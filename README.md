@@ -15,7 +15,13 @@
 
 [Татарча](#татарча) · [English](#english) · [Сүзлек / Dictionary](docs/commands.md)
 
+<img src="docs/media/console-tour.gif" width="640" alt="Tatarnetes console tour" />
+
 </div>
+
+> Күренешләр / Screenshots: [уңыш](docs/media/console-success.png) ·
+> [чәй тәнәфесе](docs/media/console-tea.png) · [яңа имля](docs/media/console-arab.png) ·
+> [хата](docs/media/console-error.png)
 
 ---
 
