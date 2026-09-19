@@ -43,6 +43,12 @@ eq "pods→pods"       "pods"   "$(resolve_noun pods)"
 eq "my-pod→my-pod"   "my-pod" "$(resolve_noun my-pod)"
 eq "эш→jobs"         "jobs"   "$(resolve_noun эш)"
 
+echo "── alif: cyrl→arab (Yaña imlâ) ──"
+eq "Татарнетес→arab" "تاتارنېتېس" "$(printf '%s' 'Татарнетес' | cyrl_to_arab)"
+eq "төен→arab (т-ө-е-н)" "تۆېن" "$(printf '%s' 'төен' | cyrl_to_arab)"
+case "$(printf '%s' 'Исәнмесез' | cyrl_to_arab)" in ئ*) ok "word-initial hamza";; *) bad "word-initial hamza" "ئ…" "$(printf '%s' Исәнмесез | cyrl_to_arab)";; esac
+if printf '%s' 'Исәнмесез, әйдә!' | cyrl_to_arab | iconv -f UTF-8 -t UTF-8 >/dev/null 2>&1; then ok "arab output is valid UTF-8"; else bad "arab output is valid UTF-8" "valid" "invalid"; fi
+
 echo "── i18n t() ──"
 case "$(t err.unknown_verb foobar)" in *foobar*) ok "t interpolates arg";; *) bad "t interpolates arg" "*foobar*" "$(t err.unknown_verb foobar)";; esac
 eq "en tagline" "A national container orchestrator" "$(AYDA_LANG=en t version.tagline)"

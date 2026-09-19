@@ -125,7 +125,7 @@ _help_tt() {
 
   КӨЙЛӘМӘЛӘР (ENV):
     AYDA_LANG=tt|en          интерфейс теле
-    AYDA_ALIF=cyrl|latin|arab  язу төре (кирилл / яңалиф / гарәп)
+    AYDA_ALIF=cyrl|latin|arab  язу төре (кирилл/яңалиф/яңа имля)
     AYDA_KUBECTL=<юл>        kubectl юлы
     AYDA_NO_TEA=1            чәй тәнәфесен узып китү
     AYDA_FORCE_TEA=1         чәй экранын мәҗбүри күрсәтү (демо)
