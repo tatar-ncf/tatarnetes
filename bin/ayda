@@ -96,6 +96,7 @@ show_help() {
   КӨЙЛӘМӘЛӘР / ENV:
     AYDA_KUBECTL=<path>   kubectl юлы (default: kubectl)
     AYDA_NO_TEA=1         чәй тәнәфесен узып китү / skip tea gate
+    AYDA_FORCE_TEA=1      чәй экранын мәҗбүри күрсәтү (демо) / force tea screen
     AYDA_PLAIN=1          бизәксез, төссез / no art, no colour
     AYDA_QUIET=1          бизәкләрне сүндерү / suppress decorations
     AYDA_FORCE_FUN=1      торбада да бизәк / force art even when piped

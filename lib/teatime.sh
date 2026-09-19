@@ -30,6 +30,7 @@ _now_minutes() { echo $(( 10#$(date +%H) * 60 + 10#$(date +%M) )); }
 # Тәнәфес интерактив сеанста гына эшли — торба/CI'да узып китә (скриптны бозмас өчен).
 # The gate is interactive-only: it never fires when output is piped / in CI.
 tea_now() {
+  [ -n "${AYDA_FORCE_TEA:-}" ] && return 0   # демо/тест өчен мәҗбүри чәй / force tea for demos
   [ -n "${AYDA_NO_TEA:-}" ] && return 1
   tat_fun_enabled || return 1
   local now s d
@@ -47,6 +48,7 @@ EOF
 
 # Хәзерге тәнәфес тәмамланганчы ничә минут калды.
 tea_minutes_left() {
+  [ -n "${AYDA_FORCE_TEA:-}" ] && { echo "$TEA_BREAK_MIN"; return 0; }
   local now s d
   now=$(_now_minutes)
   while read -r s d; do
