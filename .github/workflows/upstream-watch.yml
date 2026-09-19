@@ -43,5 +43,5 @@ jobs:
             "- [ ] ике телдә релиз ноталары" \
             "" \
             "New upstream stable Kubernetes: **$latest** (pinned: \`$pinned\`).")
-          gh issue create --title "$title" --body "$body" --label upstream 2>/dev/null \
-            || gh issue create --title "$title" --body "$body"
+          gh label create upstream --color ededed --description "Upstream tracking" 2>/dev/null || true
+          gh issue create --title "$title" --body "$body" --label upstream

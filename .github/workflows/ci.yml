@@ -1,13 +1,15 @@
 name: CI
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
   shellcheck:
     runs-on: ubuntu-latest
-    continue-on-error: true   # киңәшле / advisory
+    continue-on-error: true   # киңәшле / advisory (shellcheck preinstalled)
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y shellcheck
       - run: shellcheck -x bin/ayda lib/*.sh install.sh
 
   smoke:

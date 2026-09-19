@@ -11,7 +11,7 @@
 
 [![License: Tatarch 2.0](https://img.shields.io/badge/License-Tatarch%202.0-1f8a4c)](LICENSE)
 [![Made for](https://img.shields.io/badge/%D0%91%D3%A9%D0%B5%D0%BA%20%D1%82%D0%B0%D1%82%D0%B0%D1%80%20%D1%85%D0%B0%D0%BB%D0%BA%D1%8B%D0%BD%D0%B0-d21f2a)](LICENSE)
-[![Tea breaks](https://img.shields.io/badge/%F0%9F%8D%B5%20chая%20breaks-3%2Fday-e3a81a)](lib/teatime.sh)
+[![Tea breaks](https://img.shields.io/badge/%F0%9F%8D%B5%20tea%20breaks-3%2Fday-e3a81a)](lib/teatime.sh)
 
 [Татарча](#татарча) · [English](#english) · [Сүзлек / Dictionary](docs/commands.md)
 
@@ -58,7 +58,7 @@ export PATH="$PWD/bin:$PATH"
 ayda күрсәт кузаклар            # kubectl get pods
 ayda күрсәт кузаклар -A         # kubectl get pods -A
 ayda сөйлә төен tatar-node-1    # kubectl describe node tatar-node-1
-ayda көндәлек кузак my-pod      # kubectl logs my-pod
+ayda көндәлек my-pod            # kubectl logs my-pod
 ayda бетер хезмәт my-svc        # kubectl delete svc my-svc
 ayda күрсәт барысы -A           # kubectl get all -A
 

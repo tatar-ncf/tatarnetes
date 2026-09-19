@@ -30,10 +30,11 @@ translate_verb() {
     асыллар|ресурслар)                              echo api-resources ;;
     төркем-хәбәре|кластер-хәбәре)                   echo cluster-info ;;
     # --- инглизчә kubectl фигыльләре (passthrough) ---
-    get|describe|create|apply|delete|logs|exec|scale|edit|rollout|expose|run|\
-    port-forward|config|label|annotate|patch|top|wait|explain|api-resources|\
-    cluster-info|set|cordon|uncordon|drain|taint|proxy|cp|auth|certificate|\
-    attach|debug|events|version|completion|kustomize|diff|replace|rollback|apply-view-last-applied)
+    get|describe|create|apply|delete|logs|exec|scale|autoscale|edit|rollout|\
+    expose|run|port-forward|config|label|annotate|patch|top|wait|explain|\
+    api-resources|api-versions|cluster-info|set|cordon|uncordon|drain|taint|\
+    proxy|cp|auth|certificate|attach|debug|events|version|completion|kustomize|\
+    diff|replace|rollback|apply-view-last-applied|options|plugin)
                                                      echo "$1" ;;
     *)                                               echo "" ;;
   esac

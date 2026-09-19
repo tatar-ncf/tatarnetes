@@ -51,6 +51,12 @@
      контрольдә тотучы, аңа буйсынган һәм аның белән уртак хуҗалы барлык
      затлар.
 
+     «Чыганак» (Source) формасы — үзгәртү өчен уңайлы форма (чыганак коды,
+     документация чыганагы, көйләмәләр).
+
+     «Җыелган» (Object) формасы — Чыганактан механик рәвештә ясалган теләсә
+     нинди форма (мәсәлән, компиляцияләнгән код).
+
      «Сез» (You) — Лицензия шартларын кабул итеп, Җимештән файдаланучы зат.
 
      «Җимеш» (Work) — авторлык җимеше: чыганак коды яки җыелган хәлдә, Лицензия
@@ -80,9 +86,10 @@
 
      Һәр Өлешче Сезгә шулай ук мәңгелек, бөтендөнья, түләүсез, кире алынмас
      патент лицензиясен бирә — Җимешне ясарга, кулланырга, сатарга һәм таратырга.
-     Ләкин: әгәр берәрсе Җимешкә каршы патент дәгъвасы (суд) башласа, аңа
-     бирелгән патент лицензиясе шул көнне үк өзелә. Кем уртак хәзинәгә кул
-     күтәрә — юмартлыктан мәхрүм кала.
+     Ләкин: әгәр берәрсе Җимеш яки аңа кертелгән Өлеш патентны бозуда гаепләп
+     дәгъва (суд, шул исәптән каршы дәгъва яки каршы иск) башласа, аңа бирелгән
+     патент лицензиясе шул көнне үк өзелә. Кем уртак хәзинәгә кул күтәрә —
+     юмартлыктан мәхрүм кала.
 
 
   4. ТАРАТУ (Redistribution)
@@ -148,6 +155,10 @@
      Аны кулланган һәркем татар халкының юмартлыгын хөрмәт итсен, аның исеменә
      тап төшермәсен, һәм мөмкин булса — үз өлешен кире кайтарсын.
 
+     Бу игълан — мактаулы (хөрмәт йөзеннән), ул бернинди хокукый милек, күчерү
+     яки өлешчелек хокукы тудырмый; авторлык хокукы бары тик авторлык язмасында
+     күрсәтелгән Лицензиягә (Licensor) карый.
+
      Рәхмәт яугыры! Татарстан алга! Яшә, ирекле код!
 
 
@@ -202,6 +213,12 @@
      "You" means an individual or Legal Entity exercising permissions granted by
      this License.
 
+     "Source" form means the preferred form for making modifications (e.g.
+     source code, documentation source, configuration).
+
+     "Object" form means any form resulting from mechanical transformation of a
+     Source form (e.g. compiled code).
+
      "Work" means the work of authorship, in Source or Object form, made
      available under the License (for example, Tatarnetes, TatarOS Linux, or any
      other Tatar national program).
@@ -228,10 +245,12 @@
      Each Contributor also grants You a perpetual, worldwide, non-exclusive,
      no-charge, royalty-free, irrevocable (except as stated in this section)
      patent license to make, use, offer to sell, sell, and import the Work.
-     However, if You institute patent litigation alleging that the Work infringes
-     a patent, then any patent licenses granted to You under this License for that
-     Work shall terminate as of the day such litigation is filed. Whoever raises a
-     hand against the shared treasure forfeits its generosity.
+     However, if You institute patent litigation (including a cross-claim or
+     counterclaim in a lawsuit) alleging that the Work or a Contribution
+     incorporated within the Work constitutes direct or contributory patent
+     infringement, then any patent licenses granted to You under this License for
+     that Work shall terminate as of the day such litigation is filed. Whoever
+     raises a hand against the shared treasure forfeits its generosity.
 
 
   4. REDISTRIBUTION
@@ -299,6 +318,10 @@
      national treasure, a shared wealth, a heritage left to generations yet to
      come. Let all who use it honour the generosity of the Tatar people, bring no
      shame upon their name, and — if they are able — give their own share back.
+
+     This proclamation is honorary and creates no legal ownership, assignment, or
+     beneficiary interest; copyright is held solely by the Licensor named in the
+     copyright notice.
 
      Blessings upon you! Onward, Tatarstan! Long live free code!
 

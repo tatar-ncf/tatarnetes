@@ -78,7 +78,7 @@ show_help() {
     ayda күрсәт кузаклар               → kubectl get pods
     ayda күрсәт кузаклар -A            → kubectl get pods -A
     ayda сөйлә төен node-1             → kubectl describe node node-1
-    ayda көндәлек кузак my-pod         → kubectl logs my-pod
+    ayda көндәлек my-pod               → kubectl logs my-pod
     ayda бетер хезмәт my-svc           → kubectl delete svc my-svc
     ayda күрсәт барысы -A              → kubectl get all -A
 
@@ -100,6 +100,12 @@ show_help() {
     AYDA_QUIET=1          бизәкләрне сүндерү / suppress decorations
     AYDA_FORCE_FUN=1      торбада да бизәк / force art even when piped
     NO_COLOR=1            төссез / disable colour
+
+  ЧЫГУ КОДЛАРЫ / EXIT CODES:
+    0    уңыш / success            64   мондый әмер юк / unknown verb
+    42   чәй тәнәфесе / tea break  127  kubectl юк / kubectl not found
+    (башка кодлар — kubectl'дан / other codes come straight from kubectl)
+  Тәнәфес интерактив сеанста гына; торба/CI'да эшләми. Tea gate is tty-only.
 
 HLP
 }
@@ -175,13 +181,20 @@ main() {
     exit 64
   fi
 
-  # Калган сүзләрне тәрҗемә (флаглар — үзгәрешсез) / translate nouns; keep flags.
+  # Бары тик БЕРЕНЧЕ позицион сүзне (асыл төрен) тәрҗемә итәбез; исемнәр һәм
+  # флаг кыйммәтләре үзгәрешсез кала — шулай итеп «эш» атлы под яңлыш
+  # тәрҗемә ителми. Only the first positional token (the resource type) is
+  # translated; names and flag values pass through untouched.
   local -a kargs=()
-  local tok
+  local tok res_done=0
   for tok in "$@"; do
     case "$tok" in
       -*) kargs+=("$tok") ;;
-      *)  kargs+=("$(translate_noun "$tok")") ;;
+      *)  if [ "$res_done" -eq 0 ]; then
+            kargs+=("$(translate_noun "$tok")"); res_done=1
+          else
+            kargs+=("$tok")
+          fi ;;
     esac
   done
 
