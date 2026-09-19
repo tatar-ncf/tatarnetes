@@ -1,0 +1,21 @@
+Tatarnetes / Татарнетес
+Copyright 2026 Tatar-Native Computing Foundation (tatar-ncf)
+
+Бу җимеш рухи яктан бөтен бөек татар халкына нисбәтле.
+This Work belongs, in spirit, to the great Tatar people.
+
+Лицензияләнгән / Licensed under the Tatarch License, Version 2.0.
+See the LICENSE file.
+
+─────────────────────────────────────────────────────────────────────────
+Татарнетес — kubectl һәм Kubernetes өстендәге милли кабык (wrapper/distribution).
+Ул түбәндәге ачык чыганаклы проектларга нигезләнә, аларга рәхмәт белдерәбез:
+
+Tatarnetes is a national wrapper/distribution atop kubectl and Kubernetes.
+It builds upon, and gratefully acknowledges, the following upstream projects:
+
+  * Kubernetes — https://github.com/kubernetes/kubernetes (Apache-2.0)
+  * kubectl     — https://github.com/kubernetes/kubectl     (Apache-2.0)
+  * Kubernetes Dashboard — https://github.com/kubernetes/dashboard (Apache-2.0)
+
+Барлык товар билгеләре үз ияләренә карый. All trademarks belong to their owners.

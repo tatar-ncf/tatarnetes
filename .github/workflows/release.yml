@@ -1,0 +1,26 @@
+name: release
+# Тег этелгәндә GitHub Release ясый / creates a GitHub Release on tag push.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package
+        run: |
+          tar czf "tatarnetes-${GITHUB_REF_NAME}.tar.gz" bin lib install.sh docs LICENSE NOTICE README.md
+      - name: Create release
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "Татарнетес ${GITHUB_REF_NAME}" \
+            --generate-notes \
+            "tatarnetes-${GITHUB_REF_NAME}.tar.gz"

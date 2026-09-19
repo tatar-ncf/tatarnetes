@@ -1,0 +1,6 @@
+# локаль чүп / local junk
+*.log
+.DS_Store
+/tmp/
+# UI аерым репозиторийда яши / UI lives in tatar-ncf/tatarnetes-ui
+ui/

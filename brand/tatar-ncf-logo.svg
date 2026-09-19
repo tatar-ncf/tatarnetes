@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+  <title>Tatar-Native Computing Foundation</title>
+  <defs>
+    <linearGradient id="ring" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#25a85c"/><stop offset="1" stop-color="#0f5c34"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Тышкы боҗра / outer emblem ring -->
+  <circle cx="150" cy="150" r="140" fill="url(#ring)" stroke="#e3a81a" stroke-width="8"/>
+  <circle cx="150" cy="150" r="118" fill="none" stroke="#e3a81a" stroke-width="2" stroke-dasharray="4 8"/>
+
+  <!-- Чип / microchip (computing) -->
+  <g transform="translate(150,168)">
+    <rect x="-52" y="-52" width="104" height="104" rx="12" fill="#0f5c34" stroke="#fbf6e9" stroke-width="4"/>
+    <!-- аяклар / chip pins -->
+    <g stroke="#e3a81a" stroke-width="5" stroke-linecap="round">
+      <line x1="-70" y1="-30" x2="-52" y2="-30"/><line x1="-70" y1="0" x2="-52" y2="0"/><line x1="-70" y1="30" x2="-52" y2="30"/>
+      <line x1="52" y1="-30" x2="70" y2="-30"/><line x1="52" y1="0" x2="70" y2="0"/><line x1="52" y1="30" x2="70" y2="30"/>
+      <line x1="-30" y1="-70" x2="-30" y2="-52"/><line x1="0" y1="-70" x2="0" y2="-52"/><line x1="30" y1="-70" x2="30" y2="-52"/>
+      <line x1="-30" y1="52" x2="-30" y2="70"/><line x1="0" y1="52" x2="0" y2="70"/><line x1="30" y1="52" x2="30" y2="70"/>
+    </g>
+    <!-- эчпочмак / echpochmak in the die -->
+    <polygon points="0,-26 26,22 -26,22" fill="#e3a81a" stroke="#fbf6e9" stroke-width="2"/>
+    <polygon points="0,-8 12,16 -12,16" fill="#d21f2a"/>
+  </g>
+
+  <!-- Түбәтәй / skullcap on top of the chip -->
+  <path d="M108 92 Q150 44 192 92 Q150 76 108 92 Z" fill="#d21f2a" stroke="#9c141d" stroke-width="3"/>
+  <path d="M108 92 Q150 106 192 92" fill="none" stroke="#e3a81a" stroke-width="4"/>
+  <path d="M150 60 l7 11 -7 11 -7 -11 Z" fill="#e3a81a"/>
+
+  <!-- Аста лента / ribbon initials -->
+  <text x="150" y="286" text-anchor="middle" font-family="Georgia, serif" font-weight="700"
+        font-size="26" fill="#fbf6e9" letter-spacing="6">TNCF</text>
+</svg>

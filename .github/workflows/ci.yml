@@ -1,0 +1,33 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    continue-on-error: true   # киңәшле / advisory
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y shellcheck
+      - run: shellcheck -x bin/ayda lib/*.sh install.sh
+
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: smoke tests
+        env:
+          AYDA_NO_TEA: "1"
+          AYDA_PLAIN: "1"
+        run: |
+          set -e
+          bash bin/ayda ярдәм   >/dev/null
+          bash bin/ayda сүзлек  >/dev/null
+          bash bin/ayda тукай   >/dev/null
+          bash bin/ayda версия  >/dev/null
+          # билгесез фигыль → exit 64 / unknown verb must exit 64
+          rc=0; bash bin/ayda zzzz-unknown || rc=$?
+          test "$rc" -eq 64
+          # тәрҗемә дөресме? / translation sanity (kubectl юк, exit 127 көтелә)
+          out=$(AYDA_KUBECTL=/nonexistent AYDA_PLAIN= AYDA_FORCE_FUN=1 bash bin/ayda күрсәт кузаклар 2>&1 || true)
+          echo "$out" | grep -q "get pods"
+          echo "◆ Барлык smoke-тестлар узды / all smoke tests passed"

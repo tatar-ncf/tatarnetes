@@ -1,0 +1,47 @@
+name: upstream-watch
+# Апстрим Kubernetes'ның яңа тотрыклы версиясен күзәтә.
+# Watches for a new stable Kubernetes release and opens a tracking issue.
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # һәр дүшәмбе / every Monday 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      UPSTREAM: kubernetes/kubernetes
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check latest upstream stable
+        run: |
+          latest=$(gh api "repos/$UPSTREAM/releases/latest" --jq .tag_name)
+          pinned=$(cat .upstream-version 2>/dev/null || echo "none")
+          echo "upstream latest: $latest | pinned: $pinned"
+          if [ "$latest" = "$pinned" ]; then
+            echo "Яңарту кирәкми / up to date."; exit 0
+          fi
+          title="Upstream Kubernetes $latest available"
+          existing=$(gh issue list --search "$title in:title" --state open --json number --jq '.[0].number' 2>/dev/null || echo "")
+          if [ -n "$existing" ]; then
+            echo "Issue инде бар / already tracked: #$existing"; exit 0
+          fi
+          body=$(printf '%s\n' \
+            "Апстрим Kubernetes яңа тотрыклы версия чыгарды: **$latest**." \
+            "Хәзерге пиннинг: \`$pinned\`." \
+            "" \
+            "Татарлаштыру адымнары / Tatarisation checklist:" \
+            "- [ ] \`lib/dictionary.sh\` карау (яңа kubectl фигыльләре)" \
+            "- [ ] smoke-тестлар (\`ci.yml\`)" \
+            "- [ ] \`.upstream-version\` = \`$latest\`" \
+            "- [ ] тег \`${latest}-tatar.0\` (edge) яки \`-tatar.N\` (stable)" \
+            "- [ ] ике телдә релиз ноталары" \
+            "" \
+            "New upstream stable Kubernetes: **$latest** (pinned: \`$pinned\`).")
+          gh issue create --title "$title" --body "$body" --label upstream 2>/dev/null \
+            || gh issue create --title "$title" --body "$body"

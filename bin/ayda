@@ -1,0 +1,215 @@
+#!/usr/bin/env bash
+# ═══════════════════════════════════════════════════════════════════════
+#  ӘЙДӘ (ayda) — Татарнетес идарә коралы / Tatarnetes control tool
+#  Милли kubectl. Татарча әмерләр kubectl'га тәрҗемә ителә.
+#  A national kubectl: Tatar commands are transparently translated to kubectl.
+#
+#  © Бөек татар халкына / to the great Tatar people — Tatarch License 2.0
+# ═══════════════════════════════════════════════════════════════════════
+set -uo pipefail
+
+AYDA_HOME="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)"
+LIB="$AYDA_HOME/lib"
+
+# shellcheck source=/dev/null
+. "$LIB/render.sh"
+# shellcheck source=/dev/null
+. "$LIB/dictionary.sh"
+# shellcheck source=/dev/null
+. "$LIB/faces.sh"
+# shellcheck source=/dev/null
+. "$LIB/phrases.sh"
+# shellcheck source=/dev/null
+. "$LIB/teatime.sh"
+
+KUBECTL_BIN="${AYDA_KUBECTL:-kubectl}"
+AYDA_VERSION="2.0.0"
+
+# --- Декорацияләр / decorations -----------------------------------------
+show_success_footer() {
+  tat_fun_enabled || return 0
+  tat_carpet
+  tat_face_happy
+  printf '%b\n' "  ${TAT_GREEN}${TAT_BOLD}$(tat_random_praise)${TAT_RESET}" >&2
+  printf '%b\n' "${TAT_GOLD}$(tat_random_garnish)${TAT_RESET}" >&2
+  tat_carpet
+}
+
+show_error_footer() {
+  local rc="$1"
+  tat_fun_enabled || return 0
+  tat_carpet
+  tat_face_angry
+  printf '%b\n' "  ${TAT_RED}${TAT_BOLD}$(tat_random_curse)${TAT_RESET}  ${TAT_DIM}(код: $rc)${TAT_RESET}" >&2
+  tat_carpet
+}
+
+# --- Чәй тәнәфесе / tea break screen ------------------------------------
+show_tea_break() {
+  local left; left=$(tea_minutes_left)
+  {
+    tat_carpet
+    tat_face_tea
+    printf '%b\n' "${TAT_GOLD}${TAT_BOLD}  ⛔ СӨТЛЕ ЧӘЙ ҺӘМ КЫСТЫБЫЙ ТӘНӘФЕСЕ ⛔${TAT_RESET}"
+    printf '%s\n' "  ─────────────────────────────────────────────"
+    printf '%s\n' "  Татарнетес хәзер чәй эчә. Кыстырылма, туганкай —"
+    printf '%s\n' "  безгә дә чәй эчәргә кирәк! 🍵🫓🥟🍯"
+    printf '%s\n' ""
+    printf '%s\n' "  Зинһар, ${left} минуттан соң тагын кереп кара."
+    printf '%s\n' "  (Please try again in ${left} min — the cluster is having tea.)"
+    printf '%s\n' ""
+    printf '%b\n' "  ${TAT_DIM}Ашыгыч булса: AYDA_NO_TEA=1 ayda ...  (тәнәфесне узып китә)${TAT_RESET}"
+    tat_carpet
+  } >&2
+}
+
+# --- Ярдәм / help --------------------------------------------------------
+show_help() {
+  cat >&2 <<HLP
+
+  ӘЙДӘ (ayda) — Татарнетес идарә коралы  v${AYDA_VERSION}
+  Милли kubectl / a national kubectl.
+
+  КУЛЛАНУ / USAGE:
+    ayda <фигыль> <асыл> [исем] [флаглар]
+    ayda <verb>   <resource> [name] [flags]
+
+  МИСАЛЛАР / EXAMPLES:
+    ayda күрсәт кузаклар               → kubectl get pods
+    ayda күрсәт кузаклар -A            → kubectl get pods -A
+    ayda сөйлә төен node-1             → kubectl describe node node-1
+    ayda көндәлек кузак my-pod         → kubectl logs my-pod
+    ayda бетер хезмәт my-svc           → kubectl delete svc my-svc
+    ayda күрсәт барысы -A              → kubectl get all -A
+
+  Гадәти kubectl әмерләре дә эшли:
+    ayda get pods                      → kubectl get pods
+
+  ЭЧКЕ ӘМЕРЛӘР / BUILT-INS:
+    ayda ярдәм | help                 бу ярдәм / this help
+    ayda сүзлек                       тулы сүзлек / full dictionary
+    ayda версия                       версия / version
+    ayda тукай                        Тукайдан бер шигырь / a Tukay verse
+    ayda чәй                          чәй тәнәфесе графигы / tea schedule
+    ayda сәлам                        сәлам! / hello
+
+  КӨЙЛӘМӘЛӘР / ENV:
+    AYDA_KUBECTL=<path>   kubectl юлы (default: kubectl)
+    AYDA_NO_TEA=1         чәй тәнәфесен узып китү / skip tea gate
+    AYDA_PLAIN=1          бизәксез, төссез / no art, no colour
+    AYDA_QUIET=1          бизәкләрне сүндерү / suppress decorations
+    AYDA_FORCE_FUN=1      торбада да бизәк / force art even when piped
+    NO_COLOR=1            төссез / disable colour
+
+HLP
+}
+
+show_version() {
+  tat_carpet
+  tat_bold "  Татарнетес / Tatarnetes  v${AYDA_VERSION}"
+  printf '%b\n' "  ${TAT_GREEN}Милли контейнер оркестраторы${TAT_RESET}" >&2
+  printf '%b\n' "  ${TAT_DIM}Бөек татар халкына багышлана / to the great Tatar people${TAT_RESET}" >&2
+  if command -v "$KUBECTL_BIN" >/dev/null 2>&1; then
+    printf '%b\n' "  ${TAT_DIM}Нигез (backend):${TAT_RESET}" >&2
+    "$KUBECTL_BIN" version --client 2>/dev/null | sed 's/^/    /' >&2 || true
+  fi
+  tat_carpet
+}
+
+print_tukay() {
+  tat_carpet
+  printf '%b\n' "${TAT_GOLD}$(tat_random_tukay)${TAT_RESET}" >&2
+  tat_carpet
+}
+
+tea_status() {
+  tat_carpet
+  if tea_now; then
+    tat_face_tea
+    printf '%b\n' "  ${TAT_GOLD}Хәзер чәй вакыты! Тагын $(tea_minutes_left) минут.${TAT_RESET}" >&2
+  else
+    printf '%b\n' "  ${TAT_GREEN}Хәзер кластер эшли. Киләсе чәй: $(tea_next_hhmm)${TAT_RESET}" >&2
+  fi
+  printf '%s\n' "  Бүгенге тәнәфесләр (start dur):" >&2
+  tea_windows | while read -r s d; do
+    printf '    %02d:%02d  (%s мин)\n' $(( s / 60 )) $(( s % 60 )) "$d" >&2
+  done
+  tat_carpet
+}
+
+greet() {
+  tat_carpet
+  tat_face_happy
+  printf '%b\n' "  ${TAT_GREEN}${TAT_BOLD}Исәнмесез! Татарнетескә рәхим итегез!${TAT_RESET}" >&2
+  printf '%b\n' "  ${TAT_GOLD}$(tat_random_tukay)${TAT_RESET}" >&2
+  tat_carpet
+}
+
+# --- Төп агым / main ----------------------------------------------------
+main() {
+  if [ "$#" -eq 0 ]; then show_help; exit 0; fi
+
+  local verb="$1"; shift
+  case "$verb" in
+    ярдәм|help|--help|-h)        show_help;    exit 0 ;;
+    версия|version|--version)    show_version; exit 0 ;;
+    сүзлек|dictionary|словарь)   show_dictionary >&2; exit 0 ;;
+    тукай|tukay|shigyr)          print_tukay;  exit 0 ;;
+    чәй|чай|tea)                 tea_status;   exit 0 ;;
+    сәлам|salam|исәнме|привет)   greet;        exit 0 ;;
+  esac
+
+  # Чәй капкасы / tea gate — cluster is unreachable during tea.
+  if tea_now; then show_tea_break; exit 42; fi
+
+  # Фигыльне тәрҗемә / translate verb.
+  local kverb; kverb="$(translate_verb "$verb")"
+  if [ -z "$kverb" ]; then
+    {
+      tat_carpet; tat_face_angry
+      printf '%b\n' "  ${TAT_RED}${TAT_BOLD}Мондый әмер юк: «${verb}»${TAT_RESET}"
+      printf '%b\n' "  ${TAT_RED}$(tat_random_curse)${TAT_RESET}"
+      printf '%s\n' "  «ayda ярдәм» яки «ayda сүзлек» дип язып кара."
+      tat_carpet
+    } >&2
+    exit 64
+  fi
+
+  # Калган сүзләрне тәрҗемә (флаглар — үзгәрешсез) / translate nouns; keep flags.
+  local -a kargs=()
+  local tok
+  for tok in "$@"; do
+    case "$tok" in
+      -*) kargs+=("$tok") ;;
+      *)  kargs+=("$(translate_noun "$tok")") ;;
+    esac
+  done
+
+  # Тәрҗемәне күрсәтү (ачык эшләсен өчен) / show the translation transparently.
+  tat_dim "🐘 → $KUBECTL_BIN $kverb ${kargs[*]:-}"
+
+  # kubectl юкмы? / kubectl missing → demo note, no crash.
+  if ! command -v "$KUBECTL_BIN" >/dev/null 2>&1; then
+    {
+      tat_carpet; tat_face_angry
+      printf '%b\n' "  ${TAT_RED}kubectl табылмады (${KUBECTL_BIN}).${TAT_RESET}"
+      printf '%s\n' "  Татарнетес — kubectl өстендәге милли кабык. Башта kubectl куй."
+      printf '%s\n' "  (Tatarnetes wraps kubectl. Install kubectl first.)"
+      tat_carpet
+    } >&2
+    exit 127
+  fi
+
+  # Башкару / execute.
+  "$KUBECTL_BIN" "$kverb" ${kargs[@]+"${kargs[@]}"}
+  local rc=$?
+
+  if [ "$rc" -eq 0 ]; then
+    show_success_footer
+  else
+    show_error_footer "$rc"
+  fi
+  exit "$rc"
+}
+
+main "$@"

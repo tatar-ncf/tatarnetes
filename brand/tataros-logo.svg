@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="260" viewBox="0 0 260 260">
+  <title>TatarOS Linux</title>
+  <!-- Тукс түбәтәйдә / a penguin (Linux) in a tюбетейка, on a carpet tile -->
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1f8a4c"/><stop offset="1" stop-color="#0f5c34"/>
+    </linearGradient>
+  </defs>
+  <rect x="14" y="14" width="232" height="232" rx="36" fill="url(#tile)" stroke="#e3a81a" stroke-width="6"/>
+  <!-- почмак ромблары / corner diamonds -->
+  <g fill="#e3a81a"><path d="M40 40 l8 8 -8 8 -8 -8 Z"/><path d="M220 40 l8 8 -8 8 -8 -8 Z"/><path d="M40 220 l8 8 -8 8 -8 -8 Z"/><path d="M220 220 l8 8 -8 8 -8 -8 Z"/></g>
+
+  <!-- Пингвин гәүдәсе / penguin body -->
+  <ellipse cx="130" cy="158" rx="62" ry="66" fill="#241a0d"/>
+  <ellipse cx="130" cy="166" rx="42" ry="52" fill="#fbf6e9"/>
+  <!-- Күзләр / eyes -->
+  <g><circle cx="112" cy="132" r="12" fill="#fff"/><circle cx="148" cy="132" r="12" fill="#fff"/>
+     <circle cx="114" cy="134" r="5" fill="#241a0d"/><circle cx="146" cy="134" r="5" fill="#241a0d"/></g>
+  <!-- Томшык / beak -->
+  <path d="M118 146 Q130 160 142 146 Q130 152 118 146 Z" fill="#e3a81a"/>
+  <!-- Аяклар / feet -->
+  <g fill="#e3a81a"><path d="M104 214 q-14 8 -2 16 h20 q-4 -10 -6 -16 Z"/><path d="M156 214 q14 8 2 16 h-20 q4 -10 6 -16 Z"/></g>
+  <!-- Канатлар / flippers -->
+  <path d="M70 150 q-14 30 6 54 q4 -30 8 -50 Z" fill="#241a0d"/>
+  <path d="M190 150 q14 30 -6 54 q-4 -30 -8 -50 Z" fill="#241a0d"/>
+
+  <!-- Түбәтәй / skullcap -->
+  <path d="M92 108 Q130 66 168 108 Q130 92 92 108 Z" fill="#d21f2a" stroke="#9c141d" stroke-width="3"/>
+  <path d="M92 108 Q130 120 168 108" fill="none" stroke="#e3a81a" stroke-width="4"/>
+  <path d="M130 80 l6 9 -6 9 -6 -9 Z" fill="#e3a81a"/>
+</svg>
