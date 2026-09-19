@@ -1,0 +1,6 @@
+# Күчмә (ислам) бәйрәмнәре һәм Сабантуй — MM-DD  каталог-ачкычы.
+# Movable Islamic holidays + Sabantuy — fill/adjust yearly (dates are examples).
+# Format: MM-DD  festival.key
+06-27 festival.sabantuy
+03-20 festival.uraza
+05-27 festival.qorban

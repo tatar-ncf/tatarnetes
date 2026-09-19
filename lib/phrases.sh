@@ -1,99 +1,52 @@
 # shellcheck shell=bash
-# phrases.sh — Ачулы сүзләр, мактаулар, ризыклар һәм Тукай юллары.
-# Curses (mild, folksy), praises, foods, and original Gabdulla Tukay lines.
+# phrases.sh — Мәдәни корпус йөкләүче / cultural corpus loader.
+# Эчтәлек хәзер data/*.tt файлларында (носителеләр PR аша тулыландыра ала).
+# Content now lives in data/*.tt so native speakers can contribute via PR,
+# without touching code. Чыгарылыш AYDA_ALIF буенча транслитерацияләнә.
+# Requires: alif.sh sourced (for alif_render). Bash 3.2.
 
-# --- Ачулы (йомшак) сүзләр / mild comedic scolding -----------------------
-TAT_CURSES=(
-  "Җүләр!"
-  "Тинтәк!"
-  "Мокыт!"
-  "Аңгыра баш!"
-  "Тиле!"
-  "Ишәк!"
-  "Кит моннан!"
-  "Ай-яй-яй, оятсыз!"
-  "Башың эшлиме синең?"
-  "Кулың кәкреме әллә?"
-  "Ни кыланасың?!"
-  "Йә, булмады бит!"
-  "Күзең кайда карый?"
-)
+_CORPUS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/../data" 2>/dev/null && pwd)"
 
-# --- Мактау сүзләре / praises -------------------------------------------
-TAT_PRAISE=(
-  "Афәрин!"
-  "Маладис!"
-  "Бик шәп!"
-  "Гүзәл!"
-  "Татарстан алга!"
-  "Яшә, Татарнетес!"
-  "Рәхмәт яугыры!"
-  "Менә егет!"
-  "Татар көче!"
-  "Аллага шөкер, эшләде!"
-  "Уңыш котлы булсын!"
-  "Молодец, туганкай!"
-)
+# Файлдагы мәгънәле юллар (# һәм буш юлларны калдырып).
+_corpus_lines() { grep -vE '^[[:space:]]*(#|$)' "$1" 2>/dev/null; }
 
-# --- Татар ризыклары / Tatar dishes -------------------------------------
-TAT_FOODS=(
-  "🥟 Өчпочмак — эчендә ит тә, бәрәңге дә!"
-  "🍯 Чәкчәк — туйга да, кунакка да!"
-  "🫓 Кыстыбый — җылы килеш иң тәмлесе!"
-  "🥧 Бәлеш — зур табага пешерәбез!"
-  "🍵 Сөтле чәй — иң кирәклесе!"
-  "🐎 Казылык — чын татарча тәгам!"
-  "🧈 Талкыш кәләвә — бәйрәм ризыгы!"
-  "🥛 Катык — сәламәтлеккә файдалы!"
-  "🥐 Пәрәмәч — базардагы иң тәмлесе!"
-  "🫖 Губадия — туй табынының патшасы!"
-)
-
-# --- Габдулла Тукай юллары (оригинал) / original Tukay lines -------------
-# Һәр элемент — берничә юл. Индекслар аша сайлыйбыз (bash 3.2 массивта \n саклый).
-TAT_TUKAY=(
-"И туган тел, и матур тел, әткәм-әнкәмнең теле!
-Дөньяда күп нәрсә белдем син туган тел аркылы.
-        — Габдулла Тукай, «Туган тел»"
-
-"Иң элек бу тел белән әнкәм бишектә көйләгән,
-Аннары төннәр буе әбкәм хикәят сөйләгән.
-        — Габдулла Тукай, «Туган тел»"
-
-"И туган тел! Һәрвакытта ярдәмең берлән синең,
-Кечкенәдән аңлашылган шатлыгым, кайгым минем.
-        — Габдулла Тукай, «Туган тел»"
-
-"Нәкъ Казан артында бардыр бер авыл — «Кырлай» диләр;
-Җырлаганда көй өчен, «тавыклары җырлай» диләр.
-        — Габдулла Тукай, «Туган авыл»"
-)
-
-# rand_of ELEM1 ELEM2 ... → берсен сайлап чыгара / prints one random element.
-rand_of() {
-  local n=$#
+# Файлдан очраклы юл / random meaningful line from a file.
+_rand_line() {
+  local f="$_CORPUS_DIR/$1" IFS=$'\n'
+  local -a a=()
+  a=($(_corpus_lines "$f"))
+  local n=${#a[@]}
   [ "$n" -eq 0 ] && return 0
-  local i=$(( RANDOM % n ))
-  shift "$i"
-  printf '%s\n' "$1"
+  printf '%s' "${a[$((RANDOM % n))]}" | alif_render
 }
 
-tat_random_curse()  { rand_of "${TAT_CURSES[@]}"; }
-tat_random_praise() { rand_of "${TAT_PRAISE[@]}"; }
-tat_random_food()   { rand_of "${TAT_FOODS[@]}"; }
-
-tat_random_tukay() {
-  local n=${#TAT_TUKAY[@]}
-  [ "$n" -eq 0 ] && return 0
-  local i=$(( RANDOM % n ))
-  printf '%s\n' "${TAT_TUKAY[$i]}"
+# «%%» белән аерылган очраклы язма (күп юллы) / random %%-separated record.
+_rand_record() {
+  local f="$_CORPUS_DIR/$1"
+  [ -f "$f" ] || return 0
+  awk -v seed="$RANDOM" '
+    BEGIN{ RS="%%"; srand(seed) }
+    { gsub(/^\n+|\n+$/,""); if (length($0) && $0 !~ /^[[:space:]]*#/) recs[n++]=$0 }
+    END{ if (n>0) print recs[int(rand()*n)] }
+  ' "$f" | grep -vE '^[[:space:]]*#' | alif_render
 }
 
-# Уңышта — ярты очракта ризык, ярты очракта Тукай.
+tat_random_curse()   { _rand_line curses.tt; }
+tat_random_praise()  { _rand_line praise.tt; }
+tat_random_food()    { _rand_line foods.tt; }
+tat_random_proverb() { _rand_line proverbs.tt; }
+tat_random_poem()    { _rand_record poetry.tt; }
+tat_random_name()    { _rand_line names.tt; }
+
+# Иске исем туры килсен өчен (кире яраклылык) / back-compat alias.
+tat_random_tukay()   { tat_random_poem; }
+
+# Уңышта бизәк: чиратлап шигырь / мәкаль / ризык.
+# Success garnish: rotate poem / proverb / dish.
 tat_random_garnish() {
-  if [ $(( RANDOM % 2 )) -eq 0 ]; then
-    tat_random_food
-  else
-    tat_random_tukay
-  fi
+  case $(( RANDOM % 3 )) in
+    0) tat_random_food ;;
+    1) tat_random_proverb ;;
+    *) tat_random_poem ;;
+  esac
 }

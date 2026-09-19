@@ -1,0 +1,103 @@
+# Tatarnetes — Татар (кирилл) интерфейс юллары.
+# Tatar (Cyrillic) interface catalog — the canonical source of truth.
+# Тәрҗемәчеләргә: msgstr эчен генә үзгәртегез. msgid — тотрыклы ачкыч.
+# Translators: edit only msgstr. msgid is a stable key. Латин/гарәп язулар
+# бу кирилл юллардан автоматик транслитерация ителә (lib/alif.sh).
+msgid ""
+msgstr ""
+"Project-Id-Version: tatarnetes 2.0\n"
+"Language: tt\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "err.unknown_verb"
+msgstr "Мондый әмер юк: «%s»"
+
+msgid "hint.try_help"
+msgstr "«ayda ярдәм» яки «ayda сүзлек» дип язып кара."
+
+msgid "err.code"
+msgstr "(код: %s)"
+
+msgid "kubectl.notfound"
+msgstr "kubectl табылмады (%s)."
+
+msgid "kubectl.notfound.hint"
+msgstr "Татарнетес — kubectl өстендәге милли кабык. Башта kubectl куй."
+
+msgid "tea.title"
+msgstr "СӨТЛЕ ЧӘЙ ҺӘМ КЫСТЫБЫЙ ТӘНӘФЕСЕ"
+
+msgid "tea.body"
+msgstr "Татарнетес хәзер чәй эчә. Кыстырылма, туганкай — безгә дә чәй эчәргә кирәк!"
+
+msgid "tea.retry"
+msgstr "Зинһар, %s минуттан соң тагын кереп кара."
+
+msgid "tea.bypass"
+msgstr "Ашыгыч булса: AYDA_NO_TEA=1 ayda ...  (тәнәфесне узып китә)"
+
+msgid "tea.now"
+msgstr "Хәзер чәй вакыты! Тагын %s минут."
+
+msgid "tea.working"
+msgstr "Хәзер кластер эшли. Киләсе чәй: %s"
+
+msgid "tea.today"
+msgstr "Бүгенге тәнәфесләр:"
+
+msgid "version.tagline"
+msgstr "Милли контейнер оркестраторы"
+
+msgid "version.dedication"
+msgstr "Бөек татар халкына багышлана"
+
+msgid "version.backend"
+msgstr "Нигез (backend):"
+
+msgid "greet.hello"
+msgstr "Исәнмесез! Татарнетескә рәхим итегез!"
+
+msgid "welcome.newctx"
+msgstr "Рәхим итегез! Яңа төбәк (контекст): %s. Кунагыбыз бул!"
+
+msgid "friday.greeting"
+msgstr "Җомгагыз мөбарәк булсын!"
+
+msgid "finops.nag"
+msgstr "Акчаны әрәм итмә! %s реплика — байлыкны сакла, туганкай."
+
+msgid "finops.ok"
+msgstr "Хуҗалыкчыл эш — афәрин!"
+
+msgid "run.translated"
+msgstr "→ %s"
+
+msgid "err.hint.notfound"
+msgstr "Табылмады — исемен яки мәйданны (namespace) тикшер."
+
+msgid "err.hint.forbidden"
+msgstr "Рөхсәт юк — хокукларыңны (RBAC) тикшер."
+
+msgid "err.hint.timeout"
+msgstr "Вакыт узды — кластер җавап бирми, багланышны тикшер."
+
+msgid "err.hint.conn"
+msgstr "Кластерга тоташып булмады — контекст һәм адрес дөресме?"
+
+msgid "err.hint.exists"
+msgstr "Инде бар — башка исем сайла яки булганын үзгәрт."
+
+msgid "err.hint.nomatch"
+msgstr "Андый асыл юк — «ayda сүзлек» карап ал."
+
+msgid "festival.nauruz"
+msgstr "Нәүрүз мөбарәк! Яз килде, кластер яшәрде! 🌱"
+
+msgid "festival.sabantuy"
+msgstr "Сабан туе котлы булсын! Кластер мәйданга чыкты — көрәш вакыты! 🤼"
+
+msgid "festival.qorban"
+msgstr "Корбан бәйрәме мөбарәк булсын! 🕌"
+
+msgid "festival.uraza"
+msgstr "Ураза гаете мөбарәк булсын! 🌙"

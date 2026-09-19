@@ -1,0 +1,35 @@
+# Krew плагин манифесты / krew plugin manifest for `kubectl ayda`.
+# Урнаштыру / install (custom manifest):
+#   kubectl krew install --manifest=plugins/ayda.yaml
+# Яки PATH'ка bin/kubectl-ayda куеп: «kubectl ayda күрсәт кузаклар».
+# Or just put bin/kubectl-ayda on PATH: `kubectl ayda күрсәт кузаклар`.
+#
+# ИСКӘРМӘ: uri/sha256 кыйммәтләре чын релиз чыккач тутырыла (release.yml).
+# NOTE: uri/sha256 are filled in when a real release is published.
+apiVersion: krew.googlecontainertools.github.com/v1alpha2
+kind: Plugin
+metadata:
+  name: ayda
+spec:
+  version: v2.1.0
+  homepage: https://github.com/tatar-ncf/tatarnetes
+  shortDescription: Tatar-native kubectl (Татарнетес — милли kubectl)
+  description: |
+    ayda — милли kubectl кабыгы. Татарча әмерләр kubectl'га тәрҗемә ителә,
+    түбәтәйле йөзләр, Тукай юллары, чәй тәнәфесе. Латин керем дә эшли.
+    A Tatar-native kubectl wrapper: Tatar commands, skullcap faces, Tukay
+    verses, tea breaks. Latin input supported. AYDA_ALIF=cyrl|latin|arab.
+  caveats: |
+    kubectl һәм bash кирәк / requires kubectl and bash.
+  platforms:
+    - selector:
+        matchExpressions:
+          - key: os
+            operator: In
+            values: [darwin, linux]
+      uri: https://github.com/tatar-ncf/tatarnetes/releases/download/v2.1.0/tatarnetes-v2.1.0.tar.gz
+      sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+      bin: bin/kubectl-ayda
+      files:
+        - from: "*"
+          to: "."

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# kubectl-ayda — kubectl плагины / kubectl plugin shim.
+# PATH'та булганда «kubectl ayda ...» дип чакырырга мөмкин.
+# When on PATH, enables `kubectl ayda <татарча әмер>`.
+exec "$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)/ayda" "$@"

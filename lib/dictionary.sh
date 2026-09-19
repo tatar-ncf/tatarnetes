@@ -68,6 +68,22 @@ translate_noun() {
   esac
 }
 
+# resolve_verb/resolve_noun — башта сүзлек (кирилл/инглиз), аннары латин фолбэк.
+# Try the dictionary as-is first (Cyrillic or English kubectl), then fall back to
+# Latin→Cyrillic input. English kubectl verbs (get/pods) stay untouched.
+resolve_verb() {
+  local v="$1" r
+  r="$(translate_verb "$v")"; [ -n "$r" ] && { printf '%s' "$r"; return 0; }
+  translate_verb "$(printf '%s' "$v" | latin_to_cyrl)"
+}
+resolve_noun() {
+  local n="$1" r c
+  r="$(translate_noun "$n")"; [ "$r" != "$n" ] && { printf '%s' "$r"; return 0; }
+  c="$(printf '%s' "$n" | latin_to_cyrl)"
+  r="$(translate_noun "$c")"
+  if [ "$r" != "$c" ]; then printf '%s' "$r"; else printf '%s' "$n"; fi
+}
+
 # Сүзлекне күрсәтү / print the dictionary as a table.
 show_dictionary() {
   cat <<'TBL'

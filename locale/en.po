@@ -1,0 +1,100 @@
+# Tatarnetes — English interface catalog.
+# Translators: edit only msgstr. msgid is a stable key (see locale/tt.po).
+msgid ""
+msgstr ""
+"Project-Id-Version: tatarnetes 2.0\n"
+"Language: en\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "err.unknown_verb"
+msgstr "No such command: \"%s\""
+
+msgid "hint.try_help"
+msgstr "Try \"ayda ярдәм\" or \"ayda сүзлек\"."
+
+msgid "err.code"
+msgstr "(code: %s)"
+
+msgid "kubectl.notfound"
+msgstr "kubectl not found (%s)."
+
+msgid "kubectl.notfound.hint"
+msgstr "Tatarnetes is a national shell over kubectl. Install kubectl first."
+
+msgid "tea.title"
+msgstr "TEA-WITH-MILK AND KYSTYBYY BREAK"
+
+msgid "tea.body"
+msgstr "Tatarnetes is having tea. Don't knock, kinsman — let us drink our tea too!"
+
+msgid "tea.retry"
+msgstr "Please try again in %s min."
+
+msgid "tea.bypass"
+msgstr "In a hurry: AYDA_NO_TEA=1 ayda ...  (skips the break)"
+
+msgid "tea.now"
+msgstr "It's tea time! %s min left."
+
+msgid "tea.working"
+msgstr "Cluster is working. Next tea: %s"
+
+msgid "tea.today"
+msgstr "Today's breaks:"
+
+msgid "version.tagline"
+msgstr "A national container orchestrator"
+
+msgid "version.dedication"
+msgstr "Dedicated to the great Tatar people"
+
+msgid "version.backend"
+msgstr "Backend:"
+
+msgid "greet.hello"
+msgstr "Hello! Welcome to Tatarnetes!"
+
+msgid "welcome.newctx"
+msgstr "Welcome! New region (context): %s. Be our guest!"
+
+msgid "friday.greeting"
+msgstr "Blessed Friday (jomga) to you!"
+
+msgid "finops.nag"
+msgstr "Don't waste money! %s replicas — mind the wealth, kinsman."
+
+msgid "finops.ok"
+msgstr "Thrifty work — well done!"
+
+msgid "run.translated"
+msgstr "→ %s"
+
+msgid "err.hint.notfound"
+msgstr "Not found — check the name and the namespace."
+
+msgid "err.hint.forbidden"
+msgstr "Forbidden — check your permissions (RBAC)."
+
+msgid "err.hint.timeout"
+msgstr "Timed out — the cluster is not responding; check connectivity."
+
+msgid "err.hint.conn"
+msgstr "Could not reach the cluster — is the context and address correct?"
+
+msgid "err.hint.exists"
+msgstr "Already exists — pick another name or edit the existing one."
+
+msgid "err.hint.nomatch"
+msgstr "No such resource — see \"ayda сүзлек\"."
+
+msgid "festival.nauruz"
+msgstr "Happy Nauruz! Spring is here, the cluster is renewed! 🌱"
+
+msgid "festival.sabantuy"
+msgstr "Happy Sabantuy! The cluster steps onto the maydan — time for köräş! 🤼"
+
+msgid "festival.qorban"
+msgstr "Blessed Qurban Bayram! 🕌"
+
+msgid "festival.uraza"
+msgstr "Blessed Uraza Bayram! 🌙"
