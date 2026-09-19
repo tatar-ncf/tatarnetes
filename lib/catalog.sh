@@ -33,6 +33,13 @@ catalog_lookup() { # $1=lang $2=key
     en:festival.sabantuy) printf '%s' 'Happy Sabantuy! The cluster steps onto the maydan — time for köräş! 🤼' ;;
     en:festival.qorban) printf '%s' 'Blessed Qurban Bayram! 🕌' ;;
     en:festival.uraza) printf '%s' 'Blessed Uraza Bayram! 🌙' ;;
+    en:tos.hint.try_help) printf '%s' 'Try "tos ярдәм" or "tos сүзлек".' ;;
+    en:tos.version.tagline) printf '%s' 'A national OS that provisions Tatarnetes' ;;
+    en:tos.talosctl.notfound) printf '%s' 'talosctl not found (%s).' ;;
+    en:tos.talosctl.notfound.hint) printf '%s' 'TatarOS is a national shell over talosctl. Install talosctl first.' ;;
+    en:tos.tea.body) printf '%s' 'TatarOS is having tea. Don'\''t disturb the nodes, kinsman!' ;;
+    en:tos.greet.hello) printf '%s' 'Hello! Welcome to TatarOS Linux!' ;;
+    en:tos.greet.sub) printf '%s' 'This system will give you pure Tatarnetes.' ;;
     tt:err.unknown_verb) printf '%s' 'Мондый әмер юк: «%s»' ;;
     tt:hint.try_help) printf '%s' '«ayda ярдәм» яки «ayda сүзлек» дип язып кара.' ;;
     tt:err.code) printf '%s' '(код: %s)' ;;
@@ -64,6 +71,13 @@ catalog_lookup() { # $1=lang $2=key
     tt:festival.sabantuy) printf '%s' 'Сабан туе котлы булсын! Кластер мәйданга чыкты — көрәш вакыты! 🤼' ;;
     tt:festival.qorban) printf '%s' 'Корбан бәйрәме мөбарәк булсын! 🕌' ;;
     tt:festival.uraza) printf '%s' 'Ураза гаете мөбарәк булсын! 🌙' ;;
+    tt:tos.hint.try_help) printf '%s' '«tos ярдәм» яки «tos сүзлек» дип язып кара.' ;;
+    tt:tos.version.tagline) printf '%s' 'Милли операцион система — Татарнетес йөртә' ;;
+    tt:tos.talosctl.notfound) printf '%s' 'talosctl табылмады (%s).' ;;
+    tt:tos.talosctl.notfound.hint) printf '%s' 'TatarOS — talosctl өстендәге милли кабык. Башта talosctl куй.' ;;
+    tt:tos.tea.body) printf '%s' 'TatarOS хәзер чәй эчә. Төеннәргә кермә, туганкай!' ;;
+    tt:tos.greet.hello) printf '%s' 'Исәнмесез! TatarOS Linux'\''ка рәхим итегез!' ;;
+    tt:tos.greet.sub) printf '%s' 'Бу система сиңа саф Татарнетес бирер.' ;;
     *) printf '%s' "$2" ;;
   esac
 }

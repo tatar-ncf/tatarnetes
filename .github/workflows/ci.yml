@@ -12,6 +12,24 @@ jobs:
       - uses: actions/checkout@v4
       - run: shellcheck -x bin/ayda lib/*.sh install.sh
 
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: unit tests (alif, plural, resolve, i18n)
+        run: bash tests/unit.sh
+
+  catalog-fresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: catalog is in sync with locale/*.po
+        run: |
+          cp lib/catalog.sh /tmp/committed.sh
+          bash scripts/build-catalog.sh >/dev/null
+          diff -u /tmp/committed.sh lib/catalog.sh || {
+            echo "lib/catalog.sh иске! 'bash scripts/build-catalog.sh' эшләт."; exit 1; }
+
   smoke:
     runs-on: ubuntu-latest
     steps:

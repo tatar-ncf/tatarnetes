@@ -101,3 +101,24 @@ msgstr "Корбан бәйрәме мөбарәк булсын! 🕌"
 
 msgid "festival.uraza"
 msgstr "Ураза гаете мөбарәк булсын! 🌙"
+
+msgid "tos.hint.try_help"
+msgstr "«tos ярдәм» яки «tos сүзлек» дип язып кара."
+
+msgid "tos.version.tagline"
+msgstr "Милли операцион система — Татарнетес йөртә"
+
+msgid "tos.talosctl.notfound"
+msgstr "talosctl табылмады (%s)."
+
+msgid "tos.talosctl.notfound.hint"
+msgstr "TatarOS — talosctl өстендәге милли кабык. Башта talosctl куй."
+
+msgid "tos.tea.body"
+msgstr "TatarOS хәзер чәй эчә. Төеннәргә кермә, туганкай!"
+
+msgid "tos.greet.hello"
+msgstr "Исәнмесез! TatarOS Linux'ка рәхим итегез!"
+
+msgid "tos.greet.sub"
+msgstr "Бу система сиңа саф Татарнетес бирер."

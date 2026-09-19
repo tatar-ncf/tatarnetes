@@ -98,3 +98,24 @@ msgstr "Blessed Qurban Bayram! 🕌"
 
 msgid "festival.uraza"
 msgstr "Blessed Uraza Bayram! 🌙"
+
+msgid "tos.hint.try_help"
+msgstr "Try \"tos ярдәм\" or \"tos сүзлек\"."
+
+msgid "tos.version.tagline"
+msgstr "A national OS that provisions Tatarnetes"
+
+msgid "tos.talosctl.notfound"
+msgstr "talosctl not found (%s)."
+
+msgid "tos.talosctl.notfound.hint"
+msgstr "TatarOS is a national shell over talosctl. Install talosctl first."
+
+msgid "tos.tea.body"
+msgstr "TatarOS is having tea. Don't disturb the nodes, kinsman!"
+
+msgid "tos.greet.hello"
+msgstr "Hello! Welcome to TatarOS Linux!"
+
+msgid "tos.greet.sub"
+msgstr "This system will give you pure Tatarnetes."

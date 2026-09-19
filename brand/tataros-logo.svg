@@ -24,8 +24,8 @@
   <path d="M70 150 q-14 30 6 54 q4 -30 8 -50 Z" fill="#241a0d"/>
   <path d="M190 150 q14 30 -6 54 q-4 -30 -8 -50 Z" fill="#241a0d"/>
 
-  <!-- Түбәтәй / skullcap -->
-  <path d="M92 108 Q130 66 168 108 Q130 92 92 108 Z" fill="#d21f2a" stroke="#9c141d" stroke-width="3"/>
-  <path d="M92 108 Q130 120 168 108" fill="none" stroke="#e3a81a" stroke-width="4"/>
-  <path d="M130 80 l6 9 -6 9 -6 -9 Z" fill="#e3a81a"/>
+  <!-- Түбәтәй / skullcap (taller dome + tassel knob) -->
+  <path d="M90 108 Q130 62 170 108 Q130 90 90 108 Z" fill="#d21f2a" stroke="#9c141d" stroke-width="3"/>
+  <path d="M90 108 Q130 122 170 108" fill="none" stroke="#e3a81a" stroke-width="4"/>
+  <circle cx="130" cy="66" r="6.5" fill="#e3a81a" stroke="#9c141d" stroke-width="1.5"/>
 </svg>

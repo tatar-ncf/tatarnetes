@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="260" viewBox="0 0 260 260">
+  <title>Tatarnetes / Татарнетес</title>
+  <!-- k8s штурвалы татарча: җиде почмак + түбәтәй + эчпочмак үзәк -->
+  <defs>
+    <linearGradient id="grn" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1f8a4c"/><stop offset="1" stop-color="#12693a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Җиде почмак / heptagon (Kubernetes wheel), gold rim -->
+  <polygon points="130,40 200.4,73.9 217.7,150 169.1,211.1 90.9,211.1 42.3,150 59.6,73.9"
+           fill="url(#grn)" stroke="#e3a81a" stroke-width="6" stroke-linejoin="round"/>
+
+  <!-- Штурвал спицалары / helm spokes -->
+  <g stroke="#fbf6e9" stroke-width="7" stroke-linecap="round">
+    <line x1="130" y1="130" x2="130" y2="82"/>
+    <line x1="130" y1="130" x2="175.3" y2="103.8"/>
+    <line x1="130" y1="130" x2="186.5" y2="152.9"/>
+    <line x1="130" y1="130" x2="155.2" y2="192.3"/>
+    <line x1="130" y1="130" x2="104.8" y2="192.3"/>
+    <line x1="130" y1="130" x2="73.5" y2="152.9"/>
+    <line x1="130" y1="130" x2="84.7" y2="103.8"/>
+  </g>
+  <circle cx="130" cy="130" r="30" fill="#12693a" stroke="#fbf6e9" stroke-width="6"/>
+
+  <!-- Эчпочмак / echpochmak triangle in the hub -->
+  <polygon points="130,113 145,140 115,140" fill="#e3a81a" stroke="#fbf6e9" stroke-width="2"/>
+
+  <!-- Түбәтәй / skullcap crowning the wheel (taller dome + tassel knob) -->
+  <path d="M90 44 Q130 0 170 44 Q130 28 90 44 Z" fill="#d21f2a" stroke="#9c141d" stroke-width="3"/>
+  <path d="M90 44 Q130 58 170 44" fill="none" stroke="#e3a81a" stroke-width="4"/>
+  <circle cx="130" cy="10" r="6.5" fill="#e3a81a" stroke="#9c141d" stroke-width="1.5"/>
+</svg>

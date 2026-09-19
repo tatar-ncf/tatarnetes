@@ -2,7 +2,7 @@
   <title>Tatar-Native Computing Foundation</title>
   <defs>
     <linearGradient id="ring" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#25a85c"/><stop offset="1" stop-color="#0f5c34"/>
+      <stop offset="0" stop-color="#1f8a4c"/><stop offset="1" stop-color="#0f5c34"/>
     </linearGradient>
   </defs>
 
@@ -25,12 +25,14 @@
     <polygon points="0,-8 12,16 -12,16" fill="#d21f2a"/>
   </g>
 
-  <!-- Түбәтәй / skullcap on top of the chip -->
-  <path d="M108 92 Q150 44 192 92 Q150 76 108 92 Z" fill="#d21f2a" stroke="#9c141d" stroke-width="3"/>
-  <path d="M108 92 Q150 106 192 92" fill="none" stroke="#e3a81a" stroke-width="4"/>
-  <path d="M150 60 l7 11 -7 11 -7 -11 Z" fill="#e3a81a"/>
+  <!-- Түбәтәй / skullcap on top of the chip (taller dome + tassel knob) -->
+  <path d="M106 92 Q150 30 194 92 Q150 74 106 92 Z" fill="#d21f2a" stroke="#9c141d" stroke-width="3"/>
+  <path d="M106 92 Q150 106 194 92" fill="none" stroke="#e3a81a" stroke-width="4"/>
+  <circle cx="150" cy="33" r="6.5" fill="#e3a81a" stroke="#9c141d" stroke-width="1.5"/>
 
-  <!-- Аста лента / ribbon initials -->
-  <text x="150" y="286" text-anchor="middle" font-family="Georgia, serif" font-weight="700"
-        font-size="26" fill="#fbf6e9" letter-spacing="6">TNCF</text>
+  <!-- Аста лента / wordmark: Latin + Tatar -->
+  <text x="150" y="278" text-anchor="middle" font-family="Georgia, serif" font-weight="700"
+        font-size="24" fill="#fbf6e9" letter-spacing="6">TNCF</text>
+  <text x="150" y="294" text-anchor="middle" font-family="Georgia, serif"
+        font-size="12" fill="#e3a81a" letter-spacing="2">ТМХФ · Хисаплау Фонды</text>
 </svg>
