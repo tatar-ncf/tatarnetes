@@ -238,7 +238,7 @@ main() {
     сәлам|salam|исәнме|привет|hi) greet;       exit 0 ;;
   esac
 
-  # Чәй капкасы / tea gate — cluster unreachable during tea (interactive only).
+  # Чәй капкасы / tea gate — cluster unreachable during tea (everywhere; AYDA_NO_TEA=1 to skip).
   if tea_now; then show_tea_break; exit 42; fi
 
   # Фигыльне тәрҗемә (латин фолбэк белән) / translate verb (Latin fallback).

@@ -27,12 +27,12 @@ tea_windows() {
 _now_minutes() { echo $(( 10#$(date +%H) * 60 + 10#$(date +%M) )); }
 
 # Хәзер чәй вакытымы? 0 = әйе / returns 0 (true) if currently tea time.
-# Тәнәфес интерактив сеанста гына эшли — торба/CI'да узып китә (скриптны бозмас өчен).
-# The gate is interactive-only: it never fires when output is piped / in CI.
+# Тәнәфес ҺӘРКАЙДА эшли (торбада да, CI'да да) — кластер чәй эчә, вәссәлам.
+# Кирәкмәсә — AYDA_NO_TEA=1. The break fires EVERYWHERE (pipes, CI too); the
+# only opt-out is AYDA_NO_TEA=1. A cluster on a tea break is a cluster on a break.
 tea_now() {
   [ -n "${AYDA_FORCE_TEA:-}" ] && return 0   # демо/тест өчен мәҗбүри чәй / force tea for demos
   [ -n "${AYDA_NO_TEA:-}" ] && return 1
-  tat_fun_enabled || return 1
   local now s d
   now=$(_now_minutes)
   while read -r s d; do
