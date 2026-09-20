@@ -8,12 +8,17 @@ All poetry lines in this project were verified against sources (Sept 2026).
 
 | Автор | Әсәр | Чыганак | Ышаныч |
 |---|---|---|---|
-| Габдулла Тукай | «Туган тел» (4 строфа) | gabdullatukay.ru/works/poem/1909/tugan-tel/ | ✅ югары |
+| Габдулла Тукай | «Туган тел» (1–3 строфа) | gabdullatukay.ru/works/poem/1909/tugan-tel/ | ✅ югары |
 | Габдулла Тукай | «Туган авыл» (баш юл) | tatarica.org; kitaphane.tatarstan.ru | ✅ югары |
 | Дәрдмәнд | «Кораб» | milliard.tatar; tatarica.org | ✅ югары |
 | Муса Җәлил | «Җырларым» (Моабит) | kitap.net.ru/moabit.php; tatarica.org | ✅ югары |
 | Муса Җәлил | «Җырлап үтәм» (Моабит) | Моабит дәфтәре | ✅ югары |
 | Сибгат Хәким | «Бу кырлар, бу үзәннәрдә» | erlar.ru/node/737 | ✅ югары |
+
+> Искәрмә: «Туган тел»нең 4нче (дога) строфасы корпуска кертелмәде — юмористик
+> контекстта дини юлларны очраклы «гарнир» итеп чыгару хөрмәтсезлек булмасын өчен.
+> Note: the prayer stanza of «Туган тел» is intentionally omitted from the random
+> pool — a reverent prayer should not surface as a joke garnish.
 
 ## Мәкальләр / Proverbs (`data/proverbs.tt`)
 
