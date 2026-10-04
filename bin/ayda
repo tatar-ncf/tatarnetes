@@ -5,6 +5,7 @@
 #  A national kubectl: Tatar commands are transparently translated to kubectl.
 #
 #  Тел / language : AYDA_LANG=tt|en      Язу / script : AYDA_ALIF=cyrl|latin|arab
+#  Нигез / backend : AYDA_BACKEND=kubectl|skctl (Sheeternetes)
 #  © Бөек татар халкына / to the great Tatar people — Tatarch License 2.0
 # ═══════════════════════════════════════════════════════════════════════
 set -uo pipefail
@@ -12,12 +13,14 @@ set -uo pipefail
 AYDA_HOME="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)"
 LIB="$AYDA_HOME/lib"
 
-for _m in render alif catalog i18n dictionary faces phrases teatime calendar finops errors; do
+for _m in render alif catalog i18n dictionary faces phrases teatime calendar finops errors skctl; do
   # shellcheck source=/dev/null
   . "$LIB/$_m.sh"
 done
 
 KUBECTL_BIN="${AYDA_KUBECTL:-kubectl}"
+SKCTL_BIN="${AYDA_SKCTL:-skctl}"
+AYDA_BACKEND="${AYDA_BACKEND:-kubectl}"
 AYDA_VERSION="2.1.0"
 
 # --- Декорацияләр / decorations -----------------------------------------
@@ -48,8 +51,10 @@ show_error_footer() {
   tat_carpet
   tat_face_angry
   printf '%b\n' "  ${TAT_RED}${TAT_BOLD}$(tat_random_curse)${TAT_RESET}  ${TAT_DIM}$(t err.code "$rc")${TAT_RESET}" >&2
-  # kubectl хатасын татарча аңлату / translate the kubectl error
-  local hint; hint="$(tat_error_hint "$errtext")"
+  # kubectl/skctl хатасын татарча аңлату / translate the backend error
+  local hint=""
+  [ "$AYDA_BACKEND" = skctl ] && hint="$(skctl_error_hint "$errtext")"
+  [ -z "$hint" ] && hint="$(tat_error_hint "$errtext")"
   [ -n "$hint" ] && printf '%b\n' "  ${TAT_GOLD}$(t "$hint")${TAT_RESET}" >&2
   _footer_extras
   tat_carpet
@@ -127,12 +132,14 @@ _help_tt() {
     AYDA_LANG=tt|en          интерфейс теле
     AYDA_ALIF=cyrl|latin|arab  язу төре (кирилл/яңалиф/яңа имля)
     AYDA_KUBECTL=<юл>        kubectl юлы
+    AYDA_BACKEND=kubectl|skctl  нигез: kubectl яки Sheeternetes (skctl)
+    AYDA_SKCTL=<юл>          skctl юлы
     AYDA_NO_TEA=1            чәй тәнәфесен узып китү
     AYDA_FORCE_TEA=1         чәй экранын мәҗбүри күрсәтү (демо)
     AYDA_FINOPS_MAX=<сан>    реплика чиге (default 10)
     AYDA_PLAIN=1 | AYDA_QUIET=1 | AYDA_FORCE_FUN=1 | NO_COLOR=1
 
-  ЧЫГУ КОДЛАРЫ: 0 уңыш · 64 әмер юк · 42 чәй · 127 kubectl юк
+  ЧЫГУ КОДЛАРЫ: 0 уңыш · 64 әмер юк · 69 skctl белми · 42 чәй · 127 kubectl/skctl юк
 HLP
 }
 _help_en() {
@@ -156,10 +163,12 @@ _help_en() {
     AYDA_LANG=tt|en            interface language
     AYDA_ALIF=cyrl|latin|arab  writing system
     AYDA_KUBECTL=<path>        kubectl path
+    AYDA_BACKEND=kubectl|skctl backend: kubectl or Sheeternetes (skctl)
+    AYDA_SKCTL=<path>          skctl path
     AYDA_NO_TEA=1 · AYDA_FORCE_TEA=1 · AYDA_FINOPS_MAX=<n>
     AYDA_PLAIN=1 · AYDA_QUIET=1 · AYDA_FORCE_FUN=1 · NO_COLOR=1
 
-  EXIT CODES: 0 ok · 64 unknown verb · 42 tea · 127 kubectl missing
+  EXIT CODES: 0 ok · 64 unknown verb · 69 not supported by skctl · 42 tea · 127 kubectl/skctl missing
 HLP
 }
 show_help() { if [ "$AYDA_LANG" = "en" ]; then _help_en; else _help_tt; fi }
@@ -169,7 +178,9 @@ show_version() {
   tat_bold "  Татарнетес / Tatarnetes  v${AYDA_VERSION}"
   printf '%b\n' "  ${TAT_GREEN}$(t version.tagline)${TAT_RESET}" >&2
   printf '%b\n' "  ${TAT_DIM}$(t version.dedication)${TAT_RESET}" >&2
-  if command -v "$KUBECTL_BIN" >/dev/null 2>&1; then
+  if [ "$AYDA_BACKEND" = skctl ]; then
+    printf '%b\n' "  ${TAT_DIM}$(t version.backend) skctl (Sheeternetes) — $SKCTL_BIN${TAT_RESET}" >&2
+  elif command -v "$KUBECTL_BIN" >/dev/null 2>&1; then
     printf '%b\n' "  ${TAT_DIM}$(t version.backend)${TAT_RESET}" >&2
     "$KUBECTL_BIN" version --client 2>/dev/null | sed 's/^/    /' >&2 || true
   fi
@@ -204,9 +215,11 @@ greet() {
   tat_carpet
 }
 
-# --- kubectl башкару (stderr тотып) / execute, capturing stderr ---------
+# --- Нигезне башкару (stderr тотып) / execute the backend, capturing stderr
+# RUN_BIN + RUN_ARGS — тулысынча тәрҗемә ителгән әмер / the fully translated command.
 RC=0; ERRTEXT=""
-run_kubectl() {
+RUN_BIN=""; RUN_ARGS=()
+run_backend() {
   local streaming=0 a
   case "$kverb" in
     exec|attach|port-forward|proxy|edit|debug|cp) streaming=1 ;;
@@ -215,9 +228,9 @@ run_kubectl() {
           done ;;
   esac
   if [ "$streaming" -eq 1 ]; then
-    "$KUBECTL_BIN" "$kverb" ${kargs[@]+"${kargs[@]}"}; RC=$?; ERRTEXT=""
+    "$RUN_BIN" "${RUN_ARGS[@]}"; RC=$?; ERRTEXT=""
   else
-    { ERRTEXT="$("$KUBECTL_BIN" "$kverb" ${kargs[@]+"${kargs[@]}"} 2>&1 1>&3 3>&-)"; RC=$?; } 3>&1
+    { ERRTEXT="$("$RUN_BIN" "${RUN_ARGS[@]}" 2>&1 1>&3 3>&-)"; RC=$?; } 3>&1
     [ -n "$ERRTEXT" ] && printf '%s\n' "$ERRTEXT" >&2
   fi
 }
@@ -238,11 +251,18 @@ main() {
     сәлам|salam|исәнме|привет|hi) greet;       exit 0 ;;
   esac
 
+  case "$AYDA_BACKEND" in
+    kubectl|skctl) ;;
+    *) printf '%s\n' "$(t backend.unknown "$AYDA_BACKEND")" >&2; exit 64 ;;
+  esac
+
   # Чәй капкасы / tea gate — cluster unreachable during tea (everywhere; AYDA_NO_TEA=1 to skip).
   if tea_now; then show_tea_break; exit 42; fi
 
   # Фигыльне тәрҗемә (латин фолбэк белән) / translate verb (Latin fallback).
   local kverb; kverb="$(resolve_verb "$verb")"
+  # skctl'ның үз фигыльләре (migrate) / skctl-only verbs
+  [ -z "$kverb" ] && [ "$AYDA_BACKEND" = skctl ] && kverb="$(skctl_resolve_verb "$verb")"
   if [ -z "$kverb" ]; then
     {
       tat_carpet; tat_face_angry
@@ -269,21 +289,37 @@ main() {
     esac
   done
 
-  tat_dim "🐘 $(t run.translated "$KUBECTL_BIN $kverb ${kargs[*]:-}")"
+  if [ "$AYDA_BACKEND" = skctl ]; then
+    # Sheeternetes: skctl белмәгәнне эшләтмибез / never run what skctl can't do as typed.
+    if ! skctl_map "$kverb" ${kargs[@]+"${kargs[@]}"}; then
+      {
+        tat_carpet; tat_face_angry
+        printf '%b\n' "  ${TAT_RED}${TAT_BOLD}$(t "$SKERR" ${SKERR_ARGS[@]+"${SKERR_ARGS[@]}"})${TAT_RESET}"
+        printf '%s\n' "  $(t skctl.nothing_run)"
+        tat_carpet
+      } >&2
+      exit 69
+    fi
+    RUN_BIN="$SKCTL_BIN"; RUN_ARGS=("${SKARGS[@]}")
+  else
+    RUN_BIN="$KUBECTL_BIN"; RUN_ARGS=("$kverb" ${kargs[@]+"${kargs[@]}"})
+  fi
 
-  if ! command -v "$KUBECTL_BIN" >/dev/null 2>&1; then
+  tat_dim "🐘 $(t run.translated "$RUN_BIN ${RUN_ARGS[*]}")"
+
+  if ! command -v "$RUN_BIN" >/dev/null 2>&1; then
     {
       tat_carpet; tat_face_angry
-      printf '%b\n' "  ${TAT_RED}$(t kubectl.notfound "$KUBECTL_BIN")${TAT_RESET}"
-      printf '%s\n' "  $(t kubectl.notfound.hint)"
+      printf '%b\n' "  ${TAT_RED}$(t "$AYDA_BACKEND.notfound" "$RUN_BIN")${TAT_RESET}"
+      printf '%s\n' "  $(t "$AYDA_BACKEND.notfound.hint")"
       tat_carpet
     } >&2
     exit 127
   fi
 
-  maybe_welcome                     # кунакчыллык / hospitality
+  [ "$AYDA_BACKEND" = kubectl ] && maybe_welcome   # кунакчыллык / hospitality (kubeconfig contexts)
 
-  run_kubectl                       # → RC, ERRTEXT
+  run_backend                       # → RC, ERRTEXT
 
   if [ "$RC" -eq 0 ]; then
     show_success_footer
