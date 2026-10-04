@@ -101,6 +101,8 @@ ayda чәй                        # чәй тәнәфесе графигы
 | `AYDA_LANG=tt\|en` | интерфейс теле (default: `tt`) |
 | `AYDA_ALIF=cyrl\|latin\|arab` | язу төре (кирилл/яңалиф/яңа имля) |
 | `AYDA_KUBECTL=<юл>` | kubectl юлы (default: `kubectl`) |
+| `AYDA_BACKEND=kubectl\|skctl` | нигез: kubectl яки Sheeternetes `skctl` (default: `kubectl`) |
+| `AYDA_SKCTL=<юл>` | skctl юлы (default: `skctl`) |
 | `AYDA_NO_TEA=1` | чәй тәнәфесен узып китү |
 | `AYDA_FORCE_TEA=1` | чәй экранын мәҗбүри күрсәтү (демо/тест) |
 | `AYDA_FINOPS_MAX=<сан>` | реплика чиге (default 10) |
@@ -110,6 +112,29 @@ ayda чәй                        # чәй тәнәфесе графигы
 | `NO_COLOR=1` | төссез |
 
 > Бизәкләр `stderr`'га чыга, шуңа `ayda күрсәт кузаклар -o json | jq` чиста эшли.
+
+### Sheeternetes нигезе (SNCF × TNCF)
+
+`AYDA_BACKEND=skctl` куйсаң, татарча әмерләр `kubectl` урынына
+[Sheeternetes](https://github.com/sncfoundation/sheeternetes)'ның `skctl`'ына
+күчә — кластерың электрон таблицада булса да, татарча идарә итәсең.
+
+```bash
+export AYDA_BACKEND=skctl WEBAPP_URL=http://localhost:8787 TOKEN=...
+ayda күрсәт кузаклар                        # skctl get pods
+ayda кулла -f lab/hello-web.json            # skctl apply lab/hello-web.json
+ayda күпәйт урнаштыру web --replicas=3      # skctl scale web 3
+ayda бетер урнаштыру web                    # skctl delete web
+ayda тамгала төен a disk=ssd                # skctl label a disk=ssd
+ayda cordon a                               # skctl cordon a
+ayda күчер web-1 b                          # skctl migrate web-1 b
+```
+
+`skctl` бары `get` (кузак/төен/урнаштыру/вакыйга), `apply -f`, `scale`, `delete`
+(урнаштыру гына), `cordon`/`uncordon`/`drain`, `label`/`taint` (төен гына) һәм
+`migrate` (`күчер`) белә. Калганы — `сөйлә`, `көндәлек`, `кер`, флаглар (`-A`,
+`-o json`…) — татарча хата белән кире кагыла, **бернәрсә дә эшләтелми**, чыгу
+коды `69`. `AYDA_SKCTL=<юл>` — skctl юлы.
 
 ### Идарә панеле (UI)
 
@@ -160,6 +185,25 @@ ayda сүзлек              # full dictionary
 
 See the full command map in **[docs/commands.md](docs/commands.md)** and the
 architecture in **[docs/architecture.md](docs/architecture.md)**.
+
+### Sheeternetes backend (SNCF × TNCF)
+
+With `AYDA_BACKEND=skctl`, Tatar commands drive the
+[Sheeternetes](https://github.com/sncfoundation/sheeternetes) CLI `skctl`
+instead of `kubectl` — a spreadsheet cluster, run in Tatar.
+
+```bash
+export AYDA_BACKEND=skctl WEBAPP_URL=http://localhost:8787 TOKEN=...
+ayda күрсәт кузаклар                        # skctl get pods
+ayda күпәйт урнаштыру web --replicas=3      # skctl scale web 3
+ayda күчер web-1 b                          # skctl migrate web-1 b
+```
+
+Only what `skctl` actually supports is mapped: `get` (pods/nodes/deployments/events),
+`apply -f`, `scale` and `delete` (deployments), `cordon`/`uncordon`/`drain`,
+`label`/`taint` (nodes) and `migrate` (`күчер`). Anything else — `describe`, `logs`,
+`exec`, flags like `-A` or `-o json` — is refused with a translated error, **nothing is
+executed**, and the exit code is `69`. Set `AYDA_SKCTL=<path>` if `skctl` is not on `PATH`.
 
 ---
 
