@@ -119,3 +119,34 @@ msgstr "Hello! Welcome to TatarOS Linux!"
 
 msgid "tos.greet.sub"
 msgstr "This system will give you pure Tatarnetes."
+
+# --- Sheeternetes backend (AYDA_BACKEND=skctl) ---
+msgid "backend.unknown"
+msgstr "Unknown backend (AYDA_BACKEND): \"%s\". Allowed: kubectl, skctl."
+
+msgid "skctl.notfound"
+msgstr "skctl not found (%s)."
+
+msgid "skctl.notfound.hint"
+msgstr "Put Sheeternetes' skctl on PATH or set AYDA_SKCTL=<path>."
+
+msgid "skctl.unsupported.verb"
+msgstr "Sheeternetes (skctl) has no \"%s\". It knows: get, apply, scale, delete, cordon, uncordon, drain, label, taint, migrate."
+
+msgid "skctl.unsupported.kind"
+msgstr "skctl %s does not handle \"%s\" — only %s."
+
+msgid "skctl.unsupported.flag"
+msgstr "skctl has no \"%s\" flag."
+
+msgid "skctl.usage"
+msgstr "Sheeternetes form: %s"
+
+msgid "skctl.nothing_run"
+msgstr "Nothing was run — the cluster was not touched."
+
+msgid "skctl.hint.env"
+msgstr "WEBAPP_URL is not set — give the apiserver address via the environment or .skctl.env next to skctl."
+
+msgid "skctl.hint.token"
+msgstr "The apiserver refused (401) — is TOKEN correct?"
