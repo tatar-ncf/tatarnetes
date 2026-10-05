@@ -165,7 +165,10 @@ explain_main() {
     [ -n "$errtext" ] && printf '%s\n' "$errtext" >&2
     hint="$(_explain_hint "$errtext")"
     case "$hint" in
-      explain.no_field) printf '%s\n' "$(t explain.no_field "${path#.}" "$head")" >&2 ;;
+      explain.no_field)
+        # Ата юл: кузак.spec.zzz → кузак.spec / the parent path to list fields from.
+        local parent="$head$path"; parent="${parent%.*}"
+        printf '%s\n' "$(t explain.no_field "${path#.}" "$parent")" >&2 ;;
       explain.unknown)  printf '%s\n' "$(t explain.unknown "$head")" >&2 ;;
       *) hint="$(tat_error_hint "$errtext")"
          [ -n "$hint" ] && printf '%s\n' "$(t "$hint")" >&2

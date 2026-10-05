@@ -5,6 +5,8 @@ set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)"
 cd "$HERE" || exit 1
 export AYDA_LANG=tt AYDA_ALIF=cyrl AYDA_PLAIN=1
+# Кулланучы мохитеннән бәйсез / independent of the caller's environment
+unset AYDA_KUBECTL AYDA_BACKEND AYDA_SKCTL AYDA_FORCE_TEA AYDA_COMPLETE_TIMEOUT KUBECTL_PATH
 
 export AYDA_HOME="$HERE"
 # shellcheck source=/dev/null
@@ -204,6 +206,9 @@ eq "names: көндәлек <Tab> → pods" "cakcak-api ecpocmak-web" "$(KUBECTL
 eq "names: cordon <Tab> → nodes" "kazan" "$(KUBECTL_BIN="$STUBK/kubectl" cmp_ cordon "")"
 : > "$KLOG"
 eq "tea time → no cluster call" "" "$(AYDA_NO_TEA='' AYDA_FORCE_TEA=1 KUBECTL_BIN="$STUBK/kubectl" cmp_ күрсәт кузак "")$(cat "$KLOG")"
+printf '#!/usr/bin/env bash\nexec sleep 5\n' > "$STUBK/slowkubectl"; chmod +x "$STUBK/slowkubectl"
+t0=$(date +%s); KUBECTL_BIN="$STUBK/slowkubectl" AYDA_COMPLETE_TIMEOUT=1s cmp_ күрсәт кузак "" >/dev/null; t1=$(date +%s)
+eq "hung cluster → Tab gives up within the deadline" "1" "$([ $((t1 - t0)) -le 2 ] && echo 1)"
 eq "skctl backend → no kubectl call" "" "$(AYDA_BACKEND=skctl KUBECTL_BIN="$STUBK/kubectl" cmp_ күрсәт кузак "")$(cat "$KLOG")"
 
 echo "── аңлат (Tatar explain) ──"

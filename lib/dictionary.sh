@@ -195,9 +195,24 @@ ayda_names() {
       -n?*) scope+=("$f") ;;
     esac
   done
-  "${KUBECTL_BIN:-kubectl}" get "$kind" -o name \
-    --request-timeout="${AYDA_COMPLETE_TIMEOUT:-2s}" ${scope[@]+"${scope[@]}"} 2>/dev/null \
+  local to="${AYDA_COMPLETE_TIMEOUT:-2s}"
+  _ayda_deadline "${to%s}" "${KUBECTL_BIN:-kubectl}" get "$kind" -o name \
+    --request-timeout="$to" ${scope[@]+"${scope[@]}"} 2>/dev/null \
     | sed 's|^[^/]*/||'
+}
+
+# _ayda_deadline SECONDS CMD… — CMD'ны SECONDS секундтан соң туктату.
+# --request-timeout бер сорауга гына кагыла, ә kubectl discovery өчен берничә сорау
+# ясый; шуңа Tab өчен гомуми чик тә кирәк. A hard wall-clock limit: kubectl's
+# --request-timeout is per request and discovery makes several, so a dead
+# cluster could otherwise stall a Tab press for many times the timeout.
+_ayda_deadline() {
+  local secs="$1" pid; shift
+  case "$secs" in ''|*[!0-9]*) secs=2 ;; esac
+  "$@" & pid=$!
+  # Күзәтче stdout'ны тотмасын / the watchdog must not hold the output pipe open.
+  ( sleep "$secs"; kill "$pid" 2>/dev/null ) >/dev/null 2>&1 &
+  wait "$pid" 2>/dev/null
 }
 
 # _glossary_keys — data/glossary.tsv'тагы төшенчәләр (буш урын → «-»).
