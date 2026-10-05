@@ -3,11 +3,11 @@
 # Куллану / usage:  bash tests/unit.sh
 set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)"
-cd "$HERE"
+cd "$HERE" || exit 1
 export AYDA_LANG=tt AYDA_ALIF=cyrl AYDA_PLAIN=1
 
 # shellcheck source=/dev/null
-for m in render alif catalog i18n dictionary phrases teatime skctl; do . "lib/$m.sh"; done
+for m in render alif catalog i18n dictionary phrases teatime errors skctl; do . "lib/$m.sh"; done
 
 PASS=0; FAIL=0
 ok()   { PASS=$((PASS+1)); printf '  ✓ %s\n' "$1"; }
@@ -55,6 +55,14 @@ eq "en tagline" "A national container orchestrator" "$(AYDA_LANG=en t version.ta
 
 echo "── tea schedule ──"
 eq "3 tea windows/day" "3" "$(tea_windows | grep -c .)"
+
+echo "── kubectl error hints (tat_error_hint) ──"
+eq "unknown kind → nomatch"   "err.hint.nomatch"   "$(tat_error_hint 'error: the server could not find the requested resource')"
+eq "no resource type → nomatch" "err.hint.nomatch" "$(tat_error_hint 'error: the server doesn'"'"'t have a resource type "kuzak"')"
+eq "pod not found → notfound" "err.hint.notfound"  "$(tat_error_hint 'Error from server (NotFound): pods "x" not found')"
+eq "forbidden"                "err.hint.forbidden" "$(tat_error_hint 'pods is forbidden: User "u" cannot list')"
+eq "refused → conn"           "err.hint.conn"      "$(tat_error_hint 'dial tcp 127.0.0.1:6443: connect: connection refused')"
+eq "corpus line is non-empty" "1" "$([ -n "$(tat_random_praise)" ] && echo 1)"
 
 echo "── skctl backend: mapping (skctl_map) ──"
 # skm VERB ARGS… → "skctl args" on success, "!<error-key>" on refusal.
