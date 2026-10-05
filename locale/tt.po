@@ -90,6 +90,9 @@ msgstr "Инде бар — башка исем сайла яки булганы
 msgid "err.hint.nomatch"
 msgstr "Андый асыл юк — «ayda сүзлек» карап ал."
 
+msgid "err.hint.exec_dashdash"
+msgstr "Kubernetes 1.35 версиясеннән башлап кузак исеменнән соң «--» кирәк: ayda кер <кузак> -- <әмер>"
+
 msgid "festival.nauruz"
 msgstr "Нәүрүз мөбарәк! Яз килде, кластер яшәрде! 🌱"
 

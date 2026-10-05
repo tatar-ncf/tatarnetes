@@ -12,6 +12,7 @@ tat_error_hint() {
   # so they must be matched before the generic not-found ones.
   case "$text" in
     *"doesn't have a resource type"*|*"the server doesn't have"*|*"unknown resource"*|*"the server could not find the requested resource"*) printf 'err.hint.nomatch' ;;
+    *"exec [POD] -- [COMMAND]"*)                         printf 'err.hint.exec_dashdash' ;;
     *NotFound*|*"not found"*|*"could not find"*)         printf 'err.hint.notfound' ;;
     *Forbidden*|*forbidden*)                             printf 'err.hint.forbidden' ;;
     *"AlreadyExists"*|*"already exists"*)                printf 'err.hint.exists' ;;

@@ -29,6 +29,7 @@ catalog_lookup() { # $1=lang $2=key
     en:err.hint.conn) printf '%s' 'Could not reach the cluster — is the context and address correct?' ;;
     en:err.hint.exists) printf '%s' 'Already exists — pick another name or edit the existing one.' ;;
     en:err.hint.nomatch) printf '%s' 'No such resource — see "ayda сүзлек".' ;;
+    en:err.hint.exec_dashdash) printf '%s' 'Since Kubernetes 1.35 a "--" is required after the pod name: ayda кер <pod> -- <command>' ;;
     en:festival.nauruz) printf '%s' 'Happy Nauruz! Spring is here, the cluster is renewed! 🌱' ;;
     en:festival.sabantuy) printf '%s' 'Happy Sabantuy! The cluster steps onto the maydan — time for köräş! 🤼' ;;
     en:festival.qorban) printf '%s' 'Blessed Qurban Bayram! 🕌' ;;
@@ -77,6 +78,7 @@ catalog_lookup() { # $1=lang $2=key
     tt:err.hint.conn) printf '%s' 'Кластерга тоташып булмады — контекст һәм адрес дөресме?' ;;
     tt:err.hint.exists) printf '%s' 'Инде бар — башка исем сайла яки булганын үзгәрт.' ;;
     tt:err.hint.nomatch) printf '%s' 'Андый асыл юк — «ayda сүзлек» карап ал.' ;;
+    tt:err.hint.exec_dashdash) printf '%s' 'Kubernetes 1.35 версиясеннән башлап кузак исеменнән соң «--» кирәк: ayda кер <кузак> -- <әмер>' ;;
     tt:festival.nauruz) printf '%s' 'Нәүрүз мөбарәк! Яз килде, кластер яшәрде! 🌱' ;;
     tt:festival.sabantuy) printf '%s' 'Сабан туе котлы булсын! Кластер мәйданга чыкты — көрәш вакыты! 🤼' ;;
     tt:festival.qorban) printf '%s' 'Корбан бәйрәме мөбарәк булсын! 🕌' ;;

@@ -35,6 +35,8 @@ eq "get→get"       "get" "$(resolve_verb get)"
 eq "күрсәт→get"    "get" "$(resolve_verb күрсәт)"
 eq "kürsät→get"    "get" "$(resolve_verb kürsät)"
 eq "zzz→(empty)"   ""    "$(resolve_verb zzz)"
+eq "kuberc passthrough (kubectl ≥1.33)" "kuberc" "$(resolve_verb kuberc)"
+eq "rollback is not a kubectl verb" "" "$(resolve_verb rollback)"
 
 echo "── resolve_noun ──"
 eq "кузак→pods"      "pods"   "$(resolve_noun кузак)"
@@ -62,6 +64,7 @@ eq "no resource type → nomatch" "err.hint.nomatch" "$(tat_error_hint 'error: t
 eq "pod not found → notfound" "err.hint.notfound"  "$(tat_error_hint 'Error from server (NotFound): pods "x" not found')"
 eq "forbidden"                "err.hint.forbidden" "$(tat_error_hint 'pods is forbidden: User "u" cannot list')"
 eq "refused → conn"           "err.hint.conn"      "$(tat_error_hint 'dial tcp 127.0.0.1:6443: connect: connection refused')"
+eq "exec without -- → dashdash" "err.hint.exec_dashdash" "$(tat_error_hint 'error: exec [POD] [COMMAND] is not supported anymore. Use exec [POD] -- [COMMAND] instead')"
 eq "corpus line is non-empty" "1" "$([ -n "$(tat_random_praise)" ] && echo 1)"
 
 echo "── skctl backend: mapping (skctl_map) ──"

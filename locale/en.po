@@ -87,6 +87,9 @@ msgstr "Already exists — pick another name or edit the existing one."
 msgid "err.hint.nomatch"
 msgstr "No such resource — see \"ayda сүзлек\"."
 
+msgid "err.hint.exec_dashdash"
+msgstr "Since Kubernetes 1.35 a \"--\" is required after the pod name: ayda кер <pod> -- <command>"
+
 msgid "festival.nauruz"
 msgstr "Happy Nauruz! Spring is here, the cluster is renewed! 🌱"
 

@@ -59,6 +59,7 @@ ayda күрсәт кузаклар                 # kubectl get pods
 ayda күрсәт кузаклар -n tatar-tozem  # kubectl get pods -n tatar-tozem
 ayda сөйлә төен tatar-node-1         # kubectl describe node tatar-node-1
 ayda көндәлек ecpocmak-web           # kubectl logs ecpocmak-web
+ayda кер ecpocmak-web -- sh          # kubectl exec ecpocmak-web -- sh  («--» мәҗбүри / required)
 ayda күпәйт урнаштыру web --replicas=3
                                      # kubectl scale deploy web --replicas=3
 ayda бетер хезмәт cakcak-api         # kubectl delete svc cakcak-api

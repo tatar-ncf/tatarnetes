@@ -29,12 +29,13 @@ translate_verb() {
     аңлатып-бир|аңлат-миңа)                          echo explain ;;
     асыллар|ресурслар)                              echo api-resources ;;
     төркем-хәбәре|кластер-хәбәре)                   echo cluster-info ;;
-    # --- инглизчә kubectl фигыльләре (passthrough) ---
+    # --- инглизчә kubectl фигыльләре (passthrough), kubectl v1.37 буенча ---
+    # kubectl v1.37 top-level commands (checked against the real binary).
     get|describe|create|apply|delete|logs|exec|scale|autoscale|edit|rollout|\
     expose|run|port-forward|config|label|annotate|patch|top|wait|explain|\
     api-resources|api-versions|cluster-info|set|cordon|uncordon|drain|taint|\
     proxy|cp|auth|certificate|attach|debug|events|version|completion|kustomize|\
-    diff|replace|rollback|apply-view-last-applied|options|plugin)
+    diff|replace|options|plugin|kuberc)
                                                      echo "$1" ;;
     *)                                               echo "" ;;
   esac
