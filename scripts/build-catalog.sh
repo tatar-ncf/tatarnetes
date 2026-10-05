@@ -13,6 +13,8 @@ OUT="$HERE/lib/catalog.sh"
   echo "  case \"\$1:\$2\" in"
   for po in "$HERE"/locale/*.po; do
     lang="$(basename "$po" .po)"
+    # awk ичендәге '\'' — максатчан (bash квоталау) / intentional shell-quote splicing.
+    # shellcheck disable=SC1003
     awk -v lang="$lang" '
       function unq(s){ sub(/^msg[a-z]+ *"/,"",s); sub(/"$/,"",s);
                        gsub(/\\"/,"\"",s); gsub(/\\\\/,"\\",s); return s }

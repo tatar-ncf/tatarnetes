@@ -12,9 +12,11 @@ _corpus_lines() { grep -vE '^[[:space:]]*(#|$)' "$1" 2>/dev/null; }
 
 # Файлдан очраклы юл / random meaningful line from a file.
 _rand_line() {
-  local f="$_CORPUS_DIR/$1" IFS=$'\n'
+  local f="$_CORPUS_DIR/$1" line
   local -a a=()
-  a=($(_corpus_lines "$f"))
+  while IFS= read -r line; do [ -n "$line" ] && a+=("$line"); done <<EOF
+$(_corpus_lines "$f")
+EOF
   local n=${#a[@]}
   [ "$n" -eq 0 ] && return 0
   printf '%s' "${a[$((RANDOM % n))]}" | alif_render

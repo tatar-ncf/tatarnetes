@@ -26,12 +26,11 @@ if tat_color_enabled; then
   TAT_GREEN=$'\033[38;5;29m'
   TAT_RED=$'\033[38;5;160m'
   TAT_GOLD=$'\033[38;5;178m'
-  TAT_WHITE=$'\033[38;5;231m'
   TAT_DIM=$'\033[38;5;244m'
   TAT_BOLD=$'\033[1m'
   TAT_RESET=$'\033[0m'
 else
-  TAT_GREEN=''; TAT_RED=''; TAT_GOLD=''; TAT_WHITE=''
+  TAT_GREEN=''; TAT_RED=''; TAT_GOLD=''
   TAT_DIM=''; TAT_BOLD=''; TAT_RESET=''
 fi
 
