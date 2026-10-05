@@ -165,3 +165,86 @@ show_dictionary() {
 
 TBL
 }
+
+# --- Tab-тулыландыру / shell completion (`ayda __complete <words…>`) -----
+# Соңгы сүз — курсор астындагы (буш булырга мөмкин). The last word is the one
+# under the cursor (may be empty). Prints one candidate per line.
+
+# Аерым кыйммәт ала торган kubectl флаглары / kubectl flags taking a separate value.
+AYDA_VALUE_FLAGS="-n --namespace --context --kubeconfig --cluster --user -o --output \
+-l --selector -f --filename -c --container --replicas --field-selector --request-timeout"
+
+# ayda_names KIND — кластердан исемнәр: бары `kubectl get KIND -o name`, вакыт чиге белән.
+# Names from the cluster through ONE read-only call: `kubectl get KIND -o name`
+# with --request-timeout. Only scope flags the user typed (context, kubeconfig,
+# namespace, -A) are forwarded; nothing else from the command line is.
+ayda_names() {
+  local kind="$1" f want=""
+  local -a scope=()
+  [ -n "$kind" ] || return 0
+  case "$kind" in */*|all|-*) return 0 ;; esac
+  [ "${AYDA_BACKEND:-kubectl}" = kubectl ] || return 0
+  tea_now && return 0                       # чәй вакытында кластер җавап бирми / tea: no calls
+  command -v "${KUBECTL_BIN:-kubectl}" >/dev/null 2>&1 || return 0
+  for f in ${COMP_FLAGS[@]+"${COMP_FLAGS[@]}"}; do
+    if [ -n "$want" ]; then scope+=("$want" "$f"); want=""; continue; fi
+    case "$f" in
+      -n|--namespace|--context|--kubeconfig|--cluster|--user) want="$f" ;;
+      --namespace=*|--context=*|--kubeconfig=*|--cluster=*|--user=*|-A|--all-namespaces) scope+=("$f") ;;
+      -n?*) scope+=("$f") ;;
+    esac
+  done
+  "${KUBECTL_BIN:-kubectl}" get "$kind" -o name \
+    --request-timeout="${AYDA_COMPLETE_TIMEOUT:-2s}" ${scope[@]+"${scope[@]}"} 2>/dev/null \
+    | sed 's|^[^/]*/||'
+}
+
+# _glossary_keys — data/glossary.tsv'тагы төшенчәләр (буш урын → «-»).
+_glossary_keys() {
+  local f="$AYDA_HOME/data/glossary.tsv"
+  [ -f "$f" ] || return 0
+  grep -v '^#' "$f" | cut -f1 | sed 's/ /-/g'
+}
+
+ayda_complete() {
+  local cur="" n verb kverb kind
+  [ "$#" -gt 0 ] && cur="${!#}"
+  case "$cur" in -*) return 0 ;; esac       # флаглар — kubectl'ның үз эше / flags: not ours
+  local -a before=()
+  [ "$#" -gt 1 ] && before=("${@:1:$(($# - 1))}")
+  complete_split "$AYDA_VALUE_FLAGS" ${before[@]+"${before[@]}"}
+  n=${#COMP_POS[@]}
+
+  if [ "$n" -eq 0 ]; then
+    # shellcheck disable=SC2046
+    complete_words "$cur" $(dict_verbs) аңлат ярдәм сүзлек версия шигырь мәкаль чәй сәлам
+    [ "${AYDA_BACKEND:-kubectl}" = skctl ] && complete_words "$cur" күчер
+    return 0
+  fi
+
+  verb="$(complete_to_cyrl "${COMP_POS[0]}" аңлат)"
+  if [ "$verb" = аңлат ]; then
+    # shellcheck disable=SC2046
+    [ "$n" -eq 1 ] && complete_words "$cur" $(_glossary_keys)
+    return 0
+  fi
+  kverb="$(resolve_verb "${COMP_POS[0]}")"     # латин/гарәп керемне үзе таный
+  case "$kverb" in
+    get|describe|delete|edit|label|annotate|patch|scale|wait|expose|top|explain|taint)
+      if [ "$n" -eq 1 ]; then
+        # shellcheck disable=SC2046
+        complete_words "$cur" $(dict_nouns)
+      elif [ "$kverb" != explain ]; then
+        kind="$(resolve_noun "${COMP_POS[1]}")"
+        # shellcheck disable=SC2046
+        complete_raw "$cur" $(ayda_names "$kind")
+      fi ;;
+    logs|exec|attach|port-forward)
+      # shellcheck disable=SC2046
+      [ "$n" -eq 1 ] && complete_raw "$cur" $(ayda_names pods) ;;
+    cordon|uncordon|drain)
+      # shellcheck disable=SC2046
+      [ "$n" -eq 1 ] && complete_raw "$cur" $(ayda_names nodes) ;;
+  esac
+  return 0
+}

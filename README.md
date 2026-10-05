@@ -76,6 +76,24 @@ ayda чәй                        # чәй тәнәфесе графигы
 
 Гадәти `kubectl` синтаксисы да кабул ителә: `ayda get pods`.
 
+### Tab-тулыландыру (bash, zsh)
+
+`ayda күр<Tab>` → `күрсәт`, аннары асыл төрләре (`кузаклар`, `төеннәр`…),
+аннары кластердагы исемнәр. Сүзләр сайланган язуда тәкъдим ителә
+(`AYDA_ALIF=latin`: `kür<Tab>` → `kürsät`; `arab` — Яңа имля). Исемнәр бер генә
+укучы әмер белән алына — `kubectl get <асыл> -o name --request-timeout=2s`
+(`AYDA_COMPLETE_TIMEOUT`); чәй вакытында кластерга мөрәҗәгать юк.
+
+```bash
+# bash — ~/.bashrc
+source /path/to/tatarnetes/completion/ayda.bash
+# zsh — ~/.zshrc (compinit'тан соң)
+source /path/to/tatarnetes/completion/_ayda
+#   яки compinit'ка кадәр: fpath=(/path/to/tatarnetes/completion $fpath)
+# kubectl ayda <Tab> (krew): kubectl_complete-ayda PATH'та булсын
+ln -s "$(dirname "$(readlink ~/.krew/bin/kubectl-ayda)")/kubectl_complete-ayda" ~/.krew/bin/
+```
+
 ### Милли-нативлык (тирән мөмкинлекләр)
 
 - **Тел сайлау** — `AYDA_LANG=tt|en`. Интерфейс юллары [`locale/*.po`](locale/) да
@@ -107,6 +125,7 @@ ayda чәй                        # чәй тәнәфесе графигы
 | `AYDA_NO_TEA=1` | чәй тәнәфесен узып китү |
 | `AYDA_FORCE_TEA=1` | чәй экранын мәҗбүри күрсәтү (демо/тест) |
 | `AYDA_FINOPS_MAX=<сан>` | реплика чиге (default 10) |
+| `AYDA_COMPLETE_TIMEOUT=2s` | Tab-тулыландыруда кластерны көтү чиге |
 | `AYDA_PLAIN=1` | бизәксез, төссез (скрипт өчен) |
 | `AYDA_QUIET=1` | бизәкләрне сүндерү |
 | `AYDA_FORCE_FUN=1` | торбада (pipe) да бизәк күрсәтү |
@@ -186,6 +205,21 @@ ayda сүзлек              # full dictionary
 
 See the full command map in **[docs/commands.md](docs/commands.md)** and the
 architecture in **[docs/architecture.md](docs/architecture.md)**.
+
+### Tab completion (bash, zsh)
+
+`ayda күр<Tab>` → `күрсәт`, then resource kinds, then resource names from the
+cluster. Words are offered in the active script (`AYDA_ALIF=latin`: `kür<Tab>` →
+`kürsät`; `arab` gives Yaña imlâ). Names come from a single read-only call,
+`kubectl get <kind> -o name --request-timeout=2s` (`AYDA_COMPLETE_TIMEOUT`); during
+tea the cluster is not contacted.
+
+```bash
+source /path/to/tatarnetes/completion/ayda.bash   # bash, in ~/.bashrc
+source /path/to/tatarnetes/completion/_ayda       # zsh, in ~/.zshrc after compinit
+# kubectl ayda <Tab> via krew: put kubectl_complete-ayda on PATH
+ln -s "$(dirname "$(readlink ~/.krew/bin/kubectl-ayda)")/kubectl_complete-ayda" ~/.krew/bin/
+```
 
 ### Sheeternetes backend (SNCF × TNCF)
 

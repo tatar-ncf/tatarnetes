@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# kubectl_complete-ayda — «kubectl ayda <Tab>» өчен (kubectl ≥1.26 плагин тулыландыруы).
+# kubectl calls this with the words after `kubectl ayda` (the last one is under the
+# cursor) and expects one candidate per line plus a final `:<directive>` line.
+# :4 = ShellCompDirectiveNoFileComp (файл исемнәрен тәкъдим итмә / no file names).
+# Симлинклар аша да үз урыныңны тап (install.sh, krew симлинк ясый).
+# Follow symlinks to the real file: install.sh and krew both link into PATH.
+_self="${BASH_SOURCE[0]:-$0}"
+while [ -L "$_self" ]; do
+  _dir="$(cd "$(dirname "$_self")" && pwd)"; _self="$(readlink "$_self")"
+  case "$_self" in /*) ;; *) _self="$_dir/$_self" ;; esac
+done
+"$(cd "$(dirname "$_self")" && pwd)/ayda" __complete "$@" 2>/dev/null
+echo ":4"

@@ -6,8 +6,9 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)"
 cd "$HERE" || exit 1
 export AYDA_LANG=tt AYDA_ALIF=cyrl AYDA_PLAIN=1
 
+export AYDA_HOME="$HERE"
 # shellcheck source=/dev/null
-for m in render alif catalog i18n dictionary phrases teatime errors skctl; do . "lib/$m.sh"; done
+for m in render alif catalog i18n complete dictionary phrases teatime errors skctl; do . "lib/$m.sh"; done
 
 PASS=0; FAIL=0
 ok()   { PASS=$((PASS+1)); printf '  ✓ %s\n' "$1"; }
@@ -116,7 +117,7 @@ eq "curl 401 → token hint"       "skctl.hint.token" "$(skctl_error_hint 'curl:
 eq "curl conn → conn hint"       "err.hint.conn"    "$(skctl_error_hint 'curl: (7) Failed to connect to localhost port 8787')"
 
 echo "── skctl backend: end-to-end through bin/ayda (stub skctl on PATH) ──"
-STUB="$(mktemp -d)"; LOG="$STUB/calls"; trap 'rm -rf "$STUB"' EXIT
+STUB="$(mktemp -d)"; LOG="$STUB/calls"; trap 'rm -rf "$STUB" "${STUBK:-}"' EXIT
 cat > "$STUB/skctl" <<'STUBEOF'
 #!/usr/bin/env bash
 printf '%s\n' "$*" >> "$SKSTUB_LOG"
@@ -175,6 +176,47 @@ eq "every dict_verbs word is a verb" "" "$badv"
 badn=""; for w in $(dict_nouns); do [ "$(translate_noun "$w")" != "$w" ] || badn="$badn $w"; done
 eq "every dict_nouns word is a noun" "" "$badn"
 
+echo "── completion (ayda __complete) ──"
+export AYDA_NO_TEA=1
+cmp_() { ayda_complete "$@" | tr '\n' ' ' | sed 's/ $//'; }
+eq "күр<Tab> → күрсәт"         "күрсәт"              "$(cmp_ күр)"
+eq "күрсәт ку<Tab>"            "кузак кузаклар"      "$(cmp_ күрсәт ку)"
+eq "latin kür<Tab>"            "kürsät"              "$(AYDA_ALIF=latin cmp_ kür)"
+eq "latin kürsät kuz<Tab>"     "kuzak kuzaklar"      "$(AYDA_ALIF=latin cmp_ kürsät kuz)"
+eq "arab verb, then nouns"     "$(printf '%s\n' кузак | cyrl_to_arab)" "$(AYDA_ALIF=arab cmp_ "$AR_KURSAT" "$(printf '%s' куза | cyrl_to_arab)" | cut -d' ' -f1)"
+eq "flags are left alone"      ""                    "$(cmp_ күрсәт -)"
+eq "ярд<Tab> builtin"          "ярдәм"               "$(cmp_ ярд)"
+STUBK="$(mktemp -d)"
+cat > "$STUBK/kubectl" <<'KEOF'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >> "$KLOG"
+case "$*" in "get pods -o name"*) printf 'pod/ecpocmak-web\npod/cakcak-api\n' ;;
+             "get nodes -o name"*) printf 'node/kazan\n' ;; esac
+KEOF
+chmod +x "$STUBK/kubectl"; export KLOG="$STUBK/log"
+eq "names: күрсәт кузак e<Tab>" "ecpocmak-web" "$(KUBECTL_BIN="$STUBK/kubectl" cmp_ күрсәт кузак e)"
+eq "  one read-only call with timeout" "get pods -o name --request-timeout=2s" "$(tail -1 "$KLOG")"
+: > "$KLOG"
+KUBECTL_BIN="$STUBK/kubectl" cmp_ -n tatar --context=kind-x сөйлә кузак "" >/dev/null
+eq "  scope flags forwarded, nothing else" "get pods -o name --request-timeout=2s -n tatar --context=kind-x" "$(tail -1 "$KLOG")"
+eq "names: көндәлек <Tab> → pods" "cakcak-api ecpocmak-web" "$(KUBECTL_BIN="$STUBK/kubectl" cmp_ көндәлек "" | tr ' ' '\n' | sort | tr '\n' ' ' | sed 's/ $//')"
+eq "names: cordon <Tab> → nodes" "kazan" "$(KUBECTL_BIN="$STUBK/kubectl" cmp_ cordon "")"
+: > "$KLOG"
+eq "tea time → no cluster call" "" "$(AYDA_NO_TEA='' AYDA_FORCE_TEA=1 KUBECTL_BIN="$STUBK/kubectl" cmp_ күрсәт кузак "")$(cat "$KLOG")"
+eq "skctl backend → no kubectl call" "" "$(AYDA_BACKEND=skctl KUBECTL_BIN="$STUBK/kubectl" cmp_ күрсәт кузак "")$(cat "$KLOG")"
+
+echo "── completion scripts & entry points ──"
+bcomp() { ( complete() { :; }; . completion/ayda.bash; COMP_WORDS=("$HERE/bin/ayda" "$@"); COMP_CWORD=$#
+            _ayda_complete; printf '%s ' "${COMPREPLY[@]}" | sed 's/ $//' ); }
+eq "bash: ayda күр<Tab>"         "күрсәт"          "$(bcomp күр)"
+eq "bash: ayda күрсәт төе<Tab>"  "төен төеннәр"    "$(bcomp күрсәт төе)"
+eq "kubectl_complete-ayda"       "күрсәт :4"       "$(bash bin/kubectl_complete-ayda күр | tr '\n' ' ' | sed 's/ $//')"
+ln -s "$HERE/bin/ayda" "$STUBK/ayda-link"; ln -s "$HERE/bin/kubectl-ayda" "$STUBK/kubectl-ayda"
+eq "ayda via symlink (install.sh)" "күрсәт" "$("$STUBK/ayda-link" __complete күр)"
+eq "kubectl-ayda via symlink (krew)" "0" "$(AYDA_PLAIN=1 "$STUBK/kubectl-ayda" ярдәм >/dev/null 2>&1; echo $?)"
+if command -v zsh >/dev/null 2>&1; then
+  if zsh -n completion/_ayda; then ok "zsh completion parses"; else bad "zsh completion parses" "ok" "syntax error"; fi
+fi
 
 echo
 echo "Йомгак / result: PASS=$PASS FAIL=$FAIL"

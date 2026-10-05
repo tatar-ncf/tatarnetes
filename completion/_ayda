@@ -1,0 +1,16 @@
+#compdef ayda
+# _ayda — Tab-тулыландыру (zsh) / zsh completion for `ayda`.
+# Урнаштыру / install: бу файлны $fpath'тагы каталогка куй, яки
+#   source /path/to/tatarnetes/completion/_ayda      (compinit'тан соң / after compinit)
+# Бөтен логика `ayda __complete` эчендә / all logic lives in `ayda __complete`.
+_ayda() {
+  local -a cands
+  cands=("${(@f)$("${words[1]}" __complete "${(@)words[2,CURRENT]}" 2>/dev/null)}")
+  cands=("${(@)cands:#}")
+  (( ${#cands} )) && compadd -a cands
+}
+if [[ "${funcstack[1]}" = _ayda ]]; then
+  _ayda "$@"
+else
+  compdef _ayda ayda
+fi
