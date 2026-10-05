@@ -157,6 +157,11 @@ case "$(AYDA_LANG=en PATH="$STUB:$PATH" AYDA_BACKEND=skctl AYDA_NO_TEA=1 bash bi
   *) bad "en refusal text" '*has no "logs"*Nothing was run*' "$(AYDA_LANG=en PATH="$STUB:$PATH" AYDA_BACKEND=skctl AYDA_NO_TEA=1 bash bin/ayda logs x 2>&1 >/dev/null)" ;;
 esac
 
+echo "── krew shim: KUBECTL_PATH (kubectl ≥1.37) ──"
+printf '#!/usr/bin/env bash\nprintf "K %%s\\n" "$*"\n' > "$STUB/kk"; chmod +x "$STUB/kk"
+eq "kubectl-ayda uses KUBECTL_PATH" "K get pods" "$(KUBECTL_PATH="$STUB/kk" AYDA_NO_TEA=1 bash bin/kubectl-ayda күрсәт кузаклар 2>/dev/null)"
+eq "AYDA_KUBECTL wins over KUBECTL_PATH" "K get nodes" "$(KUBECTL_PATH=/nonexistent AYDA_KUBECTL="$STUB/kk" AYDA_NO_TEA=1 bash bin/kubectl-ayda күрсәт төеннәр 2>/dev/null)"
+
 echo
 echo "Йомгак / result: PASS=$PASS FAIL=$FAIL"
 [ "$FAIL" -eq 0 ]

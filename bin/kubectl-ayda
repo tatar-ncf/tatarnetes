@@ -2,4 +2,10 @@
 # kubectl-ayda — kubectl плагины / kubectl plugin shim.
 # PATH'та булганда «kubectl ayda ...» дип чакырырга мөмкин.
 # When on PATH, enables `kubectl ayda <татарча әмер>`.
+#
+# kubectl v1.37+ плагинга үз юлын KUBECTL_PATH аша бирә — шул ук kubectl'ны кулланабыз.
+# kubectl v1.37+ passes its own path in KUBECTL_PATH: reuse the very same kubectl.
+if [ -z "${AYDA_KUBECTL:-}" ] && [ -n "${KUBECTL_PATH:-}" ]; then
+  export AYDA_KUBECTL="$KUBECTL_PATH"
+fi
 exec "$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)/ayda" "$@"
