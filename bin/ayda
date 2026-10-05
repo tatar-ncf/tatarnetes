@@ -10,7 +10,14 @@
 # ═══════════════════════════════════════════════════════════════════════
 set -uo pipefail
 
-AYDA_HOME="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)"
+# Симлинклар аша да үз урыныңны тап (install.sh, krew симлинк ясый).
+# Follow symlinks to the real file: install.sh and krew both link into PATH.
+_self="${BASH_SOURCE[0]:-$0}"
+while [ -L "$_self" ]; do
+  _dir="$(cd "$(dirname "$_self")" && pwd)"; _self="$(readlink "$_self")"
+  case "$_self" in /*) ;; *) _self="$_dir/$_self" ;; esac
+done
+AYDA_HOME="$(cd "$(dirname "$_self")/.." && pwd)"
 LIB="$AYDA_HOME/lib"
 
 for _m in render alif catalog i18n dictionary faces phrases teatime calendar finops errors skctl; do

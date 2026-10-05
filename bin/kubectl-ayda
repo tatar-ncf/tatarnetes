@@ -8,4 +8,11 @@
 if [ -z "${AYDA_KUBECTL:-}" ] && [ -n "${KUBECTL_PATH:-}" ]; then
   export AYDA_KUBECTL="$KUBECTL_PATH"
 fi
-exec "$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)/ayda" "$@"
+# Симлинклар аша да үз урыныңны тап (install.sh, krew симлинк ясый).
+# Follow symlinks to the real file: install.sh and krew both link into PATH.
+_self="${BASH_SOURCE[0]:-$0}"
+while [ -L "$_self" ]; do
+  _dir="$(cd "$(dirname "$_self")" && pwd)"; _self="$(readlink "$_self")"
+  case "$_self" in /*) ;; *) _self="$_dir/$_self" ;; esac
+done
+exec "$(cd "$(dirname "$_self")" && pwd)/ayda" "$@"
