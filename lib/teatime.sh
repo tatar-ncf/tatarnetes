@@ -5,7 +5,8 @@
 #
 # Several times a day the cluster stops for tea. The schedule is derived
 # deterministically from the calendar day, so the CLI and the web UI agree.
-# Mirror of this logic lives in ui/app.js (teaWindowsFor / isTeaNow).
+# Mirror of this logic: tatar-ncf/tatarnetes-ui lib.js (teaWindowsFor / teaState),
+# whose CI checks it against this formula.
 
 TEA_BREAKS_PER_DAY="${AYDA_TEA_BREAKS:-3}"
 TEA_BREAK_MIN="${AYDA_TEA_MINUTES:-7}"   # һәр тәнәфес озынлыгы, минут

@@ -11,7 +11,10 @@
 t() {
   local key="$1"; shift
   local fmt; fmt="$(catalog_lookup "$AYDA_LANG" "$key")"
-  local out; out="$(printf "$fmt" "$@")"
+  # Каталог юлы — үзе формат (%s урыннары) / the catalog entry IS the format string.
+  local out
+  # shellcheck disable=SC2059
+  out="$(printf "$fmt" "$@")"
   if [ "$AYDA_LANG" = "tt" ]; then
     printf '%s' "$out" | alif_render
   else

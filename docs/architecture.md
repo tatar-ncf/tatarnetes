@@ -30,11 +30,13 @@
 | `lib/phrases.sh` | шелтә, мактау, ризык, Тукай юллары |
 | `lib/teatime.sh` | чәй тәнәфесе графигы (детерминистик) |
 | `lib/render.sh` | төсләр, келәм бүлгече, тыныч режим |
+| `lib/explain.sh` | `ayda аңлат`: глоссарий (`data/glossary.tsv`) + `kubectl explain` |
+| `lib/complete.sh` | Tab-тулыландыру ярдәмчеләре (`ayda __complete`, `completion/`) |
 
 ### Чәй тәнәфесе / tea break
 
 График — көнгә бәйле, детерминистик: `YYYYMMDD` нигезендә 3 тәрәзә исәпләнә.
-Шуңа консоль (`lib/teatime.sh`) һәм браузер (`ui/app.js`) **бер үк** вакытны
+Шуңа консоль (`lib/teatime.sh`) һәм браузер (tatarnetes-ui, `lib.js`) **бер үк** вакытны
 күрсәтә. Тәнәфестә `ayda` кластерга кермичә чәй экранын чыгара (exit 42).
 `AYDA_NO_TEA=1` — узып китә.
 
@@ -55,7 +57,7 @@ response in national decorations.
 the dictionary, faces, phrases, tea schedule, and rendering.
 
 **Tea break** — the schedule is deterministic, derived from `YYYYMMDD`, so the CLI
-(`lib/teatime.sh`) and the browser (`ui/app.js`) agree on the exact windows. During
+(`lib/teatime.sh`) and the browser (tatarnetes-ui, `lib.js`) agree on the exact windows. During
 tea, `ayda` shows the tea screen instead of reaching the cluster (exit code 42);
 `AYDA_NO_TEA=1` bypasses it.
 

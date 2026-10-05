@@ -10,10 +10,17 @@
 # ═══════════════════════════════════════════════════════════════════════
 set -uo pipefail
 
-AYDA_HOME="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)"
+# Симлинклар аша да үз урыныңны тап (install.sh, krew симлинк ясый).
+# Follow symlinks to the real file: install.sh and krew both link into PATH.
+_self="${BASH_SOURCE[0]:-$0}"
+while [ -L "$_self" ]; do
+  _dir="$(cd "$(dirname "$_self")" && pwd)"; _self="$(readlink "$_self")"
+  case "$_self" in /*) ;; *) _self="$_dir/$_self" ;; esac
+done
+AYDA_HOME="$(cd "$(dirname "$_self")/.." && pwd)"
 LIB="$AYDA_HOME/lib"
 
-for _m in render alif catalog i18n dictionary faces phrases teatime calendar finops errors skctl; do
+for _m in render alif catalog i18n complete dictionary faces phrases teatime calendar finops errors skctl explain; do
   # shellcheck source=/dev/null
   . "$LIB/$_m.sh"
 done
@@ -21,7 +28,7 @@ done
 KUBECTL_BIN="${AYDA_KUBECTL:-kubectl}"
 SKCTL_BIN="${AYDA_SKCTL:-skctl}"
 AYDA_BACKEND="${AYDA_BACKEND:-kubectl}"
-AYDA_VERSION="2.1.0"
+AYDA_VERSION="3.0.0"
 
 # --- Декорацияләр / decorations -----------------------------------------
 _footer_extras() {
@@ -55,6 +62,11 @@ show_error_footer() {
   local hint=""
   [ "$AYDA_BACKEND" = skctl ] && hint="$(skctl_error_hint "$errtext")"
   [ -z "$hint" ] && hint="$(tat_error_hint "$errtext")"
+  # exec — агымлы, stderr тотылмый; «--» юк икән, сәбәбе шул (kubectl ≥1.35).
+  # exec streams, so its stderr is not captured; without "--" that is the cause.
+  if [ -z "$hint" ] && [ "${kverb:-}" = exec ]; then
+    case " ${kargs[*]:-} " in *" -- "*) ;; *) hint=err.hint.exec_dashdash ;; esac
+  fi
   [ -n "$hint" ] && printf '%b\n' "  ${TAT_GOLD}$(t "$hint")${TAT_RESET}" >&2
   _footer_extras
   tat_carpet
@@ -117,6 +129,7 @@ _help_tt() {
     ayda сөйлә төен node-1             → kubectl describe node node-1
     ayda көндәлек my-pod              → kubectl logs my-pod
     ayda бетер хезмәт my-svc          → kubectl delete svc my-svc
+    ayda аңлат кузак.spec             → глоссарий + kubectl explain pods.spec
     ayda get pods                     → гадәти kubectl та эшли
 
   Латинча да языла (кириллсыз клавиатура өчен):
@@ -124,6 +137,7 @@ _help_tt() {
 
   ЭЧКЕ ӘМЕРЛӘР:
     ayda ярдәм | сүзлек | версия
+    ayda аңлат [төшенчә[.юл]]          татарча kubectl explain (глоссарий)
     ayda шигырь | тукай               классик поэзия
     ayda мәкаль                       халык мәкале
     ayda чәй | сәлам
@@ -137,6 +151,7 @@ _help_tt() {
     AYDA_NO_TEA=1            чәй тәнәфесен узып китү
     AYDA_FORCE_TEA=1         чәй экранын мәҗбүри күрсәтү (демо)
     AYDA_FINOPS_MAX=<сан>    реплика чиге (default 10)
+    AYDA_COMPLETE_TIMEOUT=2s  Tab-тулыландыруда кластерны көтү чиге
     AYDA_PLAIN=1 | AYDA_QUIET=1 | AYDA_FORCE_FUN=1 | NO_COLOR=1
 
   ЧЫГУ КОДЛАРЫ: 0 уңыш · 64 әмер юк · 69 skctl белми · 42 чәй · 127 kubectl/skctl юк
@@ -153,10 +168,12 @@ _help_en() {
   EXAMPLES:
     ayda күрсәт кузаклар               → kubectl get pods
     ayda kürsät kuzaklar              → kubectl get pods (Latin input)
+    ayda аңлат кузак.spec             → glossary + kubectl explain pods.spec
     ayda get pods                     → plain kubectl works too
 
   BUILT-INS:
     ayda ярдәм|help · сүзлек · версия|version
+    ayda аңлат [term[.path]]          Tatar kubectl explain (glossary)
     ayda шигырь (poetry) · мәкаль (proverb) · чәй (tea) · сәлам (hi)
 
   ENV:
@@ -166,6 +183,7 @@ _help_en() {
     AYDA_BACKEND=kubectl|skctl backend: kubectl or Sheeternetes (skctl)
     AYDA_SKCTL=<path>          skctl path
     AYDA_NO_TEA=1 · AYDA_FORCE_TEA=1 · AYDA_FINOPS_MAX=<n>
+    AYDA_COMPLETE_TIMEOUT=2s   cluster timeout for Tab completion
     AYDA_PLAIN=1 · AYDA_QUIET=1 · AYDA_FORCE_FUN=1 · NO_COLOR=1
 
   EXIT CODES: 0 ok · 64 unknown verb · 69 not supported by skctl · 42 tea · 127 kubectl/skctl missing
@@ -242,6 +260,7 @@ main() {
   local verb="$1"; shift    # builtin'нар өчен raw, kubectl юлында resolve_verb фолбэк бирә
 
   case "$verb" in
+    __complete)                  ayda_complete "$@"; exit 0 ;;   # bash/zsh/kubectl Tab
     ярдәм|help|--help|-h)        show_help;    exit 0 ;;
     версия|version|--version)    show_version; exit 0 ;;
     сүзлек|dictionary|словарь)   show_dictionary | alif_render >&2; exit 0 ;;
@@ -255,6 +274,15 @@ main() {
     kubectl|skctl) ;;
     *) printf '%s\n' "$(t backend.unknown "$AYDA_BACKEND")" >&2; exit 64 ;;
   esac
+
+  # «аңлат» — татарча explain; глоссарий чәй вакытында да ачык, схема — юк.
+  # Tatar explain: the glossary works during tea; the kubectl schema step does not.
+  if [ "$(complete_to_cyrl "$verb" аңлат)" = аңлат ]; then
+    local erc=0
+    explain_main "$@" || erc=$?
+    [ "$erc" -eq 0 ] && show_success_footer
+    exit "$erc"
+  fi
 
   # Чәй капкасы / tea gate — cluster unreachable during tea (everywhere; AYDA_NO_TEA=1 to skip).
   if tea_now; then show_tea_break; exit 42; fi

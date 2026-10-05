@@ -7,13 +7,17 @@
 # Maps common kubectl error phrases to a hint catalog-key.
 tat_error_hint() {
   local text="$1"
+  # Тәртип мөһим: «could not find the requested resource» — асыл төре юк, объект түгел.
+  # Order matters: the "unknown resource type" phrases contain "could not find",
+  # so they must be matched before the generic not-found ones.
   case "$text" in
+    *"doesn't have a resource type"*|*"the server doesn't have"*|*"unknown resource"*|*"the server could not find the requested resource"*) printf 'err.hint.nomatch' ;;
+    *"exec [POD] -- [COMMAND]"*)                         printf 'err.hint.exec_dashdash' ;;
     *NotFound*|*"not found"*|*"could not find"*)         printf 'err.hint.notfound' ;;
-    *Forbidden*|*"is forbidden"*|*forbidden*)            printf 'err.hint.forbidden' ;;
+    *Forbidden*|*forbidden*)                             printf 'err.hint.forbidden' ;;
     *"AlreadyExists"*|*"already exists"*)                printf 'err.hint.exists' ;;
     *timeout*|*"timed out"*|*"Timeout exceeded"*|*"context deadline"*) printf 'err.hint.timeout' ;;
     *"connection refused"*|*"unable to connect"*|*"dial tcp"*|*"was refused"*|*"couldn't get"*|*"no such host"*) printf 'err.hint.conn' ;;
-    *"doesn't have a resource type"*|*"the server doesn't have"*|*"unknown resource"*|*"the server could not find the requested resource"*) printf 'err.hint.nomatch' ;;
     *) printf '' ;;
   esac
 }

@@ -29,6 +29,7 @@ catalog_lookup() { # $1=lang $2=key
     en:err.hint.conn) printf '%s' 'Could not reach the cluster — is the context and address correct?' ;;
     en:err.hint.exists) printf '%s' 'Already exists — pick another name or edit the existing one.' ;;
     en:err.hint.nomatch) printf '%s' 'No such resource — see "ayda сүзлек".' ;;
+    en:err.hint.exec_dashdash) printf '%s' 'Since Kubernetes 1.35 a "--" is required after the pod name: ayda кер <pod> -- <command>' ;;
     en:festival.nauruz) printf '%s' 'Happy Nauruz! Spring is here, the cluster is renewed! 🌱' ;;
     en:festival.sabantuy) printf '%s' 'Happy Sabantuy! The cluster steps onto the maydan — time for köräş! 🤼' ;;
     en:festival.qorban) printf '%s' 'Blessed Qurban Bayram! 🕌' ;;
@@ -50,6 +51,18 @@ catalog_lookup() { # $1=lang $2=key
     en:skctl.nothing_run) printf '%s' 'Nothing was run — the cluster was not touched.' ;;
     en:skctl.hint.env) printf '%s' 'WEBAPP_URL is not set — give the apiserver address via the environment or .skctl.env next to skctl.' ;;
     en:skctl.hint.token) printf '%s' 'The apiserver refused (401) — is TOKEN correct?' ;;
+    en:explain.index) printf '%s' 'Glossary terms (docs/terminology.tt.md):' ;;
+    en:explain.index.hint) printf '%s' 'To explain a term: ayda аңлат <term>[.path]  (e.g. ayda аңлат кузак.spec)' ;;
+    en:explain.type) printf '%s' 'Kind of term: %s' ;;
+    en:explain.kubectl) printf '%s' 'kubectl resource: %s' ;;
+    en:explain.concept) printf '%s' 'A general concept, not a kubectl resource of its own.' ;;
+    en:explain.was_describe) printf '%s' '«аңлат» now explains a resource kind (kubectl explain) and takes a single word. To describe an object: ayda сөйлә %s' ;;
+    en:explain.unknown) printf '%s' 'No resource or glossary term «%s». List them: ayda аңлат' ;;
+    en:explain.not_in_glossary) printf '%s' '«%s» is not in the glossary — showing the kubectl schema only.' ;;
+    en:explain.no_schema) printf '%s' '«%s» is a general concept; it has no kubectl field schema.' ;;
+    en:explain.skctl) printf '%s' 'Sheeternetes (skctl) has no explain — glossary entry only.' ;;
+    en:explain.no_field) printf '%s' 'Field «%s» does not exist. Available fields: ayda аңлат %s' ;;
+    en:explain.schema_failed) printf '%s' 'Could not fetch the field schema (kubectl explain talks to the cluster). Glossary only: --кыскача' ;;
     tt:err.unknown_verb) printf '%s' 'Мондый әмер юк: «%s»' ;;
     tt:hint.try_help) printf '%s' '«ayda ярдәм» яки «ayda сүзлек» дип язып кара.' ;;
     tt:err.code) printf '%s' '(код: %s)' ;;
@@ -77,6 +90,7 @@ catalog_lookup() { # $1=lang $2=key
     tt:err.hint.conn) printf '%s' 'Кластерга тоташып булмады — контекст һәм адрес дөресме?' ;;
     tt:err.hint.exists) printf '%s' 'Инде бар — башка исем сайла яки булганын үзгәрт.' ;;
     tt:err.hint.nomatch) printf '%s' 'Андый асыл юк — «ayda сүзлек» карап ал.' ;;
+    tt:err.hint.exec_dashdash) printf '%s' 'Kubernetes 1.35 версиясеннән башлап кузак исеменнән соң «--» кирәк: ayda кер <кузак> -- <әмер>' ;;
     tt:festival.nauruz) printf '%s' 'Нәүрүз мөбарәк! Яз килде, кластер яшәрде! 🌱' ;;
     tt:festival.sabantuy) printf '%s' 'Сабан туе котлы булсын! Кластер мәйданга чыкты — көрәш вакыты! 🤼' ;;
     tt:festival.qorban) printf '%s' 'Корбан бәйрәме мөбарәк булсын! 🕌' ;;
@@ -98,6 +112,18 @@ catalog_lookup() { # $1=lang $2=key
     tt:skctl.nothing_run) printf '%s' 'Бернәрсә дә эшләтелмәде — кластерга кагылмадык.' ;;
     tt:skctl.hint.env) printf '%s' 'WEBAPP_URL куелмаган — apiserver адресын env яки skctl янындагы .skctl.env аша бир.' ;;
     tt:skctl.hint.token) printf '%s' 'Apiserver кертмәде (401) — TOKEN дөресме?' ;;
+    tt:explain.index) printf '%s' 'Глоссарийдагы төшенчәләр (docs/terminology.tt.md):' ;;
+    tt:explain.index.hint) printf '%s' 'Төшенчәне аңлату өчен: ayda аңлат <төшенчә>[.юл]  (мәсәлән: ayda аңлат кузак.spec)' ;;
+    tt:explain.type) printf '%s' 'Төре: %s' ;;
+    tt:explain.kubectl) printf '%s' 'kubectl асылы: %s' ;;
+    tt:explain.concept) printf '%s' 'Бу — гомуми төшенчә, аерым kubectl асылы түгел.' ;;
+    tt:explain.was_describe) printf '%s' '«аңлат» хәзер асыл төрен аңлата (kubectl explain) һәм бер генә сүз ала. Объектны тасвирлау өчен: ayda сөйлә %s' ;;
+    tt:explain.unknown) printf '%s' '«%s» — андый асыл да, төшенчә дә юк. Исемлек: ayda аңлат' ;;
+    tt:explain.not_in_glossary) printf '%s' '«%s» глоссарийда юк — kubectl схемасын гына күрсәтәбез.' ;;
+    tt:explain.no_schema) printf '%s' '«%s» — гомуми төшенчә, аның kubectl кыр схемасы юк.' ;;
+    tt:explain.skctl) printf '%s' 'Sheeternetes (skctl) explain белми — глоссарий аңлатмасы гына.' ;;
+    tt:explain.no_field) printf '%s' '«%s» кыры юк. Булган кырлар: ayda аңлат %s' ;;
+    tt:explain.schema_failed) printf '%s' 'Кыр схемасын алып булмады (kubectl explain кластер белән сөйләшә). Глоссарий гына кирәк булса: --кыскача' ;;
     *) printf '%s' "$2" ;;
   esac
 }

@@ -90,6 +90,9 @@ msgstr "Инде бар — башка исем сайла яки булганы
 msgid "err.hint.nomatch"
 msgstr "Андый асыл юк — «ayda сүзлек» карап ал."
 
+msgid "err.hint.exec_dashdash"
+msgstr "Kubernetes 1.35 версиясеннән башлап кузак исеменнән соң «--» кирәк: ayda кер <кузак> -- <әмер>"
+
 msgid "festival.nauruz"
 msgstr "Нәүрүз мөбарәк! Яз килде, кластер яшәрде! 🌱"
 
@@ -153,3 +156,40 @@ msgstr "WEBAPP_URL куелмаган — apiserver адресын env яки sk
 
 msgid "skctl.hint.token"
 msgstr "Apiserver кертмәде (401) — TOKEN дөресме?"
+
+# --- «ayda аңлат» — татарча kubectl explain ---
+msgid "explain.index"
+msgstr "Глоссарийдагы төшенчәләр (docs/terminology.tt.md):"
+
+msgid "explain.index.hint"
+msgstr "Төшенчәне аңлату өчен: ayda аңлат <төшенчә>[.юл]  (мәсәлән: ayda аңлат кузак.spec)"
+
+msgid "explain.type"
+msgstr "Төре: %s"
+
+msgid "explain.kubectl"
+msgstr "kubectl асылы: %s"
+
+msgid "explain.concept"
+msgstr "Бу — гомуми төшенчә, аерым kubectl асылы түгел."
+
+msgid "explain.was_describe"
+msgstr "«аңлат» хәзер асыл төрен аңлата (kubectl explain) һәм бер генә сүз ала. Объектны тасвирлау өчен: ayda сөйлә %s"
+
+msgid "explain.unknown"
+msgstr "«%s» — андый асыл да, төшенчә дә юк. Исемлек: ayda аңлат"
+
+msgid "explain.not_in_glossary"
+msgstr "«%s» глоссарийда юк — kubectl схемасын гына күрсәтәбез."
+
+msgid "explain.no_schema"
+msgstr "«%s» — гомуми төшенчә, аның kubectl кыр схемасы юк."
+
+msgid "explain.skctl"
+msgstr "Sheeternetes (skctl) explain белми — глоссарий аңлатмасы гына."
+
+msgid "explain.no_field"
+msgstr "«%s» кыры юк. Булган кырлар: ayda аңлат %s"
+
+msgid "explain.schema_failed"
+msgstr "Кыр схемасын алып булмады (kubectl explain кластер белән сөйләшә). Глоссарий гына кирәк булса: --кыскача"

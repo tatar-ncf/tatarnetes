@@ -4,8 +4,11 @@
 # Яки PATH'ка bin/kubectl-ayda куеп: «kubectl ayda күрсәт кузаклар».
 # Or just put bin/kubectl-ayda on PATH: `kubectl ayda күрсәт кузаклар`.
 #
-# v2.1.0 релизы чыгарылды — uri/sha256 тулы, krew урнаштырырга әзер.
-# v2.1.0 released — uri/sha256 are live; ready for `kubectl krew install`.
+# Бу файл соңгы чыккан релизга (v2.1.0) күрсәтә. Яңа тег куелганда release.yml
+# аның version/uri/sha256'ын яңартып, `ayda.yaml` итеп релизга беркетә.
+# This file points at the last published release (v2.1.0). On every tag,
+# release.yml renders it with that tag's version/uri/sha256 and attaches the
+# result to the GitHub Release as `ayda.yaml`.
 apiVersion: krew.googlecontainertools.github.com/v1alpha2
 kind: Plugin
 metadata:
@@ -21,6 +24,10 @@ spec:
     verses, tea breaks. Latin input supported. AYDA_ALIF=cyrl|latin|arab.
   caveats: |
     kubectl һәм bash кирәк / requires kubectl and bash.
+
+    Tab-тулыландыру / shell completion (v1.37.1-tatar.0 һәм соңрак / and later):
+      kubectl ayda <Tab>:  ln -s "$(dirname "$(readlink ~/.krew/bin/kubectl-ayda)")/kubectl_complete-ayda" ~/.krew/bin/
+      ayda (bash/zsh):     see completion/ in the plugin directory and the README.
   platforms:
     - selector:
         matchExpressions:

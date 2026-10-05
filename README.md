@@ -76,13 +76,47 @@ ayda чәй                        # чәй тәнәфесе графигы
 
 Гадәти `kubectl` синтаксисы да кабул ителә: `ayda get pods`.
 
+### Аңлат — татарча `kubectl explain`
+
+`ayda аңлат кузак` башта [милли терминологиядән](docs/terminology.tt.md)
+татарча аңлатма бирә (мәгънәсе, төре, kubectl асылы), аннары чын
+`kubectl explain pods` кыр схемасын күрсәтә. `кузак.spec.containers` кебек
+юллар, `-R`, `--max-depth` эшли; `--кыскача` — глоссарий гына, кластерсыз.
+Төшенчәләр исемлеге — `ayda аңлат`.
+
+```bash
+ayda аңлат кузак.spec             # глоссарий + kubectl explain pods.spec
+ayda аңлат бүлүче                 # scheduler — гомуми төшенчә, схемасыз
+```
+
+> **v3.0.0:** элек `аңлат` = `describe` иде; хәзер тасвирлау өчен `сөйлә`.
+
+### Tab-тулыландыру (bash, zsh)
+
+`ayda күр<Tab>` → `күрсәт`, аннары асыл төрләре (`кузаклар`, `төеннәр`…),
+аннары кластердагы исемнәр. Сүзләр сайланган язуда тәкъдим ителә
+(`AYDA_ALIF=latin`: `kür<Tab>` → `kürsät`; `arab` — Яңа имля). Исемнәр бер генә
+укучы әмер белән алына — `kubectl get <асыл> -o name --request-timeout=2s`
+(`AYDA_COMPLETE_TIMEOUT`); чәй вакытында кластерга мөрәҗәгать юк.
+
+```bash
+# bash — ~/.bashrc
+source /path/to/tatarnetes/completion/ayda.bash
+# zsh — ~/.zshrc (compinit'тан соң)
+source /path/to/tatarnetes/completion/_ayda
+#   яки compinit'ка кадәр: fpath=(/path/to/tatarnetes/completion $fpath)
+# kubectl ayda <Tab> (krew): kubectl_complete-ayda PATH'та булсын
+ln -s "$(dirname "$(readlink ~/.krew/bin/kubectl-ayda)")/kubectl_complete-ayda" ~/.krew/bin/
+```
+
 ### Милли-нативлык (тирән мөмкинлекләр)
 
 - **Тел сайлау** — `AYDA_LANG=tt|en`. Интерфейс юллары [`locale/*.po`](locale/) да
   (gettext) — носителеләр PR аша тәрҗемә итә ала, кодка тимичә.
 - **Өч язу** — `AYDA_ALIF=cyrl|latin|arab`: кирилл, **Яңалиф** (латин), **Яңа имля**
   (татар гарәп язуы, 1920нче еллар — фонематик, сүз башы сузыгына hamza ташучысы,
-  RTL+тоташу терминалда). `ayda kürsät kuzaklar` — латинча керем дә эшли.
+  RTL+тоташу терминалда). `ayda kürsät kuzaklar` — латинча керем дә эшли;
+  гарәпчә (Яңа имля) язылган әмерләр дә таныла.
 - **Милли терминология** — [docs/terminology.tt.md](docs/terminology.tt.md):
   Kubernetes төшенчәләренә татарча IT-сүзлек (реаль өлеш, пародия түгел).
 - **Классик поэзия** — Тукай, Җәлил, Дәрдмәнд, Сибгат Хәким + халык мәкальләре;
@@ -106,6 +140,7 @@ ayda чәй                        # чәй тәнәфесе графигы
 | `AYDA_NO_TEA=1` | чәй тәнәфесен узып китү |
 | `AYDA_FORCE_TEA=1` | чәй экранын мәҗбүри күрсәтү (демо/тест) |
 | `AYDA_FINOPS_MAX=<сан>` | реплика чиге (default 10) |
+| `AYDA_COMPLETE_TIMEOUT=2s` | Tab-тулыландыруда кластерны көтү чиге |
 | `AYDA_PLAIN=1` | бизәксез, төссез (скрипт өчен) |
 | `AYDA_QUIET=1` | бизәкләрне сүндерү |
 | `AYDA_FORCE_FUN=1` | торбада (pipe) да бизәк күрсәтү |
@@ -185,6 +220,31 @@ ayda сүзлек              # full dictionary
 
 See the full command map in **[docs/commands.md](docs/commands.md)** and the
 architecture in **[docs/architecture.md](docs/architecture.md)**.
+
+### `аңлат` — a Tatar `kubectl explain`
+
+`ayda аңлат кузак` first prints the Tatar explanation from the
+[glossary](docs/terminology.tt.md) (meaning, kind of term, kubectl resource),
+then the field schema from the real `kubectl explain pods`. Paths such as
+`кузак.spec.containers`, `-R` and `--max-depth` work; `--кыскача` (or `--brief`)
+prints the glossary entry only, without a cluster. `ayda аңлат` lists all terms.
+
+> **v3.0.0:** `аңлат` used to mean `describe`; use `сөйлә` for that now.
+
+### Tab completion (bash, zsh)
+
+`ayda күр<Tab>` → `күрсәт`, then resource kinds, then resource names from the
+cluster. Words are offered in the active script (`AYDA_ALIF=latin`: `kür<Tab>` →
+`kürsät`; `arab` gives Yaña imlâ). Names come from a single read-only call,
+`kubectl get <kind> -o name --request-timeout=2s` (`AYDA_COMPLETE_TIMEOUT`); during
+tea the cluster is not contacted.
+
+```bash
+source /path/to/tatarnetes/completion/ayda.bash   # bash, in ~/.bashrc
+source /path/to/tatarnetes/completion/_ayda       # zsh, in ~/.zshrc after compinit
+# kubectl ayda <Tab> via krew: put kubectl_complete-ayda on PATH
+ln -s "$(dirname "$(readlink ~/.krew/bin/kubectl-ayda)")/kubectl_complete-ayda" ~/.krew/bin/
+```
 
 ### Sheeternetes backend (SNCF × TNCF)
 

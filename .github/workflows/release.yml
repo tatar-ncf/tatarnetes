@@ -18,11 +18,23 @@ jobs:
       - name: Package
         run: |
           tar czf "tatarnetes-${GITHUB_REF_NAME}.tar.gz" \
-            bin lib data locale docs plugins scripts install.sh \
+            bin lib data locale docs plugins scripts completion install.sh \
             LICENSE NOTICE README.md MANIFESTO.md CODE_OF_CONDUCT.md
+      - name: Krew manifest for this release
+        # plugins/ayda.yaml — соңгы чыккан релизга күрсәтә; монда яңа тегка
+        # uri/sha256 белән яңа манифест ясала һәм релизга беркетелә.
+        # Render plugins/ayda.yaml for this tag (version, uri, sha256) and attach it.
+        run: |
+          sha="$(sha256sum "tatarnetes-${GITHUB_REF_NAME}.tar.gz" | cut -d' ' -f1)"
+          sed -E \
+            -e "s|^(  version: ).*|\1${GITHUB_REF_NAME}|" \
+            -e "s|(releases/download/)[^/]+/tatarnetes-[^ ]+\.tar\.gz|\1${GITHUB_REF_NAME}/tatarnetes-${GITHUB_REF_NAME}.tar.gz|" \
+            -e "s|^(      sha256: ).*|\1\"${sha}\"|" \
+            plugins/ayda.yaml > ayda.yaml
+          grep -q "${sha}" ayda.yaml && grep -q "download/${GITHUB_REF_NAME}/" ayda.yaml
       - name: Create release
         run: |
           gh release create "${GITHUB_REF_NAME}" \
             --title "Татарнетес ${GITHUB_REF_NAME}" \
             --generate-notes \
-            "tatarnetes-${GITHUB_REF_NAME}.tar.gz"
+            "tatarnetes-${GITHUB_REF_NAME}.tar.gz" ayda.yaml

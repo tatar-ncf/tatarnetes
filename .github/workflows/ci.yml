@@ -7,10 +7,12 @@ permissions:
 jobs:
   shellcheck:
     runs-on: ubuntu-latest
-    continue-on-error: true   # киңәшле / advisory (shellcheck preinstalled)
     steps:
       - uses: actions/checkout@v4
-      - run: shellcheck -x bin/ayda lib/*.sh install.sh
+      # shellcheck ubuntu-latest'та инде бар / preinstalled on ubuntu-latest
+      - run: |
+          shellcheck -x bin/ayda bin/kubectl-ayda bin/kubectl_complete-ayda lib/*.sh \
+            install.sh scripts/*.sh tests/unit.sh completion/ayda.bash
 
   unit:
     runs-on: ubuntu-latest
@@ -29,6 +31,26 @@ jobs:
           bash scripts/build-catalog.sh >/dev/null
           diff -u /tmp/committed.sh lib/catalog.sh || {
             echo "lib/catalog.sh иске! 'bash scripts/build-catalog.sh' эшләт."; exit 1; }
+
+  glossary-fresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: data/glossary.tsv is in sync with docs/terminology.tt.md
+        run: |
+          cp data/glossary.tsv /tmp/committed.tsv
+          bash scripts/build-glossary.sh >/dev/null
+          diff -u /tmp/committed.tsv data/glossary.tsv || {
+            echo "data/glossary.tsv иске! 'bash scripts/build-glossary.sh' эшләт."; exit 1; }
+
+  completion-syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: zsh completion parses
+        run: |
+          sudo apt-get install -y -qq zsh >/dev/null
+          zsh -n completion/_ayda
 
   smoke:
     runs-on: ubuntu-latest
@@ -50,4 +72,8 @@ jobs:
           # тәрҗемә дөресме? / translation sanity (kubectl юк, exit 127 көтелә)
           out=$(AYDA_KUBECTL=/nonexistent AYDA_PLAIN= AYDA_FORCE_FUN=1 bash bin/ayda күрсәт кузаклар 2>&1 || true)
           echo "$out" | grep -q "get pods"
+          # аңлат: глоссарий кластерсыз / glossary works without a cluster
+          bash bin/ayda аңлат кузак --кыскача | grep -q "pod"
+          # Tab: күр → күрсәт
+          test "$(bash bin/ayda __complete күр)" = "күрсәт"
           echo "◆ Барлык smoke-тестлар узды / all smoke tests passed"

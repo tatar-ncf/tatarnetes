@@ -20,5 +20,8 @@ case ":$PATH:" in
     ;;
 esac
 echo
+echo "  Tab (bash): source $HERE/completion/ayda.bash"
+echo "  Tab (zsh):  source $HERE/completion/_ayda"
+echo
 echo "  Сынап кара / try it:   ayda ярдәм"
 echo "◆◇◆◇◆◇◆◇◆◇◆◇◆◇◆◇◆"

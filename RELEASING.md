@@ -57,6 +57,27 @@
 - `tatar-layer` — тәрҗемә/бизәк/чәй катламы
 - `breaking` — каршылыклы үзгәреш
 
+### Хәзерге апстрим һәм туры килү
+
+| | |
+|---|---|
+| Апстрим | Kubernetes **v1.37.1** (`.upstream-version`) |
+| Киләсе тег | `v1.37.1-tatar.0` (edge: 1.37 минорының беренче татарлаштыруы) |
+| Тикшерелгән kubectl | v1.37.1 (чын бинар белән сыналды) |
+| Kubernetes кластеры | kubectl рәсми рәвештә apiserver'дан бер минорга кадәр аерыла ала: 1.36, 1.37, 1.38 |
+| TatarOS | Talos v1.14.1 — эчендә Kubernetes 1.37 |
+
+**v1.31.0 → v1.37.1: `ayda` өчен нәрсә үзгәрде**
+
+- `kubectl exec <кузак> <әмер>` 1.35 версиясеннән эшләми — `--` мәҗбүри:
+  `ayda кер <кузак> -- <әмер>`. Хата чыкса, `ayda` татарча киңәш бирә.
+- `kuberc` (1.33) — яңа kubectl фигыле, үзгәрешсез үткәрелә.
+- `rollback` һәм `apply-view-last-applied` сүзлектән алынды — kubectl'да андый
+  фигыльләр юк.
+- kubectl 1.37 плагинга үз юлын `KUBECTL_PATH` аша бирә; `kubectl ayda` шул
+  kubectl'ны куллана.
+- `kubectl explain --max-depth` (1.37) — `ayda аңлат` аша да эшли.
+
 ## English
 
 Tatarnetes is not a standalone project — it is a **national wrapper over
@@ -96,6 +117,26 @@ directly. We do not invent; we follow stable upstream, Tatarise it, test, ship.
 3. **Test** — `ci.yml` runs shellcheck + smoke tests.
 4. **Tag** — pushing `vX.Y.Z-tatar.N` triggers `release.yml` → a GitHub Release.
 5. **Announce** — bilingual release notes.
+
+### Current upstream and compatibility
+
+| | |
+|---|---|
+| Upstream | Kubernetes **v1.37.1** (`.upstream-version`) |
+| Next tag | `v1.37.1-tatar.0` (edge: first Tatarisation of the 1.37 minor) |
+| Verified kubectl | v1.37.1 (checked against the real binary) |
+| Clusters | kubectl's official skew is one minor either way: 1.36, 1.37, 1.38 |
+| TatarOS | Talos v1.14.1 — ships Kubernetes 1.37 |
+
+**v1.31.0 → v1.37.1: what changed for `ayda`**
+
+- Since 1.35 `kubectl exec <pod> <cmd>` is rejected; `--` is required:
+  `ayda кер <pod> -- <cmd>`. `ayda` adds a Tatar hint when this happens.
+- `kuberc` (1.33) is a new kubectl verb and is passed through.
+- `rollback` and `apply-view-last-applied` were removed from the dictionary —
+  kubectl has no such top-level commands.
+- kubectl 1.37 exports `KUBECTL_PATH` to plugins; `kubectl ayda` uses it.
+- `kubectl explain --max-depth` (1.37) also works through `ayda аңлат`.
 
 ---
 

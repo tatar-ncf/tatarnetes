@@ -3,11 +3,14 @@
 # Куллану / usage:  bash tests/unit.sh
 set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)"
-cd "$HERE"
+cd "$HERE" || exit 1
 export AYDA_LANG=tt AYDA_ALIF=cyrl AYDA_PLAIN=1
+# Кулланучы мохитеннән бәйсез / independent of the caller's environment
+unset AYDA_KUBECTL AYDA_BACKEND AYDA_SKCTL AYDA_FORCE_TEA AYDA_COMPLETE_TIMEOUT KUBECTL_PATH
 
+export AYDA_HOME="$HERE"
 # shellcheck source=/dev/null
-for m in render alif catalog i18n dictionary phrases teatime skctl; do . "lib/$m.sh"; done
+for m in render alif catalog i18n complete dictionary phrases teatime errors skctl explain; do . "lib/$m.sh"; done
 
 PASS=0; FAIL=0
 ok()   { PASS=$((PASS+1)); printf '  ✓ %s\n' "$1"; }
@@ -35,6 +38,8 @@ eq "get→get"       "get" "$(resolve_verb get)"
 eq "күрсәт→get"    "get" "$(resolve_verb күрсәт)"
 eq "kürsät→get"    "get" "$(resolve_verb kürsät)"
 eq "zzz→(empty)"   ""    "$(resolve_verb zzz)"
+eq "kuberc passthrough (kubectl ≥1.33)" "kuberc" "$(resolve_verb kuberc)"
+eq "rollback is not a kubectl verb" "" "$(resolve_verb rollback)"
 
 echo "── resolve_noun ──"
 eq "кузак→pods"      "pods"   "$(resolve_noun кузак)"
@@ -55,6 +60,15 @@ eq "en tagline" "A national container orchestrator" "$(AYDA_LANG=en t version.ta
 
 echo "── tea schedule ──"
 eq "3 tea windows/day" "3" "$(tea_windows | grep -c .)"
+
+echo "── kubectl error hints (tat_error_hint) ──"
+eq "unknown kind → nomatch"   "err.hint.nomatch"   "$(tat_error_hint 'error: the server could not find the requested resource')"
+eq "no resource type → nomatch" "err.hint.nomatch" "$(tat_error_hint 'error: the server doesn'"'"'t have a resource type "kuzak"')"
+eq "pod not found → notfound" "err.hint.notfound"  "$(tat_error_hint 'Error from server (NotFound): pods "x" not found')"
+eq "forbidden"                "err.hint.forbidden" "$(tat_error_hint 'pods is forbidden: User "u" cannot list')"
+eq "refused → conn"           "err.hint.conn"      "$(tat_error_hint 'dial tcp 127.0.0.1:6443: connect: connection refused')"
+eq "exec without -- → dashdash" "err.hint.exec_dashdash" "$(tat_error_hint 'error: exec [POD] [COMMAND] is not supported anymore. Use exec [POD] -- [COMMAND] instead')"
+eq "corpus line is non-empty" "1" "$([ -n "$(tat_random_praise)" ] && echo 1)"
 
 echo "── skctl backend: mapping (skctl_map) ──"
 # skm VERB ARGS… → "skctl args" on success, "!<error-key>" on refusal.
@@ -105,7 +119,7 @@ eq "curl 401 → token hint"       "skctl.hint.token" "$(skctl_error_hint 'curl:
 eq "curl conn → conn hint"       "err.hint.conn"    "$(skctl_error_hint 'curl: (7) Failed to connect to localhost port 8787')"
 
 echo "── skctl backend: end-to-end through bin/ayda (stub skctl on PATH) ──"
-STUB="$(mktemp -d)"; LOG="$STUB/calls"; trap 'rm -rf "$STUB"' EXIT
+STUB="$(mktemp -d)"; LOG="$STUB/calls"; trap 'rm -rf "$STUB" "${STUBK:-}"' EXIT
 cat > "$STUB/skctl" <<'STUBEOF'
 #!/usr/bin/env bash
 printf '%s\n' "$*" >> "$SKSTUB_LOG"
@@ -145,6 +159,97 @@ case "$(AYDA_LANG=en PATH="$STUB:$PATH" AYDA_BACKEND=skctl AYDA_NO_TEA=1 bash bi
   *'has no "logs"'*"Nothing was run"*) ok "en refusal text" ;;
   *) bad "en refusal text" '*has no "logs"*Nothing was run*' "$(AYDA_LANG=en PATH="$STUB:$PATH" AYDA_BACKEND=skctl AYDA_NO_TEA=1 bash bin/ayda logs x 2>&1 >/dev/null)" ;;
 esac
+
+echo "── krew shim: KUBECTL_PATH (kubectl ≥1.37) ──"
+printf '#!/usr/bin/env bash\nprintf "K %%s\\n" "$*"\n' > "$STUB/kk"; chmod +x "$STUB/kk"
+eq "kubectl-ayda uses KUBECTL_PATH" "K get pods" "$(KUBECTL_PATH="$STUB/kk" AYDA_NO_TEA=1 bash bin/kubectl-ayda күрсәт кузаклар 2>/dev/null)"
+eq "AYDA_KUBECTL wins over KUBECTL_PATH" "K get nodes" "$(KUBECTL_PATH=/nonexistent AYDA_KUBECTL="$STUB/kk" AYDA_NO_TEA=1 bash bin/kubectl-ayda күрсәт төеннәр 2>/dev/null)"
+
+echo "── Яңа имля керем / Arabic-script input ──"
+AR_KURSAT="$(printf '%s' күрсәт | cyrl_to_arab)"; AR_KUZAK="$(printf '%s' кузаклар | cyrl_to_arab)"
+eq "arab күрсәт → get"     "get"  "$(resolve_verb "$AR_KURSAT")"
+eq "arab кузаклар → pods"  "pods" "$(resolve_noun "$AR_KUZAK")"
+eq "arab unknown → empty"  ""     "$(resolve_verb "$(printf '%s' җүләр | cyrl_to_arab)")"
+eq "alif_has_arab cyrl"    "no"   "$(alif_has_arab күрсәт && echo yes || echo no)"
+
+echo "── word lists resolve through the dictionary ──"
+badv=""; for w in $(dict_verbs); do [ -n "$(translate_verb "$w")" ] || badv="$badv $w"; done
+eq "every dict_verbs word is a verb" "" "$badv"
+badn=""; for w in $(dict_nouns); do [ "$(translate_noun "$w")" != "$w" ] || badn="$badn $w"; done
+eq "every dict_nouns word is a noun" "" "$badn"
+
+echo "── completion (ayda __complete) ──"
+export AYDA_NO_TEA=1
+cmp_() { ayda_complete "$@" | tr '\n' ' ' | sed 's/ $//'; }
+eq "күр<Tab> → күрсәт"         "күрсәт"              "$(cmp_ күр)"
+eq "күрсәт ку<Tab>"            "кузак кузаклар"      "$(cmp_ күрсәт ку)"
+eq "latin kür<Tab>"            "kürsät"              "$(AYDA_ALIF=latin cmp_ kür)"
+eq "latin kürsät kuz<Tab>"     "kuzak kuzaklar"      "$(AYDA_ALIF=latin cmp_ kürsät kuz)"
+eq "arab verb, then nouns"     "$(printf '%s\n' кузак | cyrl_to_arab)" "$(AYDA_ALIF=arab cmp_ "$AR_KURSAT" "$(printf '%s' куза | cyrl_to_arab)" | cut -d' ' -f1)"
+eq "аңлат те<Tab> (glossary)"  "тезмә теләк-халәте"  "$(cmp_ аңлат те)"
+eq "flags are left alone"      ""                    "$(cmp_ күрсәт -)"
+eq "ярд<Tab> builtin"          "ярдәм"               "$(cmp_ ярд)"
+STUBK="$(mktemp -d)"
+cat > "$STUBK/kubectl" <<'KEOF'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >> "$KLOG"
+case "$*" in "get pods -o name"*) printf 'pod/ecpocmak-web\npod/cakcak-api\n' ;;
+             "get nodes -o name"*) printf 'node/kazan\n' ;; esac
+KEOF
+chmod +x "$STUBK/kubectl"; export KLOG="$STUBK/log"
+eq "names: күрсәт кузак e<Tab>" "ecpocmak-web" "$(KUBECTL_BIN="$STUBK/kubectl" cmp_ күрсәт кузак e)"
+eq "  one read-only call with timeout" "get pods -o name --request-timeout=2s" "$(tail -1 "$KLOG")"
+: > "$KLOG"
+KUBECTL_BIN="$STUBK/kubectl" cmp_ -n tatar --context=kind-x сөйлә кузак "" >/dev/null
+eq "  scope flags forwarded, nothing else" "get pods -o name --request-timeout=2s -n tatar --context=kind-x" "$(tail -1 "$KLOG")"
+eq "names: көндәлек <Tab> → pods" "cakcak-api ecpocmak-web" "$(KUBECTL_BIN="$STUBK/kubectl" cmp_ көндәлек "" | tr ' ' '\n' | sort | tr '\n' ' ' | sed 's/ $//')"
+eq "names: cordon <Tab> → nodes" "kazan" "$(KUBECTL_BIN="$STUBK/kubectl" cmp_ cordon "")"
+: > "$KLOG"
+eq "tea time → no cluster call" "" "$(AYDA_NO_TEA='' AYDA_FORCE_TEA=1 KUBECTL_BIN="$STUBK/kubectl" cmp_ күрсәт кузак "")$(cat "$KLOG")"
+printf '#!/usr/bin/env bash\nexec sleep 5\n' > "$STUBK/slowkubectl"; chmod +x "$STUBK/slowkubectl"
+t0=$(date +%s); KUBECTL_BIN="$STUBK/slowkubectl" AYDA_COMPLETE_TIMEOUT=1s cmp_ күрсәт кузак "" >/dev/null; t1=$(date +%s)
+eq "hung cluster → Tab gives up within the deadline" "1" "$([ $((t1 - t0)) -le 2 ] && echo 1)"
+eq "skctl backend → no kubectl call" "" "$(AYDA_BACKEND=skctl KUBECTL_BIN="$STUBK/kubectl" cmp_ күрсәт кузак "")$(cat "$KLOG")"
+
+echo "── аңлат (Tatar explain) ──"
+eq "glossary_find кузак"      "pod"     "$(glossary_find кузак | cut -f2)"
+eq "glossary_find кузаклар"   "кузак"   "$(glossary_find кузаклар | cut -f1)"
+eq "glossary_find борчак"     "кузак"   "$(glossary_find борчак | cut -f1)"
+eq "glossary_find latin töen" "төен"    "$(glossary_find töen | cut -f1)"
+eq "glossary_find english pods" "кузак" "$(glossary_find pods | cut -f1)"
+eq "glossary_find persistentvolume" "күләм" "$(glossary_find persistentvolume | cut -f1)"
+eq "glossary_find теләк-халәте" "теләк халәте" "$(glossary_find теләк-халәте | cut -f1)"
+eq "glossary_find unknown"    "1"       "$(glossary_find җүләр >/dev/null; echo $?)"
+ex() { : > "$KLOG"; AYDA_KUBECTL="$STUBK/kubectl" bash bin/ayda аңлат "$@" >"$STUBK/out" 2>"$STUBK/err"; echo $?; }
+eq "аңлат кузак.spec → rc 0"  "0" "$(ex кузак.spec)"
+eq "  ran kubectl explain pods.spec" "explain pods.spec" "$(cat "$KLOG")"
+case "$(cat "$STUBK/out")" in "кузак — pod"*) ok "  glossary entry printed first";; *) bad "  glossary entry printed first" "кузак — pod…" "$(head -1 "$STUBK/out")";; esac
+eq "аңлат кузак -R --max-depth=2" "explain pods -R --max-depth=2" "$(ex кузак -R --max-depth=2 >/dev/null; cat "$KLOG")"
+eq "аңлат кузак --кыскача → no kubectl" "" "$(ex кузак --кыскача >/dev/null; cat "$KLOG")"
+eq "аңлат бүлүче (concept) → rc 0, no kubectl" "0:" "$(ex бүлүче):$(cat "$KLOG")"
+eq "аңлат бүлүче.spec → rc 64" "64" "$(ex бүлүче.spec)"
+eq "аңлат җүләр → rc 64"       "64" "$(ex җүләр)"
+case "$(cat "$STUBK/err")" in *"андый асыл да"*) ok "  translated unknown error";; *) bad "  translated unknown error" "*андый асыл да*" "$(cat "$STUBK/err")";; esac
+eq "аңлат кузак x → rc 64 (describe hint)" "64" "$(ex кузак x)"
+case "$(cat "$STUBK/err")" in *"ayda сөйлә кузак x"*) ok "  points to сөйлә";; *) bad "  points to сөйлә" "*ayda сөйлә кузак x*" "$(cat "$STUBK/err")";; esac
+eq "аңлат crd (not in glossary) → kubectl" "explain crd" "$(ex crd >/dev/null; cat "$KLOG")"
+eq "аңлат during tea → rc 42"  "42" "$(AYDA_NO_TEA='' AYDA_FORCE_TEA=1 ex кузак)"
+eq "  …but glossary still shown" "кузак — pod" "$(head -1 "$STUBK/out")"
+eq "сөйлә still → describe"    "describe" "$(resolve_verb сөйлә)"
+eq "аңлат is no longer describe" "" "$(translate_verb аңлат)"
+
+echo "── completion scripts & entry points ──"
+bcomp() { ( complete() { :; }; . completion/ayda.bash; COMP_WORDS=("$HERE/bin/ayda" "$@"); COMP_CWORD=$#
+            _ayda_complete; printf '%s ' "${COMPREPLY[@]}" | sed 's/ $//' ); }
+eq "bash: ayda күр<Tab>"         "күрсәт"          "$(bcomp күр)"
+eq "bash: ayda күрсәт төе<Tab>"  "төен төеннәр"    "$(bcomp күрсәт төе)"
+eq "kubectl_complete-ayda"       "күрсәт :4"       "$(bash bin/kubectl_complete-ayda күр | tr '\n' ' ' | sed 's/ $//')"
+ln -s "$HERE/bin/ayda" "$STUBK/ayda-link"; ln -s "$HERE/bin/kubectl-ayda" "$STUBK/kubectl-ayda"
+eq "ayda via symlink (install.sh)" "күрсәт" "$("$STUBK/ayda-link" __complete күр)"
+eq "kubectl-ayda via symlink (krew)" "0" "$(AYDA_PLAIN=1 "$STUBK/kubectl-ayda" ярдәм >/dev/null 2>&1; echo $?)"
+if command -v zsh >/dev/null 2>&1; then
+  if zsh -n completion/_ayda; then ok "zsh completion parses"; else bad "zsh completion parses" "ok" "syntax error"; fi
+fi
 
 echo
 echo "Йомгак / result: PASS=$PASS FAIL=$FAIL"
