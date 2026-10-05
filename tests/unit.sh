@@ -162,6 +162,20 @@ printf '#!/usr/bin/env bash\nprintf "K %%s\\n" "$*"\n' > "$STUB/kk"; chmod +x "$
 eq "kubectl-ayda uses KUBECTL_PATH" "K get pods" "$(KUBECTL_PATH="$STUB/kk" AYDA_NO_TEA=1 bash bin/kubectl-ayda күрсәт кузаклар 2>/dev/null)"
 eq "AYDA_KUBECTL wins over KUBECTL_PATH" "K get nodes" "$(KUBECTL_PATH=/nonexistent AYDA_KUBECTL="$STUB/kk" AYDA_NO_TEA=1 bash bin/kubectl-ayda күрсәт төеннәр 2>/dev/null)"
 
+echo "── Яңа имля керем / Arabic-script input ──"
+AR_KURSAT="$(printf '%s' күрсәт | cyrl_to_arab)"; AR_KUZAK="$(printf '%s' кузаклар | cyrl_to_arab)"
+eq "arab күрсәт → get"     "get"  "$(resolve_verb "$AR_KURSAT")"
+eq "arab кузаклар → pods"  "pods" "$(resolve_noun "$AR_KUZAK")"
+eq "arab unknown → empty"  ""     "$(resolve_verb "$(printf '%s' җүләр | cyrl_to_arab)")"
+eq "alif_has_arab cyrl"    "no"   "$(alif_has_arab күрсәт && echo yes || echo no)"
+
+echo "── word lists resolve through the dictionary ──"
+badv=""; for w in $(dict_verbs); do [ -n "$(translate_verb "$w")" ] || badv="$badv $w"; done
+eq "every dict_verbs word is a verb" "" "$badv"
+badn=""; for w in $(dict_nouns); do [ "$(translate_noun "$w")" != "$w" ] || badn="$badn $w"; done
+eq "every dict_nouns word is a noun" "" "$badn"
+
+
 echo
 echo "Йомгак / result: PASS=$PASS FAIL=$FAIL"
 [ "$FAIL" -eq 0 ]

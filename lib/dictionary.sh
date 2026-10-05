@@ -72,17 +72,45 @@ translate_noun() {
 # resolve_verb/resolve_noun — башта сүзлек (кирилл/инглиз), аннары латин фолбэк.
 # Try the dictionary as-is first (Cyrillic or English kubectl), then fall back to
 # Latin→Cyrillic input. English kubectl verbs (get/pods) stay untouched.
+# Гарәп язуы (Яңа имля) белән кертелгән сүз dict_verbs/dict_nouns аша таныла.
+# Arabic-script input is recognised through the dict_verbs / dict_nouns lists.
 resolve_verb() {
   local v="$1" r
   r="$(translate_verb "$v")"; [ -n "$r" ] && { printf '%s' "$r"; return 0; }
+  if alif_has_arab "$v"; then
+    # shellcheck disable=SC2046  # word lists are single words by construction
+    r="$(alif_arab_pick "$v" $(dict_verbs))" && translate_verb "$r"
+    return 0
+  fi
   translate_verb "$(printf '%s' "$v" | latin_to_cyrl)"
 }
 resolve_noun() {
   local n="$1" r c
   r="$(translate_noun "$n")"; [ "$r" != "$n" ] && { printf '%s' "$r"; return 0; }
+  if alif_has_arab "$n"; then
+    # shellcheck disable=SC2046
+    if r="$(alif_arab_pick "$n" $(dict_nouns))"; then translate_noun "$r"; else printf '%s' "$n"; fi
+    return 0
+  fi
   c="$(printf '%s' "$n" | latin_to_cyrl)"
   r="$(translate_noun "$c")"
   if [ "$r" != "$c" ]; then printf '%s' "$r"; else printf '%s' "$n"; fi
+}
+
+# --- Тулыландыру өчен исемлекләр / word lists for completion & Arabic input ---
+# Төп (каноник) формалар гына; һәрберсе translate_verb/translate_noun аша
+# танылырга тиеш (tests/unit.sh тикшерә). Canonical forms only; every word must
+# resolve through the case tables above (enforced by tests/unit.sh).
+dict_verbs() {
+  printf '%s\n' күрсәт кара сөйлә тасвирла төзе яса кулла бетер көндәлек кер \
+    күпәйт төзәт яңарт ач җибәр порт тоташтыр контекст тамгала искәрмә ямау \
+    өскә көт аңлатып-бир асыллар төркем-хәбәре
+}
+dict_nouns() {
+  printf '%s\n' кузак кузаклар төен төеннәр хезмәт хезмәтләр урнаштыру урнаштырулар \
+    мәйдан мәйданнар капка капкалар сер серләр көйләмә көйләмәләр күләм күләмнәр \
+    таләп эш эшләр вакытлы-эш күчермә күчермәләр көтү тезмә хисап роль рольләр \
+    вакыйга вакыйгалар барысы
 }
 
 # Сүзлекне күрсәтү / print the dictionary as a table.

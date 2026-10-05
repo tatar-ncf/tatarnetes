@@ -102,3 +102,30 @@ alif_normalize_in() {
     *) printf '%s' "$1" ;;                          # сан/флаг / number/flag
   esac
 }
+
+# --- Гарәп керемен танып алу / recognising Arabic-script input -----------
+# Яңа имля транслитерациясе кире кайтмый (е/э → ې, и/й → ی), шуңа гарәпчә
+# кертелгән сүзне билгеле сүзләр исемлеге белән чагыштырабыз.
+# Yaña imlâ is lossy, so Arabic input is matched against a known word list.
+
+# alif_has_arab WORD — 0 if WORD contains Arabic-script letters (U+0600–U+06FF).
+alif_has_arab() {
+  printf '%s' "$1" | LC_ALL=C grep -q "$(printf '[\330-\333]')"
+}
+
+# alif_arab_pick WORD CANDIDATE... — гарәпчә WORD'ка туры килгән кирилл сүзне бас.
+# Prints the Cyrillic candidate whose Arabic rendering equals WORD; rc 1 if none.
+alif_arab_pick() {
+  local w="$1" a i=0; shift
+  [ "$#" -gt 0 ] || return 1
+  local -a c=("$@")
+  # Бер торбада барысын да күчерәбез / one pipeline for all candidates.
+  # (BSD awk'та UTF-8 юлларны чагыштыру ышанычсыз — bash'та чагыштырабыз.)
+  while IFS= read -r a; do
+    if [ "$a" = "$w" ]; then printf '%s' "${c[$i]}"; return 0; fi
+    i=$((i + 1))
+  done <<EOF
+$(printf '%s\n' "$@" | cyrl_to_arab)
+EOF
+  return 1
+}
