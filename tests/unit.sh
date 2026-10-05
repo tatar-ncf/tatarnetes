@@ -7,7 +7,7 @@ cd "$HERE"
 export AYDA_LANG=tt AYDA_ALIF=cyrl AYDA_PLAIN=1
 
 # shellcheck source=/dev/null
-for m in render alif catalog i18n dictionary phrases teatime; do . "lib/$m.sh"; done
+for m in render alif catalog i18n dictionary phrases teatime skctl; do . "lib/$m.sh"; done
 
 PASS=0; FAIL=0
 ok()   { PASS=$((PASS+1)); printf '  ✓ %s\n' "$1"; }
@@ -55,6 +55,96 @@ eq "en tagline" "A national container orchestrator" "$(AYDA_LANG=en t version.ta
 
 echo "── tea schedule ──"
 eq "3 tea windows/day" "3" "$(tea_windows | grep -c .)"
+
+echo "── skctl backend: mapping (skctl_map) ──"
+# skm VERB ARGS… → "skctl args" on success, "!<error-key>" on refusal.
+skm() { if skctl_map "$@"; then printf '%s' "${SKARGS[*]}"; else printf '!%s' "$SKERR"; fi; }
+eq "get pods"                    "get pods"            "$(skm get pods)"
+eq "get po → pods"               "get pods"            "$(skm get po)"
+eq "get deploy → deployments"    "get deployments"     "$(skm get deploy)"
+eq "get nodes"                   "get nodes"           "$(skm get nodes)"
+eq "get events"                  "get events"          "$(skm get events)"
+eq "apply -f f.json"             "apply f.json"        "$(skm apply -f f.json)"
+eq "apply --filename=f.json"     "apply f.json"        "$(skm apply --filename=f.json)"
+eq "scale deploy web --replicas=3" "scale web 3"       "$(skm scale deploy web --replicas=3)"
+eq "scale deploy/web --replicas 2" "scale web 2"       "$(skm scale deploy/web --replicas 2)"
+eq "delete deploy web"           "delete web"          "$(skm delete deploy web)"
+eq "delete deployment/web"       "delete web"          "$(skm delete deployment/web)"
+eq "cordon a"                    "cordon a"            "$(skm cordon a)"
+eq "drain nodes a"               "drain a"             "$(skm drain nodes a)"
+eq "uncordon node/a"             "uncordon a"          "$(skm uncordon node/a)"
+eq "label nodes a disk=ssd"      "label a disk=ssd"    "$(skm label nodes a disk=ssd)"
+eq "taint node/a gpu=true:NoSchedule" "taint a gpu=true:NoSchedule" "$(skm taint node/a gpu=true:NoSchedule)"
+eq "migrate web-1 b"             "migrate web-1 b"     "$(skm migrate web-1 b)"
+eq "migrate pods web-1 b"        "migrate web-1 b"     "$(skm migrate pods web-1 b)"
+echo "── skctl backend: honest refusals ──"
+eq "describe → unsupported verb" "!skctl.unsupported.verb"  "$(skm describe pods x)"
+eq "logs → unsupported verb"     "!skctl.unsupported.verb"  "$(skm logs x)"
+eq "get svc → unsupported kind"  "!skctl.unsupported.kind"  "$(skm get svc)"
+eq "delete svc x → unsupported kind" "!skctl.unsupported.kind" "$(skm delete svc x)"
+eq "label pods x a=b → unsupported kind" "!skctl.unsupported.kind" "$(skm label pods x a=b)"
+eq "get pods -A → unsupported flag" "!skctl.unsupported.flag" "$(skm get pods -A)"
+eq "get pods -o json → unsupported flag" "!skctl.unsupported.flag" "$(skm get pods -o json)"
+eq "drain a --force → unsupported flag" "!skctl.unsupported.flag" "$(skm drain a --force)"
+eq "get pods web-1 → usage (no by-name get)" "!skctl.usage" "$(skm get pods web-1)"
+eq "get (no kind) → usage"       "!skctl.usage"             "$(skm get)"
+eq "scale without --replicas → usage" "!skctl.usage"        "$(skm scale deploy web)"
+eq "scale --replicas=x → usage"  "!skctl.usage"             "$(skm scale deploy web --replicas=x)"
+eq "delete web (no kind) → usage" "!skctl.usage"            "$(skm delete web)"
+eq "delete deploy a b → usage"   "!skctl.usage"             "$(skm delete deploy a b)"
+eq "label a k=v (no kind) → usage" "!skctl.usage"           "$(skm label a k=v)"
+eq "label nodes a k=v k2=v2 → usage" "!skctl.usage"         "$(skm label nodes a k=v k2=v2)"
+eq "apply (no file) → usage"     "!skctl.usage"             "$(skm apply)"
+echo "── skctl backend: verbs only skctl has ──"
+eq "күчер→migrate"  "migrate" "$(skctl_resolve_verb күчер)"
+eq "küçer→migrate"  "migrate" "$(skctl_resolve_verb küçer)"
+eq "zzz→(empty)"    ""        "$(skctl_resolve_verb zzz)"
+echo "── skctl backend: error hints ──"
+eq "WEBAPP_URL unset → env hint" "skctl.hint.env"   "$(skctl_error_hint 'skctl: line 24: WEBAPP_URL: set WEBAPP_URL')"
+eq "curl 401 → token hint"       "skctl.hint.token" "$(skctl_error_hint 'curl: (22) The requested URL returned error: 401')"
+eq "curl conn → conn hint"       "err.hint.conn"    "$(skctl_error_hint 'curl: (7) Failed to connect to localhost port 8787')"
+
+echo "── skctl backend: end-to-end through bin/ayda (stub skctl on PATH) ──"
+STUB="$(mktemp -d)"; LOG="$STUB/calls"; trap 'rm -rf "$STUB"' EXIT
+cat > "$STUB/skctl" <<'STUBEOF'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >> "$SKSTUB_LOG"
+printf 'OUT %s\n' "$*"
+exit "${SKSTUB_RC:-0}"
+STUBEOF
+chmod +x "$STUB/skctl"
+# ay ARGS… → runs ayda on the skctl backend; stdout to $STUB/out, rc echoed.
+ay() { : > "$LOG"; PATH="$STUB:$PATH" AYDA_BACKEND=skctl AYDA_NO_TEA=1 SKSTUB_LOG="$LOG" \
+         bash bin/ayda "$@" >"$STUB/out" 2>"$STUB/err"; echo $?; }
+eq "күрсәт кузаклар → rc 0"          "0"                   "$(ay күрсәт кузаклар)"
+eq "  stub got 'get pods'"           "get pods"            "$(cat "$LOG")"
+eq "  stdout is exactly skctl's"     "OUT get pods"        "$(cat "$STUB/out")"
+eq "kürsät töennär → get nodes"      "0"                   "$(ay kürsät töennär)"
+eq "  stub got 'get nodes'"          "get nodes"           "$(cat "$LOG")"
+eq "күпәйт урнаштыру web --replicas=3" "0"                 "$(ay күпәйт урнаштыру web --replicas=3)"
+eq "  stub got 'scale web 3'"        "scale web 3"         "$(cat "$LOG")"
+eq "бетер урнаштыру web"             "0"                   "$(ay бетер урнаштыру web)"
+eq "  stub got 'delete web'"         "delete web"          "$(cat "$LOG")"
+eq "кулла -f lab/x.json"             "0"                   "$(ay кулла -f lab/x.json)"
+eq "  stub got 'apply lab/x.json'"   "apply lab/x.json"    "$(cat "$LOG")"
+eq "күчер web-1 b"                   "0"                   "$(ay күчер web-1 b)"
+eq "  stub got 'migrate web-1 b'"    "migrate web-1 b"     "$(cat "$LOG")"
+eq "сөйлә кузак x → rc 69"           "69"                  "$(ay сөйлә кузак x)"
+eq "  stub NOT called"               ""                    "$(cat "$LOG")"
+eq "  stdout empty"                  ""                    "$(cat "$STUB/out")"
+eq "күрсәт кузаклар -A → rc 69"      "69"                  "$(ay күрсәт кузаклар -A)"
+eq "  stub NOT called"               ""                    "$(cat "$LOG")"
+eq "бетер хезмәт s → rc 69"          "69"                  "$(ay бетер хезмәт s)"
+eq "  stub NOT called"               ""                    "$(cat "$LOG")"
+eq "unknown verb still rc 64"        "64"                  "$(ay zzzz)"
+eq "skctl rc 3 propagates"           "3"                   "$(SKSTUB_RC=3 ay күрсәт кузаклар)"
+case "$(cat "$STUB/err")" in *"get, apply, scale"*) bad "rc 3 is not a refusal" "" "refusal text";; *) ok "rc 3 is not a refusal";; esac
+eq "AYDA_BACKEND=bogus → rc 64"      "64"                  "$(PATH="$STUB:$PATH" AYDA_BACKEND=bogus AYDA_NO_TEA=1 bash bin/ayda get pods >/dev/null 2>&1; echo $?)"
+eq "skctl missing → rc 127"          "127"                 "$(AYDA_BACKEND=skctl AYDA_SKCTL=/nonexistent/skctl AYDA_NO_TEA=1 bash bin/ayda get pods >/dev/null 2>&1; echo $?)"
+case "$(AYDA_LANG=en PATH="$STUB:$PATH" AYDA_BACKEND=skctl AYDA_NO_TEA=1 bash bin/ayda logs x 2>&1 >/dev/null)" in
+  *'has no "logs"'*"Nothing was run"*) ok "en refusal text" ;;
+  *) bad "en refusal text" '*has no "logs"*Nothing was run*' "$(AYDA_LANG=en PATH="$STUB:$PATH" AYDA_BACKEND=skctl AYDA_NO_TEA=1 bash bin/ayda logs x 2>&1 >/dev/null)" ;;
+esac
 
 echo
 echo "Йомгак / result: PASS=$PASS FAIL=$FAIL"

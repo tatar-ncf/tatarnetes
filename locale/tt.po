@@ -122,3 +122,34 @@ msgstr "Исәнмесез! TatarOS Linux'ка рәхим итегез!"
 
 msgid "tos.greet.sub"
 msgstr "Бу система сиңа саф Татарнетес бирер."
+
+# --- Sheeternetes нигезе / skctl backend (AYDA_BACKEND=skctl) ---
+msgid "backend.unknown"
+msgstr "Билгесез нигез (AYDA_BACKEND): «%s». Мөмкиннәре: kubectl, skctl."
+
+msgid "skctl.notfound"
+msgstr "skctl табылмады (%s)."
+
+msgid "skctl.notfound.hint"
+msgstr "Sheeternetes'ның skctl'ын PATH'ка куй яки AYDA_SKCTL=<юл> күрсәт."
+
+msgid "skctl.unsupported.verb"
+msgstr "Sheeternetes (skctl) «%s» әмерен белми. Ул белгәннәр: get, apply, scale, delete, cordon, uncordon, drain, label, taint, migrate."
+
+msgid "skctl.unsupported.kind"
+msgstr "skctl %s өчен «%s» асылын белми — бары %s."
+
+msgid "skctl.unsupported.flag"
+msgstr "skctl «%s» флагын белми."
+
+msgid "skctl.usage"
+msgstr "Sheeternetes өчен әмер рәвеше: %s"
+
+msgid "skctl.nothing_run"
+msgstr "Бернәрсә дә эшләтелмәде — кластерга кагылмадык."
+
+msgid "skctl.hint.env"
+msgstr "WEBAPP_URL куелмаган — apiserver адресын env яки skctl янындагы .skctl.env аша бир."
+
+msgid "skctl.hint.token"
+msgstr "Apiserver кертмәде (401) — TOKEN дөресме?"

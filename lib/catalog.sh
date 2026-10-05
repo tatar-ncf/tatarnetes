@@ -40,6 +40,16 @@ catalog_lookup() { # $1=lang $2=key
     en:tos.tea.body) printf '%s' 'TatarOS is having tea. Don'\''t disturb the nodes, kinsman!' ;;
     en:tos.greet.hello) printf '%s' 'Hello! Welcome to TatarOS Linux!' ;;
     en:tos.greet.sub) printf '%s' 'This system will give you pure Tatarnetes.' ;;
+    en:backend.unknown) printf '%s' 'Unknown backend (AYDA_BACKEND): "%s". Allowed: kubectl, skctl.' ;;
+    en:skctl.notfound) printf '%s' 'skctl not found (%s).' ;;
+    en:skctl.notfound.hint) printf '%s' 'Put Sheeternetes'\'' skctl on PATH or set AYDA_SKCTL=<path>.' ;;
+    en:skctl.unsupported.verb) printf '%s' 'Sheeternetes (skctl) has no "%s". It knows: get, apply, scale, delete, cordon, uncordon, drain, label, taint, migrate.' ;;
+    en:skctl.unsupported.kind) printf '%s' 'skctl %s does not handle "%s" — only %s.' ;;
+    en:skctl.unsupported.flag) printf '%s' 'skctl has no "%s" flag.' ;;
+    en:skctl.usage) printf '%s' 'Sheeternetes form: %s' ;;
+    en:skctl.nothing_run) printf '%s' 'Nothing was run — the cluster was not touched.' ;;
+    en:skctl.hint.env) printf '%s' 'WEBAPP_URL is not set — give the apiserver address via the environment or .skctl.env next to skctl.' ;;
+    en:skctl.hint.token) printf '%s' 'The apiserver refused (401) — is TOKEN correct?' ;;
     tt:err.unknown_verb) printf '%s' 'Мондый әмер юк: «%s»' ;;
     tt:hint.try_help) printf '%s' '«ayda ярдәм» яки «ayda сүзлек» дип язып кара.' ;;
     tt:err.code) printf '%s' '(код: %s)' ;;
@@ -78,6 +88,16 @@ catalog_lookup() { # $1=lang $2=key
     tt:tos.tea.body) printf '%s' 'TatarOS хәзер чәй эчә. Төеннәргә кермә, туганкай!' ;;
     tt:tos.greet.hello) printf '%s' 'Исәнмесез! TatarOS Linux'\''ка рәхим итегез!' ;;
     tt:tos.greet.sub) printf '%s' 'Бу система сиңа саф Татарнетес бирер.' ;;
+    tt:backend.unknown) printf '%s' 'Билгесез нигез (AYDA_BACKEND): «%s». Мөмкиннәре: kubectl, skctl.' ;;
+    tt:skctl.notfound) printf '%s' 'skctl табылмады (%s).' ;;
+    tt:skctl.notfound.hint) printf '%s' 'Sheeternetes'\''ның skctl'\''ын PATH'\''ка куй яки AYDA_SKCTL=<юл> күрсәт.' ;;
+    tt:skctl.unsupported.verb) printf '%s' 'Sheeternetes (skctl) «%s» әмерен белми. Ул белгәннәр: get, apply, scale, delete, cordon, uncordon, drain, label, taint, migrate.' ;;
+    tt:skctl.unsupported.kind) printf '%s' 'skctl %s өчен «%s» асылын белми — бары %s.' ;;
+    tt:skctl.unsupported.flag) printf '%s' 'skctl «%s» флагын белми.' ;;
+    tt:skctl.usage) printf '%s' 'Sheeternetes өчен әмер рәвеше: %s' ;;
+    tt:skctl.nothing_run) printf '%s' 'Бернәрсә дә эшләтелмәде — кластерга кагылмадык.' ;;
+    tt:skctl.hint.env) printf '%s' 'WEBAPP_URL куелмаган — apiserver адресын env яки skctl янындагы .skctl.env аша бир.' ;;
+    tt:skctl.hint.token) printf '%s' 'Apiserver кертмәде (401) — TOKEN дөресме?' ;;
     *) printf '%s' "$2" ;;
   esac
 }
