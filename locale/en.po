@@ -153,3 +153,40 @@ msgstr "WEBAPP_URL is not set — give the apiserver address via the environment
 
 msgid "skctl.hint.token"
 msgstr "The apiserver refused (401) — is TOKEN correct?"
+
+# --- `ayda аңлат` — a Tatar kubectl explain ---
+msgid "explain.index"
+msgstr "Glossary terms (docs/terminology.tt.md):"
+
+msgid "explain.index.hint"
+msgstr "To explain a term: ayda аңлат <term>[.path]  (e.g. ayda аңлат кузак.spec)"
+
+msgid "explain.type"
+msgstr "Kind of term: %s"
+
+msgid "explain.kubectl"
+msgstr "kubectl resource: %s"
+
+msgid "explain.concept"
+msgstr "A general concept, not a kubectl resource of its own."
+
+msgid "explain.was_describe"
+msgstr "«аңлат» now explains a resource kind (kubectl explain) and takes a single word. To describe an object: ayda сөйлә %s"
+
+msgid "explain.unknown"
+msgstr "No resource or glossary term «%s». List them: ayda аңлат"
+
+msgid "explain.not_in_glossary"
+msgstr "«%s» is not in the glossary — showing the kubectl schema only."
+
+msgid "explain.no_schema"
+msgstr "«%s» is a general concept; it has no kubectl field schema."
+
+msgid "explain.skctl"
+msgstr "Sheeternetes (skctl) has no explain — glossary entry only."
+
+msgid "explain.no_field"
+msgstr "Field «%s» does not exist. Available fields: ayda аңлат %s"
+
+msgid "explain.schema_failed"
+msgstr "Could not fetch the field schema (kubectl explain talks to the cluster). Glossary only: --кыскача"

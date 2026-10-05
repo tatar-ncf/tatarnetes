@@ -51,6 +51,18 @@ catalog_lookup() { # $1=lang $2=key
     en:skctl.nothing_run) printf '%s' 'Nothing was run — the cluster was not touched.' ;;
     en:skctl.hint.env) printf '%s' 'WEBAPP_URL is not set — give the apiserver address via the environment or .skctl.env next to skctl.' ;;
     en:skctl.hint.token) printf '%s' 'The apiserver refused (401) — is TOKEN correct?' ;;
+    en:explain.index) printf '%s' 'Glossary terms (docs/terminology.tt.md):' ;;
+    en:explain.index.hint) printf '%s' 'To explain a term: ayda аңлат <term>[.path]  (e.g. ayda аңлат кузак.spec)' ;;
+    en:explain.type) printf '%s' 'Kind of term: %s' ;;
+    en:explain.kubectl) printf '%s' 'kubectl resource: %s' ;;
+    en:explain.concept) printf '%s' 'A general concept, not a kubectl resource of its own.' ;;
+    en:explain.was_describe) printf '%s' '«аңлат» now explains a resource kind (kubectl explain) and takes a single word. To describe an object: ayda сөйлә %s' ;;
+    en:explain.unknown) printf '%s' 'No resource or glossary term «%s». List them: ayda аңлат' ;;
+    en:explain.not_in_glossary) printf '%s' '«%s» is not in the glossary — showing the kubectl schema only.' ;;
+    en:explain.no_schema) printf '%s' '«%s» is a general concept; it has no kubectl field schema.' ;;
+    en:explain.skctl) printf '%s' 'Sheeternetes (skctl) has no explain — glossary entry only.' ;;
+    en:explain.no_field) printf '%s' 'Field «%s» does not exist. Available fields: ayda аңлат %s' ;;
+    en:explain.schema_failed) printf '%s' 'Could not fetch the field schema (kubectl explain talks to the cluster). Glossary only: --кыскача' ;;
     tt:err.unknown_verb) printf '%s' 'Мондый әмер юк: «%s»' ;;
     tt:hint.try_help) printf '%s' '«ayda ярдәм» яки «ayda сүзлек» дип язып кара.' ;;
     tt:err.code) printf '%s' '(код: %s)' ;;
@@ -100,6 +112,18 @@ catalog_lookup() { # $1=lang $2=key
     tt:skctl.nothing_run) printf '%s' 'Бернәрсә дә эшләтелмәде — кластерга кагылмадык.' ;;
     tt:skctl.hint.env) printf '%s' 'WEBAPP_URL куелмаган — apiserver адресын env яки skctl янындагы .skctl.env аша бир.' ;;
     tt:skctl.hint.token) printf '%s' 'Apiserver кертмәде (401) — TOKEN дөресме?' ;;
+    tt:explain.index) printf '%s' 'Глоссарийдагы төшенчәләр (docs/terminology.tt.md):' ;;
+    tt:explain.index.hint) printf '%s' 'Төшенчәне аңлату өчен: ayda аңлат <төшенчә>[.юл]  (мәсәлән: ayda аңлат кузак.spec)' ;;
+    tt:explain.type) printf '%s' 'Төре: %s' ;;
+    tt:explain.kubectl) printf '%s' 'kubectl асылы: %s' ;;
+    tt:explain.concept) printf '%s' 'Бу — гомуми төшенчә, аерым kubectl асылы түгел.' ;;
+    tt:explain.was_describe) printf '%s' '«аңлат» хәзер асыл төрен аңлата (kubectl explain) һәм бер генә сүз ала. Объектны тасвирлау өчен: ayda сөйлә %s' ;;
+    tt:explain.unknown) printf '%s' '«%s» — андый асыл да, төшенчә дә юк. Исемлек: ayda аңлат' ;;
+    tt:explain.not_in_glossary) printf '%s' '«%s» глоссарийда юк — kubectl схемасын гына күрсәтәбез.' ;;
+    tt:explain.no_schema) printf '%s' '«%s» — гомуми төшенчә, аның kubectl кыр схемасы юк.' ;;
+    tt:explain.skctl) printf '%s' 'Sheeternetes (skctl) explain белми — глоссарий аңлатмасы гына.' ;;
+    tt:explain.no_field) printf '%s' '«%s» кыры юк. Булган кырлар: ayda аңлат %s' ;;
+    tt:explain.schema_failed) printf '%s' 'Кыр схемасын алып булмады (kubectl explain кластер белән сөйләшә). Глоссарий гына кирәк булса: --кыскача' ;;
     *) printf '%s' "$2" ;;
   esac
 }

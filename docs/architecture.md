@@ -30,6 +30,7 @@
 | `lib/phrases.sh` | шелтә, мактау, ризык, Тукай юллары |
 | `lib/teatime.sh` | чәй тәнәфесе графигы (детерминистик) |
 | `lib/render.sh` | төсләр, келәм бүлгече, тыныч режим |
+| `lib/explain.sh` | `ayda аңлат`: глоссарий (`data/glossary.tsv`) + `kubectl explain` |
 | `lib/complete.sh` | Tab-тулыландыру ярдәмчеләре (`ayda __complete`, `completion/`) |
 
 ### Чәй тәнәфесе / tea break

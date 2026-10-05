@@ -76,6 +76,21 @@ ayda чәй                        # чәй тәнәфесе графигы
 
 Гадәти `kubectl` синтаксисы да кабул ителә: `ayda get pods`.
 
+### Аңлат — татарча `kubectl explain`
+
+`ayda аңлат кузак` башта [милли терминологиядән](docs/terminology.tt.md)
+татарча аңлатма бирә (мәгънәсе, төре, kubectl асылы), аннары чын
+`kubectl explain pods` кыр схемасын күрсәтә. `кузак.spec.containers` кебек
+юллар, `-R`, `--max-depth` эшли; `--кыскача` — глоссарий гына, кластерсыз.
+Төшенчәләр исемлеге — `ayda аңлат`.
+
+```bash
+ayda аңлат кузак.spec             # глоссарий + kubectl explain pods.spec
+ayda аңлат бүлүче                 # scheduler — гомуми төшенчә, схемасыз
+```
+
+> **v3.0.0:** элек `аңлат` = `describe` иде; хәзер тасвирлау өчен `сөйлә`.
+
 ### Tab-тулыландыру (bash, zsh)
 
 `ayda күр<Tab>` → `күрсәт`, аннары асыл төрләре (`кузаклар`, `төеннәр`…),
@@ -205,6 +220,16 @@ ayda сүзлек              # full dictionary
 
 See the full command map in **[docs/commands.md](docs/commands.md)** and the
 architecture in **[docs/architecture.md](docs/architecture.md)**.
+
+### `аңлат` — a Tatar `kubectl explain`
+
+`ayda аңлат кузак` first prints the Tatar explanation from the
+[glossary](docs/terminology.tt.md) (meaning, kind of term, kubectl resource),
+then the field schema from the real `kubectl explain pods`. Paths such as
+`кузак.spec.containers`, `-R` and `--max-depth` work; `--кыскача` (or `--brief`)
+prints the glossary entry only, without a cluster. `ayda аңлат` lists all terms.
+
+> **v3.0.0:** `аңлат` used to mean `describe`; use `сөйлә` for that now.
 
 ### Tab completion (bash, zsh)
 

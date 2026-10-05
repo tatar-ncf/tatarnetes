@@ -8,7 +8,7 @@ export AYDA_LANG=tt AYDA_ALIF=cyrl AYDA_PLAIN=1
 
 export AYDA_HOME="$HERE"
 # shellcheck source=/dev/null
-for m in render alif catalog i18n complete dictionary phrases teatime errors skctl; do . "lib/$m.sh"; done
+for m in render alif catalog i18n complete dictionary phrases teatime errors skctl explain; do . "lib/$m.sh"; done
 
 PASS=0; FAIL=0
 ok()   { PASS=$((PASS+1)); printf '  ✓ %s\n' "$1"; }
@@ -184,6 +184,7 @@ eq "күрсәт ку<Tab>"            "кузак кузаклар"      "$(cmp
 eq "latin kür<Tab>"            "kürsät"              "$(AYDA_ALIF=latin cmp_ kür)"
 eq "latin kürsät kuz<Tab>"     "kuzak kuzaklar"      "$(AYDA_ALIF=latin cmp_ kürsät kuz)"
 eq "arab verb, then nouns"     "$(printf '%s\n' кузак | cyrl_to_arab)" "$(AYDA_ALIF=arab cmp_ "$AR_KURSAT" "$(printf '%s' куза | cyrl_to_arab)" | cut -d' ' -f1)"
+eq "аңлат те<Tab> (glossary)"  "тезмә теләк-халәте"  "$(cmp_ аңлат те)"
 eq "flags are left alone"      ""                    "$(cmp_ күрсәт -)"
 eq "ярд<Tab> builtin"          "ярдәм"               "$(cmp_ ярд)"
 STUBK="$(mktemp -d)"
@@ -204,6 +205,33 @@ eq "names: cordon <Tab> → nodes" "kazan" "$(KUBECTL_BIN="$STUBK/kubectl" cmp_ 
 : > "$KLOG"
 eq "tea time → no cluster call" "" "$(AYDA_NO_TEA='' AYDA_FORCE_TEA=1 KUBECTL_BIN="$STUBK/kubectl" cmp_ күрсәт кузак "")$(cat "$KLOG")"
 eq "skctl backend → no kubectl call" "" "$(AYDA_BACKEND=skctl KUBECTL_BIN="$STUBK/kubectl" cmp_ күрсәт кузак "")$(cat "$KLOG")"
+
+echo "── аңлат (Tatar explain) ──"
+eq "glossary_find кузак"      "pod"     "$(glossary_find кузак | cut -f2)"
+eq "glossary_find кузаклар"   "кузак"   "$(glossary_find кузаклар | cut -f1)"
+eq "glossary_find борчак"     "кузак"   "$(glossary_find борчак | cut -f1)"
+eq "glossary_find latin töen" "төен"    "$(glossary_find töen | cut -f1)"
+eq "glossary_find english pods" "кузак" "$(glossary_find pods | cut -f1)"
+eq "glossary_find persistentvolume" "күләм" "$(glossary_find persistentvolume | cut -f1)"
+eq "glossary_find теләк-халәте" "теләк халәте" "$(glossary_find теләк-халәте | cut -f1)"
+eq "glossary_find unknown"    "1"       "$(glossary_find җүләр >/dev/null; echo $?)"
+ex() { : > "$KLOG"; AYDA_KUBECTL="$STUBK/kubectl" bash bin/ayda аңлат "$@" >"$STUBK/out" 2>"$STUBK/err"; echo $?; }
+eq "аңлат кузак.spec → rc 0"  "0" "$(ex кузак.spec)"
+eq "  ran kubectl explain pods.spec" "explain pods.spec" "$(cat "$KLOG")"
+case "$(cat "$STUBK/out")" in "кузак — pod"*) ok "  glossary entry printed first";; *) bad "  glossary entry printed first" "кузак — pod…" "$(head -1 "$STUBK/out")";; esac
+eq "аңлат кузак -R --max-depth=2" "explain pods -R --max-depth=2" "$(ex кузак -R --max-depth=2 >/dev/null; cat "$KLOG")"
+eq "аңлат кузак --кыскача → no kubectl" "" "$(ex кузак --кыскача >/dev/null; cat "$KLOG")"
+eq "аңлат бүлүче (concept) → rc 0, no kubectl" "0:" "$(ex бүлүче):$(cat "$KLOG")"
+eq "аңлат бүлүче.spec → rc 64" "64" "$(ex бүлүче.spec)"
+eq "аңлат җүләр → rc 64"       "64" "$(ex җүләр)"
+case "$(cat "$STUBK/err")" in *"андый асыл да"*) ok "  translated unknown error";; *) bad "  translated unknown error" "*андый асыл да*" "$(cat "$STUBK/err")";; esac
+eq "аңлат кузак x → rc 64 (describe hint)" "64" "$(ex кузак x)"
+case "$(cat "$STUBK/err")" in *"ayda сөйлә кузак x"*) ok "  points to сөйлә";; *) bad "  points to сөйлә" "*ayda сөйлә кузак x*" "$(cat "$STUBK/err")";; esac
+eq "аңлат crd (not in glossary) → kubectl" "explain crd" "$(ex crd >/dev/null; cat "$KLOG")"
+eq "аңлат during tea → rc 42"  "42" "$(AYDA_NO_TEA='' AYDA_FORCE_TEA=1 ex кузак)"
+eq "  …but glossary still shown" "кузак — pod" "$(head -1 "$STUBK/out")"
+eq "сөйлә still → describe"    "describe" "$(resolve_verb сөйлә)"
+eq "аңлат is no longer describe" "" "$(translate_verb аңлат)"
 
 echo "── completion scripts & entry points ──"
 bcomp() { ( complete() { :; }; . completion/ayda.bash; COMP_WORDS=("$HERE/bin/ayda" "$@"); COMP_CWORD=$#

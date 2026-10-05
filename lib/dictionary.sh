@@ -8,7 +8,7 @@
 translate_verb() {
   case "$1" in
     күрсәт|курсат|кара|ал|күрсәтче)                 echo get ;;
-    сөйлә|сойла|аңлат|аңлатма|тасвирла|тулы)         echo describe ;;
+    сөйлә|сойла|аңлатма|тасвирла|тулы)               echo describe ;;  # «аңлат» — bin/ayda: Tatar explain
     төзе|тозе|яса|булдыр)                            echo create ;;
     кулла|урнаштыр|кертеп-куй|куй)                   echo apply ;;
     бетер|бетерә|юк-ит|юкит|ю)                       echo delete ;;
@@ -123,7 +123,8 @@ show_dictionary() {
   ФИГЫЛЬЛӘР / VERBS            татарча            → kubectl
   ---------------------------------------------------------------
     күрсәт / кара / ал         show / list        → get
-    сөйлә / аңлат              describe           → describe
+    сөйлә / тасвирла           describe           → describe
+    аңлат                      explain (глоссарий) → explain
     төзе / яса                 create             → create
     кулла / куй                apply              → apply
     бетер / ю                  delete             → delete
