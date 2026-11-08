@@ -10,7 +10,7 @@ unset AYDA_KUBECTL AYDA_BACKEND AYDA_SKCTL AYDA_FORCE_TEA AYDA_COMPLETE_TIMEOUT 
 
 export AYDA_HOME="$HERE"
 # shellcheck source=/dev/null
-for m in render alif catalog i18n complete dictionary phrases teatime errors skctl explain; do . "lib/$m.sh"; done
+for m in render alif catalog i18n faces complete dictionary phrases teatime errors skctl explain; do . "lib/$m.sh"; done
 
 PASS=0; FAIL=0
 ok()   { PASS=$((PASS+1)); printf '  ✓ %s\n' "$1"; }
@@ -250,6 +250,46 @@ eq "kubectl-ayda via symlink (krew)" "0" "$(AYDA_PLAIN=1 "$STUBK/kubectl-ayda" �
 if command -v zsh >/dev/null 2>&1; then
   if zsh -n completion/_ayda; then ok "zsh completion parses"; else bad "zsh completion parses" "ok" "syntax error"; fi
 fi
+
+echo "── faces: alignment ──"
+eq "tat_width counts code points, not bytes" "5" "$(tat_width '╱‿ᵕ◆ä')"
+for mood in happy angry tea; do
+  # Йөз блогы — турыпочмак / the face block is a rectangle: every line TAT_FACE_W wide.
+  badw=""; n=0
+  while IFS= read -r l; do n=$((n + 1)); w=$(tat_width "$l"); [ "$w" -eq "$TAT_FACE_W" ] || badw="$badw L$n=$w"; done <<EOF
+$(tat_face_lines "$mood")
+EOF
+  eq "face $mood: all lines are $TAT_FACE_W cells wide" "" "$badw"
+  # Кашның уң кырые бер баганада / the brim and every |…| row end in the same column.
+  badw=""
+  while IFS= read -r l; do
+    case "$l" in *'|'|*"\\") w=$(tat_width "$l"); [ "$w" -eq "$TAT_FACE_W" ] || badw="$badw [$l]=$w" ;; esac
+  done <<EOF
+$(_tat_face_art "$mood")
+EOF
+  eq "face $mood: right edge of brim and rows aligned" "" "$badw"
+done
+
+echo "── faces: captions follow AYDA_LANG / AYDA_ALIF ──"
+has_cyrl() { printf '%s' "$1" | LC_ALL=C grep -q "$(printf '[\320-\323]')"; }
+cap() { tat_face "$1" | sed -n 2p | sed 's/^.*  //'; }
+eq "caption cyrl"  "түбәтәй"  "$(cap happy)"
+eq "caption latin" "tübätäy"  "$(AYDA_ALIF=latin cap happy)"
+eq "caption arab"  "$(printf '%s' түбәтәй | cyrl_to_arab)" "$(AYDA_ALIF=arab cap angry)"
+eq "caption en"    "skullcap" "$(AYDA_LANG=en cap tea)"
+case "$(AYDA_ALIF=latin tat_face tea)" in *"sötle çäy"*) ok "tea cup caption latin";; *) bad "tea cup caption latin" "*sötle çäy*" "$(AYDA_ALIF=latin tat_face tea)";; esac
+for a in latin arab; do
+  for mood in happy angry tea; do
+    if has_cyrl "$(AYDA_ALIF=$a tat_face "$mood")"; then bad "face $mood: no Cyrillic left ($a)" "" "$(AYDA_ALIF=$a tat_face "$mood")"; else ok "face $mood: no Cyrillic left ($a)"; fi
+  done
+  for cmd in версия чәй; do
+    o="$(AYDA_ALIF=$a AYDA_FORCE_FUN=1 AYDA_FORCE_TEA=1 bash bin/ayda "$cmd" 2>&1)"
+    if has_cyrl "$o"; then bad "ayda $cmd: no Cyrillic left ($a)" "" "$o"; else ok "ayda $cmd: no Cyrillic left ($a)"; fi
+  done
+done
+eq "tea window line latin" "09:00  (7 min)" "$(AYDA_ALIF=latin t tea.window 09:00 7)"
+eq "tea tomorrow latin"    "irtägä"         "$(AYDA_ALIF=latin t tea.tomorrow)"
+eq "tea tomorrow en"       "tomorrow"       "$(AYDA_LANG=en t tea.tomorrow)"
 
 echo
 echo "Йомгак / result: PASS=$PASS FAIL=$FAIL"

@@ -42,6 +42,18 @@ msgstr "Cluster is working. Next tea: %s"
 msgid "tea.today"
 msgstr "Today's breaks:"
 
+msgid "tea.window"
+msgstr "%s  (%s min)"
+
+msgid "tea.tomorrow"
+msgstr "tomorrow"
+
+msgid "face.skullcap"
+msgstr "skullcap"
+
+msgid "face.milktea"
+msgstr "milk tea"
+
 msgid "version.tagline"
 msgstr "A national container orchestrator"
 

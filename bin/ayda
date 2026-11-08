@@ -193,7 +193,9 @@ show_help() { if [ "$AYDA_LANG" = "en" ]; then _help_en; else _help_tt; fi }
 
 show_version() {
   tat_carpet
-  tat_bold "  Татарнетес / Tatarnetes  v${AYDA_VERSION}"
+  local name=Татарнетес
+  [ "$AYDA_LANG" = tt ] && name="$(printf '%s' "$name" | alif_render)"
+  tat_bold "  $name / Tatarnetes  v${AYDA_VERSION}"
   printf '%b\n' "  ${TAT_GREEN}$(t version.tagline)${TAT_RESET}" >&2
   printf '%b\n' "  ${TAT_DIM}$(t version.dedication)${TAT_RESET}" >&2
   if [ "$AYDA_BACKEND" = skctl ]; then
@@ -218,7 +220,7 @@ tea_status() {
   fi
   printf '%b\n' "  $(t tea.today)" >&2
   tea_windows | while read -r s d; do
-    printf '    %02d:%02d  (%s мин)\n' $(( s / 60 )) $(( s % 60 )) "$d" >&2
+    printf '    %s\n' "$(t tea.window "$(printf '%02d:%02d' $(( s / 60 )) $(( s % 60 )))" "$d")" >&2
   done
   tat_carpet
 }
