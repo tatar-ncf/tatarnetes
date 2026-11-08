@@ -99,5 +99,7 @@ jobs:
             --set holidays='2027-03-10 festival.uraza' > /tmp/cm.yaml
           grep -q 'path: /validate/enforce' /tmp/plain.yaml && grep -q 'path: /validate/warn' /tmp/plain.yaml
           grep -q 'cert-manager.io/inject-ca-from: freeze/t' /tmp/cm.yaml
+          grep -q 'resources: \[deployments/scale, statefulsets/scale, replicasets/scale\]' /tmp/plain.yaml
+          grep -q 'serviceAccountName: t' /tmp/plain.yaml
       - name: image builds
         run: docker build -f freeze/Dockerfile -t tatarnetes-freeze:ci .

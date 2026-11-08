@@ -188,8 +188,13 @@ kubectl annotate deploy web tatar-ncf.github.io/break-glass="INC-42: түләү�
 
 - `enforce` — кире кага; `warn` — үткәрә, ләкин кисәтә; `--set mode=warn` —
   бөтен кластер өчен сынау режимы.
-- Кластерның үз контроллерлары (`kube-system`), төеннәр, `events`, `leases`
-  тыелмый; вебхук эшләмәсә, үзгәрешләр уза (`failurePolicy: Ignore`).
+- Кешенең үлчәм үзгәртүе (`kubectl scale`, `ayda күпәйт`) — урнаштыру,
+  StatefulSet, ReplicaSet өчен — шулай ук тыела. Scale соравында искәрмәләр
+  юк, шуңа күрә вебхук break-glass искәрмәсен ана объекттан укый (моның өчен
+  аңа шул өч төрне `get` итү хокукы бирелә).
+- Кластерның үз контроллерлары (`kube-system`, шул исәптән HPA), KEDA
+  операторы, төеннәр, `events`, `leases` тыелмый; вебхук эшләмәсә, үзгәрешләр
+  уза (`failurePolicy: Ignore`).
 - Сертификат — Helm ясый яки cert-manager (`--set certManager.enabled=true`).
 - Бәйрәм булмаган көнне сынап карау өчен `--set today=2026-06-20` — бүген
   Сабан туе дип исәпли; `tests/e2e-freeze.sh` kind кластерында шулай эшли.
@@ -307,9 +312,14 @@ kubectl annotate deploy web tatar-ncf.github.io/break-glass="INC-42: payments do
 
 - `enforce` denies, `warn` lets the change through with a warning, and
   `--set mode=warn` turns the whole cluster's freeze into a dry run.
-- The cluster's own controllers (`kube-system` service accounts, the
-  controller manager, the scheduler), nodes, `events` and `leases` are never
-  frozen, and subresources such as `status` pass; an unreachable webhook lets
+- A human `kubectl scale` of a deployment, statefulset or replicaset is
+  frozen too. A scale request carries no annotations, so the webhook reads
+  break-glass off the parent object; its service account may `get` those
+  three kinds and nothing else.
+- The cluster's own controllers (`kube-system` service accounts, the HPA
+  among them, the controller manager, the scheduler), KEDA's operator
+  (`keda:keda-operator`), nodes, `events` and `leases` are never frozen, and
+  other subresources such as `status` pass; an unreachable webhook lets
   changes through (`failurePolicy: Ignore`).
 - The serving certificate comes from the chart, kept across upgrades, or from
   cert-manager (`--set certManager.enabled=true`). Next year's dates can be

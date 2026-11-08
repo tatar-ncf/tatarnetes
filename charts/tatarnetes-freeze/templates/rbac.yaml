@@ -1,0 +1,33 @@
+{{- $name := include "freeze.name" . -}}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $name }}
+  labels: {{- include "freeze.labels" . | nindent 4 }}
+automountServiceAccountToken: false
+---
+# A scale request carries no annotations: break-glass is read from the
+# deployment, statefulset or replicaset being scaled.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ $name }}-{{ .Release.Namespace }}-parents
+  labels: {{- include "freeze.labels" . | nindent 4 }}
+rules:
+- apiGroups: [apps]
+  resources: [deployments, statefulsets, replicasets]
+  verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ $name }}-{{ .Release.Namespace }}-parents
+  labels: {{- include "freeze.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ $name }}-{{ .Release.Namespace }}-parents
+subjects:
+- kind: ServiceAccount
+  name: {{ $name }}
+  namespace: {{ .Release.Namespace }}

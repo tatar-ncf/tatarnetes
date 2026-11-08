@@ -12,12 +12,15 @@ replicas: 2
 mode: enforce
 # Whose date decides the holiday: Kazan's.
 timezone: Europe/Moscow
-# Users and groups never frozen: the cluster's own controllers and nodes.
+# Users and groups never frozen: the cluster's own controllers (the HPA
+# among them) and nodes, and KEDA's operator, which scales to and from zero
+# itself. People are frozen, kubectl scale included.
 exemptUsers:
   - system:kube-controller-manager
   - system:kube-scheduler
   - system:node:*
   - system:serviceaccount:kube-system:*
+  - system:serviceaccount:keda:keda-operator
 exemptGroups:
   - system:nodes
 skipResources:
