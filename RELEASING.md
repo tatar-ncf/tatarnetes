@@ -61,9 +61,9 @@
 
 | | |
 |---|---|
-| Апстрим | Kubernetes **v1.37.1** (`.upstream-version`) |
-| Киләсе тег | `v1.37.1-tatar.0` (edge: 1.37 минорының беренче татарлаштыруы) |
-| Тикшерелгән kubectl | v1.37.1 (чын бинар белән сыналды) |
+| Апстрим | Kubernetes **v1.37.2** (`.upstream-version`) |
+| Киләсе тег | `v1.37.2-tatar.1` (stable: 1.37 минорының патч-яңартуы; `v1.37.1-tatar.0` — edge иде) |
+| Тикшерелгән kubectl | v1.37.2 (чын бинар белән сыналды: фигыльләр һәм `--help` v1.37.1 белән бер үк) |
 | Kubernetes кластеры | kubectl рәсми рәвештә apiserver'дан бер минорга кадәр аерыла ала: 1.36, 1.37, 1.38 |
 | TatarOS | Talos v1.14.1 — эчендә Kubernetes 1.37 |
 
@@ -77,6 +77,9 @@
 - kubectl 1.37 плагинга үз юлын `KUBECTL_PATH` аша бирә; `kubectl ayda` шул
   kubectl'ны куллана.
 - `kubectl explain --max-depth` (1.37) — `ayda аңлат` аша да эшли.
+
+**v1.37.1 → v1.37.2:** kubectl фигыльләре дә, бер генә `--help` тә үзгәрмәде —
+сүзлеккә тияргә кирәк булмады.
 
 ## English
 
@@ -122,9 +125,9 @@ directly. We do not invent; we follow stable upstream, Tatarise it, test, ship.
 
 | | |
 |---|---|
-| Upstream | Kubernetes **v1.37.1** (`.upstream-version`) |
-| Next tag | `v1.37.1-tatar.0` (edge: first Tatarisation of the 1.37 minor) |
-| Verified kubectl | v1.37.1 (checked against the real binary) |
+| Upstream | Kubernetes **v1.37.2** (`.upstream-version`) |
+| Next tag | `v1.37.2-tatar.1` (stable: patch update of the 1.37 minor; `v1.37.1-tatar.0` was the edge cut) |
+| Verified kubectl | v1.37.2 (checked against the real binary: verb set and every `--help` identical to v1.37.1) |
 | Clusters | kubectl's official skew is one minor either way: 1.36, 1.37, 1.38 |
 | TatarOS | Talos v1.14.1 — ships Kubernetes 1.37 |
 
@@ -137,6 +140,9 @@ directly. We do not invent; we follow stable upstream, Tatarise it, test, ship.
   kubectl has no such top-level commands.
 - kubectl 1.37 exports `KUBECTL_PATH` to plugins; `kubectl ayda` uses it.
 - `kubectl explain --max-depth` (1.37) also works through `ayda аңлат`.
+
+**v1.37.1 → v1.37.2:** no kubectl verb or `--help` text changed, so the
+dictionary needed no update.
 
 ---
 
