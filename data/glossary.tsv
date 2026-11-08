@@ -35,3 +35,36 @@
 кире кайтару	rollback	алдагы версиягә кайту		Процесслар һәм механизмнар / Processes & mechanisms
 бүленеш	split-brain	төркем икегә аерылу (куркыныч)		Процесслар һәм механизмнар / Processes & mechanisms
 сайлау	leader election	лидер төенне сайлау		Процесслар һәм механизмнар / Processes & mechanisms
+эш җыелмасы	jobset	бергә идарә ителгән эшләр җыелмасы	тәрҗемә	Headlamp менюсы / Headlamp menu
+җитәкче-эшче җыелмасы	leaderworkerset	бер җитәкче һәм эшче кузаклар төркеме	тәрҗемә	Headlamp менюсы / Headlamp menu
+сыйныф	class	бер төрдәге объектлар өчен үрнәк-класс	тәрҗемә	Headlamp менюсы / Headlamp menu
+саклагыч сыйныфы	storageclass	күләмнәр нинди саклагычтан бирелә	тәрҗемә	Headlamp менюсы / Headlamp menu
+күләм үзлекләре сыйныфы	volumeattributesclass	күләмнең үзгәртелә торган үзлекләре (тизлек һ.б.)	тәрҗемә	Headlamp менюсы / Headlamp menu
+ахыргы нокта	endpoints	хезмәт артындагы кузак адресы	тәрҗемә	Headlamp менюсы / Headlamp menu
+ахыргы нокта кисәге	endpointslice	ахыргы нокталар исемлегенең бер кисәге	тәрҗемә	Headlamp менюсы / Headlamp menu
+капка сыйныфы	ingressclass	капканы кайсы контроллер хезмәт итә	тәрҗемә	Headlamp менюсы / Headlamp menu
+порт юнәлтү	port-forward	җирле портны кузак портына юнәлтү	тәрҗемә	Headlamp менюсы / Headlamp menu
+челтәр сәясәте	networkpolicy	кузаклар арасында кемгә кем белән сөйләшергә ярый	тәрҗемә	Headlamp менюсы / Headlamp menu
+шлюз	gateway	Gateway API кереме; «капка» ingress өчен алынган	үзләштерү	Headlamp менюсы / Headlamp menu
+шлюз сыйныфы	gatewayclass	шлюзны кайсы контроллер хезмәт итә	үзләштерү	Headlamp менюсы / Headlamp menu
+маршрут	httproute / grpcroute / tcproute / udproute	соратуны хезмәткә илтүче кагыйдә (HTTP, GRPC, TCP, UDP)	үзләштерү	Headlamp менюсы / Headlamp menu
+сылтама рөхсәте	referencegrant	башка мәйдандагы объектка сылтарга рөхсәт	тәрҗемә	Headlamp менюсы / Headlamp menu
+арткы як	backend	соратуны чынлап хезмәт итүче (backend)	тәрҗемә	Headlamp менюсы / Headlamp menu
+хезмәт хисабы	serviceaccount	кузак яки программа өчен хисап язмасы	тәрҗемә	Headlamp менюсы / Headlamp menu
+роль	role	хокуклар җыелмасы	үзләштерү	Headlamp менюсы / Headlamp menu
+роль бәйләнеше	rolebinding	рольне кулланучыга яки хезмәт хисабына бәйләү	тәрҗемә	Headlamp менюсы / Headlamp menu
+горизонталь үлчәү	horizontalpodautoscaler	кузаклар санын йөккә карап үзгәртү (HPA)	үзләштерү	Headlamp менюсы / Headlamp menu
+вертикаль үлчәү	verticalpodautoscaler	кузакның ресурсларын йөккә карап үзгәртү (VPA)	үзләштерү	Headlamp менюсы / Headlamp menu
+өзелү чиге	poddisruptionbudget	бер юлы ничә кузакны туктатырга ярый (PDB)	тәрҗемә	Headlamp менюсы / Headlamp menu
+ресурс өлеше	resourcequota	мәйданга бирелгән ресурс квотасы	тәрҗемә	Headlamp менюсы / Headlamp menu
+чик аралыгы	limitrange	савыт ресурсларының иң аз һәм иң күп чикләре	тәрҗемә	Headlamp менюсы / Headlamp menu
+өстенлек сыйныфы	priorityclass	кузакның чиратта өстенлеге	тәрҗемә	Headlamp менюсы / Headlamp menu
+башкару сыйныфы	runtimeclass	савытларны нинди мохиттә башкарырга	тәрҗемә	Headlamp менюсы / Headlamp menu
+аренда	lease	вакытлыча биләү хокукы (лидер сайлау, йөрәк тибеше)	үзләштерү	Headlamp менюсы / Headlamp menu
+вебхук	webhook	API-сервер чакыра торган тышкы тикшерүче/үзгәртүче	үзләштерү	Headlamp менюсы / Headlamp menu
+җайланма	device	төендәге җиһаз (GPU һ.б.), DRA аша бүленә	тәрҗемә	Headlamp менюсы / Headlamp menu
+ресурс таләбе	resourceclaim	кузакның җайланмага таләбе	тәрҗемә	Headlamp менюсы / Headlamp menu
+калып	template	шуннан яңа объектлар ясала торган үрнәк	тәрҗемә	Headlamp менюсы / Headlamp menu
+кузак берләшмәсе	podgroup	бергә бүленергә тиешле кузаклар	тәрҗемә	Headlamp менюсы / Headlamp menu
+махсус ресурс	customresource	кулланучы өстәгән ресурс төре (CRD)	тәрҗемә	Headlamp менюсы / Headlamp menu
+нөсхә	instance	ресурс төренең бер объекты	тәрҗемә	Headlamp менюсы / Headlamp menu
