@@ -1,8 +1,13 @@
-# Күчмә (ислам) бәйрәмнәре һәм Сабантуй — MM-DD  каталог-ачкычы.
-# Movable Islamic holidays + Sabantuy. MM-DD  festival.key
-# 2026 даталары РАСЛАНГАН: Татарстан Раисе Указы (17.01.2026, N 17) + Казан Сабантуе.
-# 2026 dates VERIFIED: Decree of the Raıs of Tatarstan (N 17) + Kazan Sabantuy.
-# ⚠ Ел саен яңартырга кирәк (ислам даталары күчмә) / update yearly.
-03-20 festival.uraza      # Ураза-байрам 2026
-05-27 festival.qorban     # Корбан-байрам 2026
-06-20 festival.sabantuy   # Сабантуй (Казан) 2026
+# Күчмә (ислам) бәйрәмнәре һәм Сабантуй — YYYY-MM-DD  каталог-ачкычы.
+# Movable Islamic holidays + Sabantuy. YYYY-MM-DD  festival.key
+# Бары тик РАСЛАНГАН даталар (чыганаклары астта); тулы дата кирәк — ел
+# белән, чөнки ислам бәйрәмнәре ел саен күчә. Бәйрәм баннеры (calendar.sh) һәм
+# үзгәрешләрне тыю (tatarnetes-freeze) бу файлны укый.
+# Verified dates only (sources below), each with its year, since the Islamic holidays move every
+# year. Read by the festival banner (calendar.sh) and the change freeze.
+# 2026: Татарстан Раисе Указы (17.01.2026, N 17) + Казан Сабантуе.
+# 2026: Decree of the Raıs of Tatarstan (N 17) + Kazan Sabantuy.
+# ⚠ Ел саен яңартырга кирәк / update yearly.
+2026-03-20 festival.uraza      # Ураза-байрам 2026
+2026-05-27 festival.qorban     # Корбан-байрам 2026
+2026-06-20 festival.sabantuy   # Сабантуй (Казан) 2026

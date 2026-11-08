@@ -243,3 +243,22 @@ msgstr "Days must be between 1 and 60: \"%s\"."
 
 msgid "tos.teawin.bad_tz"
 msgstr "Unknown time zone: \"%s\"."
+
+# --- Change freeze (tatarnetes-freeze) ---
+msgid "holiday.uraza"
+msgstr "Eid al-Fitr (Uraza bayramı)"
+
+msgid "holiday.qorban"
+msgstr "Eid al-Adha (Qorban bayramı)"
+
+msgid "holiday.sabantuy"
+msgstr "Sabantuy"
+
+msgid "freeze.denied"
+msgstr "Today is %s: changes in namespace \"%s\" are frozen. For an emergency, annotate the object with \"%s\" and the reason."
+
+msgid "freeze.warn"
+msgstr "Today is %s: this change in namespace \"%s\" went through, but an enforced freeze would deny it."
+
+msgid "freeze.breakglass"
+msgstr "Today is %s: the \"%s\" annotation let this change through the freeze: %s"
