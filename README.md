@@ -171,6 +171,27 @@ ayda күчер web-1 b                          # skctl migrate web-1 b
 `-o json`…) — татарча хата белән кире кагыла, **бернәрсә дә эшләтелми**, чыгу
 коды `69`. `AYDA_SKCTL=<юл>` — skctl юлы.
 
+### Бәйрәмдә үзгәрешләр тыела (change freeze)
+
+`tatarnetes-freeze` — кластерга куела торган admission-вебхук: Ураза гаете,
+Корбан бәйрәме һәм Сабан туенда ([data/holidays.tt](data/holidays.tt) — бары
+тик расланган, елы белән язылган даталар, Казан вакыты белән) тамгаланган
+мәйданнарда үзгәрешләрне кире кага. Хәбәрләр — шул ук `locale/*.po`
+каталогыннан, татарча һәм инглизчә.
+
+```bash
+helm install freeze charts/tatarnetes-freeze -n tatarnetes-freeze --create-namespace
+kubectl label ns shop tatar-ncf.github.io/change-freeze=enforce   # яки =warn
+# ашыгыч эш: объектка сәбәп белән искәрмә
+kubectl annotate deploy web tatar-ncf.github.io/break-glass="INC-42: түләүләр төште"
+```
+
+- `enforce` — кире кага; `warn` — үткәрә, ләкин кисәтә; `--set mode=warn` —
+  бөтен кластер өчен сынау режимы.
+- Кластерның үз контроллерлары (`kube-system`), төеннәр, `events`, `leases`
+  тыелмый; вебхук эшләмәсә, үзгәрешләр уза (`failurePolicy: Ignore`).
+- Сертификат — Helm ясый яки cert-manager (`--set certManager.enabled=true`).
+
 ### Идарә панеле (UI)
 
 Милли идарә панеле — аерым репозиторийда:
@@ -266,6 +287,31 @@ Only what `skctl` actually supports is mapped: `get` (pods/nodes/deployments/eve
 executed**, and the exit code is `69`. Set `AYDA_SKCTL=<path>` if `skctl` is not on `PATH`.
 
 ---
+
+### Change freeze on holidays
+
+`tatarnetes-freeze` is a validating admission webhook that denies changes in
+opted-in namespaces on Eid al-Fitr (Uraza), Eid al-Adha (Qorban) and Sabantuy:
+only the verified, dated entries of [data/holidays.tt](data/holidays.tt) count,
+and the day is Kazan's. Its messages come from the same `locale/*.po` catalog,
+in Tatar and English.
+
+```bash
+helm install freeze charts/tatarnetes-freeze -n tatarnetes-freeze --create-namespace
+kubectl label ns shop tatar-ncf.github.io/change-freeze=enforce   # or =warn
+# an emergency: annotate the object with the reason
+kubectl annotate deploy web tatar-ncf.github.io/break-glass="INC-42: payments down"
+```
+
+- `enforce` denies, `warn` lets the change through with a warning, and
+  `--set mode=warn` turns the whole cluster's freeze into a dry run.
+- The cluster's own controllers (`kube-system` service accounts, the
+  controller manager, the scheduler), nodes, `events` and `leases` are never
+  frozen, and subresources such as `status` pass; an unreachable webhook lets
+  changes through (`failurePolicy: Ignore`).
+- The serving certificate comes from the chart, kept across upgrades, or from
+  cert-manager (`--set certManager.enabled=true`). Next year's dates can be
+  given with `--set-file holidays=...` before a new image is out.
 
 ## Гаилә / Family
 

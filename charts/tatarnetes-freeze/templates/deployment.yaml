@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "freeze.name" . }}
+  labels: {{- include "freeze.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels: {{- include "freeze.selector" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "freeze.selector" . | nindent 8 }}
+      {{- if .Values.holidays }}
+      annotations:
+        checksum/holidays: {{ .Values.holidays | sha256sum }}
+      {{- end }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+      - name: freeze
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        args:
+        - --mode={{ .Values.mode }}
+        - --timezone={{ .Values.timezone }}
+        - --exempt-users={{ join "," .Values.exemptUsers }}
+        - --exempt-groups={{ join "," .Values.exemptGroups }}
+        - --skip-resources={{ join "," .Values.skipResources }}
+        {{- if .Values.holidays }}
+        - --holidays=/holidays/holidays.tt
+        {{- end }}
+        ports:
+        - {name: https, containerPort: 8443}
+        readinessProbe:
+          httpGet: {path: /healthz, port: https, scheme: HTTPS}
+        livenessProbe:
+          httpGet: {path: /healthz, port: https, scheme: HTTPS}
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: {drop: [ALL]}
+        resources: {{- toYaml .Values.resources | nindent 10 }}
+        volumeMounts:
+        - {name: tls, mountPath: /tls, readOnly: true}
+        {{- if .Values.holidays }}
+        - {name: holidays, mountPath: /holidays, readOnly: true}
+        {{- end }}
+      volumes:
+      - name: tls
+        secret: {secretName: {{ include "freeze.name" . }}-tls}
+      {{- if .Values.holidays }}
+      - name: holidays
+        configMap: {name: {{ include "freeze.name" . }}-holidays}
+      {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "freeze.name" . }}
+  labels: {{- include "freeze.labels" . | nindent 4 }}
+spec:
+  selector: {{- include "freeze.selector" . | nindent 4 }}
+  ports:
+  - {name: https, port: 443, targetPort: https}
+{{- if .Values.holidays }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "freeze.name" . }}-holidays
+  labels: {{- include "freeze.labels" . | nindent 4 }}
+data:
+  holidays.tt: {{ .Values.holidays | quote }}
+{{- end }}

@@ -80,6 +80,12 @@ catalog_lookup() { # $1=lang $2=key
     en:tos.teawin.applied) printf '%s' 'Rollout %s now proceeds only during tea breaks: %s windows, %s days ahead.' ;;
     en:tos.teawin.bad_days) printf '%s' 'Days must be between 1 and 60: "%s".' ;;
     en:tos.teawin.bad_tz) printf '%s' 'Unknown time zone: "%s".' ;;
+    en:holiday.uraza) printf '%s' 'Eid al-Fitr (Uraza bayramı)' ;;
+    en:holiday.qorban) printf '%s' 'Eid al-Adha (Qorban bayramı)' ;;
+    en:holiday.sabantuy) printf '%s' 'Sabantuy' ;;
+    en:freeze.denied) printf '%s' 'Today is %s: changes in namespace "%s" are frozen. For an emergency, annotate the object with "%s" and the reason.' ;;
+    en:freeze.warn) printf '%s' 'Today is %s: this change in namespace "%s" went through, but an enforced freeze would deny it.' ;;
+    en:freeze.breakglass) printf '%s' 'Today is %s: the "%s" annotation let this change through the freeze: %s' ;;
     tt:err.unknown_verb) printf '%s' 'Мондый әмер юк: «%s»' ;;
     tt:hint.try_help) printf '%s' '«ayda ярдәм» яки «ayda сүзлек» дип язып кара.' ;;
     tt:err.code) printf '%s' '(код: %s)' ;;
@@ -158,6 +164,12 @@ catalog_lookup() { # $1=lang $2=key
     tt:tos.teawin.applied) printf '%s' '«%s» яңарту җәюе хәзер чәй тәнәфесләрендә генә бара: %s тәрәзә, %s көнгә алдан.' ;;
     tt:tos.teawin.bad_days) printf '%s' 'Көннәр саны 1 белән 60 арасында булсын: «%s».' ;;
     tt:tos.teawin.bad_tz) printf '%s' 'Билгесез вакыт поясы: «%s».' ;;
+    tt:holiday.uraza) printf '%s' 'Ураза гаете' ;;
+    tt:holiday.qorban) printf '%s' 'Корбан бәйрәме' ;;
+    tt:holiday.sabantuy) printf '%s' 'Сабан туе' ;;
+    tt:freeze.denied) printf '%s' 'Бүген %s — «%s» мәйданында үзгәрешләр тыела. Ашыгыч булса, объектка «%s» искәрмәсен куй (сәбәбе белән).' ;;
+    tt:freeze.warn) printf '%s' 'Бүген %s — «%s» мәйданындагы бу үзгәреш узды, ләкин тыю кабызылса, кире кагылыр иде.' ;;
+    tt:freeze.breakglass) printf '%s' 'Бүген %s — тыюны «%s» искәрмәсе узып китте: %s' ;;
     *) printf '%s' "$2" ;;
   esac
 }

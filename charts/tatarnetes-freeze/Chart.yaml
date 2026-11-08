@@ -1,0 +1,7 @@
+apiVersion: v2
+name: tatarnetes-freeze
+description: Change freeze on Tatar holidays (Uraza, Qorban, Sabantuy) — a validating admission webhook for namespaces that opt in.
+type: application
+version: 0.1.0
+appVersion: "v1.37.2-tatar.1"  # the Tatarnetes release whose image it runs
+home: https://github.com/tatar-ncf/tatarnetes

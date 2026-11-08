@@ -62,6 +62,18 @@ echo "── tea schedule ──"
 eq "3 tea windows/day" "3" "$(tea_windows | grep -c .)"
 eq "tea windows of a given day" "1101 7,1078 7,1055 7" "$(tea_windows 20261108 | paste -sd, -)"
 
+echo "── festival calendar (dated holidays only) ──"
+# fest YYYY-MM-DD DOW — tat_festival on that day, through a stand-in date(1).
+fest() ( d="$(mktemp -d)"; trap 'rm -rf "$d"' EXIT
+  # shellcheck disable=SC2016  # the stub's own $1, written out literally
+  printf '#!/bin/sh\ncase "$1" in +%%Y-%%m-%%d) echo %s ;; +%%m-%%d) echo %s ;; +%%u) echo %s ;; esac\n' "$1" "${1#*-}" "$2" > "$d/date"
+  chmod +x "$d/date"
+  env PATH="$d:$PATH" bash -c '. lib/calendar.sh; tat_festival' )
+eq "Sabantuy 2026"                   "festival.sabantuy" "$(fest 2026-06-20 6)"
+eq "same day 2027 is not verified"   ""                  "$(fest 2027-06-20 7)"
+eq "Uraza 2026"                      "festival.uraza"    "$(fest 2026-03-20 5)"
+eq "Nauruz is fixed"                 "festival.nauruz"   "$(fest 2027-03-21 7)"
+
 echo "── kubectl error hints (tat_error_hint) ──"
 eq "unknown kind → nomatch"   "err.hint.nomatch"   "$(tat_error_hint 'error: the server could not find the requested resource')"
 eq "no resource type → nomatch" "err.hint.nomatch" "$(tat_error_hint 'error: the server doesn'"'"'t have a resource type "kuzak"')"

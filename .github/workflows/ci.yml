@@ -77,3 +77,27 @@ jobs:
           # Tab: күр → күрсәт
           test "$(bash bin/ayda __complete күр)" = "күрсәт"
           echo "◆ Барлык smoke-тестлар узды / all smoke tests passed"
+
+  freeze:
+    # Үзгәрешләрне тыю вебхугы / the change-freeze webhook (Go, Helm, image)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: gofmt, vet, test
+        run: |
+          test -z "$(gofmt -l .)" || { gofmt -l .; exit 1; }
+          go vet ./...
+          go test ./...
+      - name: chart lints and renders, both certificate modes
+        run: |
+          helm lint charts/tatarnetes-freeze
+          helm template t charts/tatarnetes-freeze -n freeze > /tmp/plain.yaml
+          helm template t charts/tatarnetes-freeze -n freeze --set certManager.enabled=true \
+            --set holidays='2027-03-10 festival.uraza' > /tmp/cm.yaml
+          grep -q 'path: /validate/enforce' /tmp/plain.yaml && grep -q 'path: /validate/warn' /tmp/plain.yaml
+          grep -q 'cert-manager.io/inject-ca-from: freeze/t' /tmp/cm.yaml
+      - name: image builds
+        run: docker build -f freeze/Dockerfile -t tatarnetes-freeze:ci .

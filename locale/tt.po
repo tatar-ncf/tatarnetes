@@ -246,3 +246,22 @@ msgstr "Көннәр саны 1 белән 60 арасында булсын: «%
 
 msgid "tos.teawin.bad_tz"
 msgstr "Билгесез вакыт поясы: «%s»."
+
+# --- Үзгәрешләрне тыю / change freeze (tatarnetes-freeze) ---
+msgid "holiday.uraza"
+msgstr "Ураза гаете"
+
+msgid "holiday.qorban"
+msgstr "Корбан бәйрәме"
+
+msgid "holiday.sabantuy"
+msgstr "Сабан туе"
+
+msgid "freeze.denied"
+msgstr "Бүген %s — «%s» мәйданында үзгәрешләр тыела. Ашыгыч булса, объектка «%s» искәрмәсен куй (сәбәбе белән)."
+
+msgid "freeze.warn"
+msgstr "Бүген %s — «%s» мәйданындагы бу үзгәреш узды, ләкин тыю кабызылса, кире кагылыр иде."
+
+msgid "freeze.breakglass"
+msgstr "Бүген %s — тыюны «%s» искәрмәсе узып китте: %s"

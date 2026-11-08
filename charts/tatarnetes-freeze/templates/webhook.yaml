@@ -1,0 +1,87 @@
+{{- $name := include "freeze.name" . -}}
+{{- $caBundle := "" -}}
+{{- if not .Values.certManager.enabled }}
+{{- /* A CA and a serving certificate of the chart's own, kept across upgrades. */ -}}
+{{- $secret := lookup "v1" "Secret" .Release.Namespace (printf "%s-tls" $name) -}}
+{{- $crt := "" -}}{{- $key := "" -}}
+{{- if and $secret (index $secret.data "ca.crt") }}
+{{- $crt = index $secret.data "tls.crt" -}}{{- $key = index $secret.data "tls.key" -}}{{- $caBundle = index $secret.data "ca.crt" -}}
+{{- else }}
+{{- $ca := genCA (printf "%s-ca" $name) 3650 -}}
+{{- $cert := genSignedCert (include "freeze.dns" .) nil (list (include "freeze.dns" .) (printf "%s.%s" $name .Release.Namespace) $name) 3650 $ca -}}
+{{- $crt = $cert.Cert | b64enc -}}{{- $key = $cert.Key | b64enc -}}{{- $caBundle = $ca.Cert | b64enc -}}
+{{- end }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $name }}-tls
+  labels: {{- include "freeze.labels" . | nindent 4 }}
+type: kubernetes.io/tls
+data:
+  tls.crt: {{ $crt }}
+  tls.key: {{ $key }}
+  ca.crt: {{ $caBundle }}
+---
+{{- else }}
+{{- if not .Values.certManager.issuerRef }}
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ $name }}-selfsigned
+  labels: {{- include "freeze.labels" . | nindent 4 }}
+spec:
+  selfSigned: {}
+---
+{{- end }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ $name }}
+  labels: {{- include "freeze.labels" . | nindent 4 }}
+spec:
+  secretName: {{ $name }}-tls
+  dnsNames:
+  - {{ include "freeze.dns" . }}
+  issuerRef:
+    {{- if .Values.certManager.issuerRef }}
+    {{- toYaml .Values.certManager.issuerRef | nindent 4 }}
+    {{- else }}
+    name: {{ $name }}-selfsigned
+    kind: Issuer
+    {{- end }}
+---
+{{- end }}
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: {{ $name }}
+  labels: {{- include "freeze.labels" . | nindent 4 }}
+  {{- if .Values.certManager.enabled }}
+  annotations:
+    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ $name }}
+  {{- end }}
+webhooks:
+{{- range $mode := list "enforce" "warn" }}
+- name: {{ $mode }}.change-freeze.tatar-ncf.github.io
+  admissionReviewVersions: [v1]
+  sideEffects: None
+  failurePolicy: {{ $.Values.failurePolicy }}
+  timeoutSeconds: {{ $.Values.timeoutSeconds }}
+  clientConfig:
+    service:
+      name: {{ $name }}
+      namespace: {{ $.Release.Namespace }}
+      path: /validate/{{ $mode }}
+    {{- if not $.Values.certManager.enabled }}
+    caBundle: {{ $caBundle }}
+    {{- end }}
+  namespaceSelector:
+    matchExpressions:
+    - {key: tatar-ncf.github.io/change-freeze, operator: In, values: [{{ $mode }}]}
+  rules:
+  - operations: [CREATE, UPDATE, DELETE]
+    apiGroups: ["*"]
+    apiVersions: ["*"]
+    resources: ["*"]
+    scope: Namespaced
+{{- end }}
