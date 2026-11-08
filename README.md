@@ -191,6 +191,8 @@ kubectl annotate deploy web tatar-ncf.github.io/break-glass="INC-42: түләү�
 - Кластерның үз контроллерлары (`kube-system`), төеннәр, `events`, `leases`
   тыелмый; вебхук эшләмәсә, үзгәрешләр уза (`failurePolicy: Ignore`).
 - Сертификат — Helm ясый яки cert-manager (`--set certManager.enabled=true`).
+- Бәйрәм булмаган көнне сынап карау өчен `--set today=2026-06-20` — бүген
+  Сабан туе дип исәпли; `tests/e2e-freeze.sh` kind кластерында шулай эшли.
 
 ### Идарә панеле (UI)
 
@@ -312,6 +314,8 @@ kubectl annotate deploy web tatar-ncf.github.io/break-glass="INC-42: payments do
 - The serving certificate comes from the chart, kept across upgrades, or from
   cert-manager (`--set certManager.enabled=true`). Next year's dates can be
   given with `--set-file holidays=...` before a new image is out.
+- To try the freeze on a day that is not a holiday, `--set today=2026-06-20`
+  pretends the date is Sabantuy; `tests/e2e-freeze.sh` does this on kind.
 
 ## Гаилә / Family
 

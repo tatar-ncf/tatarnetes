@@ -48,3 +48,17 @@ func (c Calendar) On(t time.Time, loc *time.Location) (key string, ok bool) {
 func HolidayName(festival string) string {
 	return "holiday." + strings.TrimPrefix(festival, "festival.")
 }
+
+// FixedDay is a clock stopped at noon of day (YYYY-MM-DD) in loc: tests
+// pretend it is a holiday with it. Empty day is the real clock.
+func FixedDay(day string, loc *time.Location) (func() time.Time, error) {
+	if day == "" {
+		return time.Now, nil
+	}
+	d, err := time.ParseInLocation(time.DateOnly, day, loc)
+	if err != nil {
+		return nil, fmt.Errorf("want YYYY-MM-DD: %w", err)
+	}
+	noon := d.Add(12 * time.Hour)
+	return func() time.Time { return noon }, nil
+}

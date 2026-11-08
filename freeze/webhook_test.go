@@ -199,3 +199,18 @@ func TestCatalogMatchesTheShell(t *testing.T) {
 		t.Errorf("tt holiday.sabantuy = %q", got)
 	}
 }
+
+func TestFixedDay(t *testing.T) {
+	now, err := FixedDay("2026-06-20", kazan)
+	if err != nil {
+		t.Fatal(err)
+	}
+	f := newFreeze(t, ordinary)
+	f.Now = now
+	if resp := f.Decide(req("CREATE"), ModeEnforce); resp.Allowed {
+		t.Error("a pretended Sabantuy was not frozen")
+	}
+	if _, err := FixedDay("20.06.2026", kazan); err == nil {
+		t.Error("a malformed day was accepted")
+	}
+}
