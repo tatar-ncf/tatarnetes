@@ -45,7 +45,7 @@
 капка сыйныфы	ingressclass	капканы кайсы контроллер хезмәт итә	тәрҗемә	Headlamp менюсы / Headlamp menu
 порт юнәлтү	port-forward	җирле портны кузак портына юнәлтү	тәрҗемә	Headlamp менюсы / Headlamp menu
 челтәр сәясәте	networkpolicy	кузаклар арасында кемгә кем белән сөйләшергә ярый	тәрҗемә	Headlamp менюсы / Headlamp menu
-шлюз	gateway	Gateway API кереме; *капка* ingress өчен алынган	үзләштерү	Headlamp менюсы / Headlamp menu
+шлюз	gateway	Gateway API кереме; «капка» ingress өчен алынган	үзләштерү	Headlamp менюсы / Headlamp menu
 шлюз сыйныфы	gatewayclass	шлюзны кайсы контроллер хезмәт итә	үзләштерү	Headlamp менюсы / Headlamp menu
 маршрут	httproute / grpcroute / tcproute / udproute	соратуны хезмәткә илтүче кагыйдә (HTTP, GRPC, TCP, UDP)	үзләштерү	Headlamp менюсы / Headlamp menu
 сылтама рөхсәте	referencegrant	башка мәйдандагы объектка сылтарга рөхсәт	тәрҗемә	Headlamp менюсы / Headlamp menu

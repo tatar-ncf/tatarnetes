@@ -83,7 +83,7 @@ international word already used in Tatar. All are open to correction.*
 | **капка сыйныфы** | капканы кайсы контроллер хезмәт итә | ingressclass | тәрҗемә |
 | **порт юнәлтү** | җирле портны кузак портына юнәлтү | port-forward | тәрҗемә |
 | **челтәр сәясәте** | кузаклар арасында кемгә кем белән сөйләшергә ярый | networkpolicy | тәрҗемә |
-| **шлюз** | Gateway API кереме; *капка* ingress өчен алынган | gateway | үзләштерү |
+| **шлюз** | Gateway API кереме; «капка» ingress өчен алынган | gateway | үзләштерү |
 | **шлюз сыйныфы** | шлюзны кайсы контроллер хезмәт итә | gatewayclass | үзләштерү |
 | **маршрут** | соратуны хезмәткә илтүче кагыйдә (HTTP, GRPC, TCP, UDP) | httproute / grpcroute / tcproute / udproute | үзләштерү |
 | **сылтама рөхсәте** | башка мәйдандагы объектка сылтарга рөхсәт | referencegrant | тәрҗемә |
