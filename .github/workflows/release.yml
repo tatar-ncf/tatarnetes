@@ -4,6 +4,10 @@ on:
   push:
     tags:
       - "v*"
+  # Сынау өчен: образ һәм чарт җыела, бернәрсә дә чыгарылмый.
+  # Dry run: builds the multi-arch freeze image and packages its chart,
+  # pushes nothing and creates no release.
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -11,6 +15,7 @@ permissions:
 
 jobs:
   release:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
@@ -48,6 +53,7 @@ jobs:
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
+        if: github.event_name == 'push'
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -57,5 +63,20 @@ jobs:
           context: .
           file: freeze/Dockerfile
           platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ghcr.io/tatar-ncf/tatarnetes-freeze:${{ github.ref_name }}
+          push: ${{ github.event_name == 'push' }}
+          tags: ghcr.io/tatar-ncf/tatarnetes-freeze:${{ github.event_name == 'push' && github.ref_name || 'dry-run' }}
+      - uses: azure/setup-helm@v4
+      - name: Package the chart
+        # Чарт версиясе — релиз теге (v өлешсез) / the chart is versioned as the release.
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          [ "$GITHUB_EVENT_NAME" = push ] || version="0.0.0-dry-run"
+          helm lint charts/tatarnetes-freeze
+          helm package charts/tatarnetes-freeze --version "$version" \
+            --app-version "${{ github.event_name == 'push' && github.ref_name || 'dry-run' }}" -d dist
+          ls -l dist
+      - name: Push the chart
+        if: github.event_name == 'push'
+        run: |
+          echo "${{ github.token }}" | helm registry login ghcr.io -u "${{ github.actor }}" --password-stdin
+          helm push dist/tatarnetes-freeze-*.tgz oci://ghcr.io/tatar-ncf/charts
