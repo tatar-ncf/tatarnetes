@@ -12,7 +12,7 @@ jobs:
       # shellcheck ubuntu-latest'та инде бар / preinstalled on ubuntu-latest
       - run: |
           shellcheck -x bin/ayda bin/kubectl-ayda bin/kubectl_complete-ayda lib/*.sh \
-            install.sh scripts/*.sh tests/unit.sh completion/ayda.bash
+            install.sh scripts/*.sh tests/unit.sh tests/e2e-freeze.sh completion/ayda.bash
 
   unit:
     runs-on: ubuntu-latest

@@ -1,0 +1,51 @@
+name: e2e-freeze
+# Тыю вебхугы kind кластерында / the change-freeze webhook end to end on kind:
+# a pretended holiday, enforce and warn namespaces, break-glass, controllers.
+on:
+  push:
+    branches: [main]
+    paths:
+      - freeze/**
+      - cmd/tatarnetes-freeze/**
+      - charts/tatarnetes-freeze/**
+      - data/holidays.tt
+      - locale/**
+      - assets.go
+      - go.mod
+      - tests/e2e-freeze.sh
+      - .github/workflows/e2e-freeze.yml
+  pull_request:
+    paths:
+      - freeze/**
+      - cmd/tatarnetes-freeze/**
+      - charts/tatarnetes-freeze/**
+      - data/holidays.tt
+      - locale/**
+      - assets.go
+      - go.mod
+      - tests/e2e-freeze.sh
+      - .github/workflows/e2e-freeze.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cert: [helm, cert-manager]
+    name: e2e (${{ matrix.cert }} certificate)
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+      - uses: helm/kind-action@v1
+        with:
+          cluster_name: kind
+      - name: change freeze end to end
+        env:
+          CERT_MODE: ${{ matrix.cert }}
+          KIND_CLUSTER: kind
+        run: tests/e2e-freeze.sh
