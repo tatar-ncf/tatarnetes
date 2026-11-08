@@ -123,9 +123,10 @@ kubectl create namespace keda --dry-run=client -o yaml | kubectl apply -f -
 kubectl -n keda create serviceaccount keda-operator --dry-run=client -o yaml | kubectl apply -f -
 kubectl -n shop create rolebinding keda-operator --clusterrole=edit --serviceaccount=keda:keda-operator \
 	--dry-run=client -o yaml | kubectl apply -f -
-# kubectl scale reads the deployment first, which the HPA controller's own
-# role does not allow; impersonating it needs that read in shop.
-kubectl -n shop create rolebinding hpa-reads --clusterrole=view --serviceaccount=kube-system:horizontal-pod-autoscaler \
+# kubectl scale reads the deployment and patches its scale, while the HPA
+# controller's own role allows get and update of scale only: impersonating
+# it with kubectl needs more in shop.
+kubectl -n shop create rolebinding hpa-kubectl --clusterrole=edit --serviceaccount=kube-system:horizontal-pod-autoscaler \
 	--dry-run=client -o yaml | kubectl apply -f -
 for ns in shop bazaar plain; do kubectl -n "$ns" rollout status deploy/web --timeout=2m; done
 kubectl -n shop rollout status deploy/api --timeout=2m
