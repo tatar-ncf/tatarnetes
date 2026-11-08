@@ -14,6 +14,10 @@ catalog_lookup() { # $1=lang $2=key
     en:tea.now) printf '%s' 'It'\''s tea time! %s min left.' ;;
     en:tea.working) printf '%s' 'Cluster is working. Next tea: %s' ;;
     en:tea.today) printf '%s' 'Today'\''s breaks:' ;;
+    en:tea.window) printf '%s' '%s  (%s min)' ;;
+    en:tea.tomorrow) printf '%s' 'tomorrow' ;;
+    en:face.skullcap) printf '%s' 'skullcap' ;;
+    en:face.milktea) printf '%s' 'milk tea' ;;
     en:version.tagline) printf '%s' 'A national container orchestrator' ;;
     en:version.dedication) printf '%s' 'Dedicated to the great Tatar people' ;;
     en:version.backend) printf '%s' 'Backend:' ;;
@@ -75,6 +79,10 @@ catalog_lookup() { # $1=lang $2=key
     tt:tea.now) printf '%s' 'Хәзер чәй вакыты! Тагын %s минут.' ;;
     tt:tea.working) printf '%s' 'Хәзер кластер эшли. Киләсе чәй: %s' ;;
     tt:tea.today) printf '%s' 'Бүгенге тәнәфесләр:' ;;
+    tt:tea.window) printf '%s' '%s  (%s мин)' ;;
+    tt:tea.tomorrow) printf '%s' 'иртәгә' ;;
+    tt:face.skullcap) printf '%s' 'түбәтәй' ;;
+    tt:face.milktea) printf '%s' 'сөтле чәй' ;;
     tt:version.tagline) printf '%s' 'Милли контейнер оркестраторы' ;;
     tt:version.dedication) printf '%s' 'Бөек татар халкына багышлана' ;;
     tt:version.backend) printf '%s' 'Нигез (backend):' ;;

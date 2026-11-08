@@ -63,7 +63,7 @@ EOF
   echo 0
 }
 
-# Киләсе тәнәфескә кадәр (HH:MM) — мәгълүмат өчен.
+# Киләсе тәнәфескә кадәр (HH:MM) — мәгълүмат өчен. Requires: i18n.sh (t).
 tea_next_hhmm() {
   local now best=1441 s d
   now=$(_now_minutes)
@@ -73,6 +73,6 @@ tea_next_hhmm() {
   done <<EOF
 $(tea_windows)
 EOF
-  [ "$best" -eq 1441 ] && { echo "иртәгә"; return; }
+  [ "$best" -eq 1441 ] && { t tea.tomorrow; echo; return; }
   printf '%02d:%02d\n' $(( best / 60 )) $(( best % 60 ))
 }

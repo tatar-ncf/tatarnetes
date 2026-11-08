@@ -45,6 +45,18 @@ msgstr "Хәзер кластер эшли. Киләсе чәй: %s"
 msgid "tea.today"
 msgstr "Бүгенге тәнәфесләр:"
 
+msgid "tea.window"
+msgstr "%s  (%s мин)"
+
+msgid "tea.tomorrow"
+msgstr "иртәгә"
+
+msgid "face.skullcap"
+msgstr "түбәтәй"
+
+msgid "face.milktea"
+msgstr "сөтле чәй"
+
 msgid "version.tagline"
 msgstr "Милли контейнер оркестраторы"
 
