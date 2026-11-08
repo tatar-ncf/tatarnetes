@@ -1,0 +1,44 @@
+# Тыю бары тик тамгаланган мәйданнарда эшли / the freeze applies only to
+# namespaces labelled tatar-ncf.github.io/change-freeze=enforce (deny) or
+# =warn (let through with a warning).
+image:
+  repository: ghcr.io/tatar-ncf/tatarnetes-freeze
+  tag: ""            # .Chart.AppVersion (the Tatarnetes release) when empty
+  pullPolicy: IfNotPresent
+
+replicas: 2
+
+# enforce, or warn: a dry run of the freeze for every opted-in namespace.
+mode: enforce
+# Whose date decides the holiday: Kazan's.
+timezone: Europe/Moscow
+# Users and groups never frozen: the cluster's own controllers and nodes.
+exemptUsers:
+  - system:kube-controller-manager
+  - system:kube-scheduler
+  - system:node:*
+  - system:serviceaccount:kube-system:*
+exemptGroups:
+  - system:nodes
+skipResources:
+  - events
+  - leases
+
+# A holidays.tt to use instead of the built-in one (verified YYYY-MM-DD lines
+# only), e.g. next year's dates before a new image is out.
+holidays: ""
+
+# Unreachable webhook: Ignore lets changes through rather than stopping the
+# cluster on a holiday; Fail makes the freeze strict.
+failurePolicy: Ignore
+timeoutSeconds: 5
+
+# The serving certificate: cert-manager's, or one the chart generates and
+# keeps across upgrades.
+certManager:
+  enabled: false
+  issuerRef: {}      # empty: a self-signed Issuer of the chart's own
+
+resources:
+  requests: {cpu: 10m, memory: 32Mi}
+  limits: {memory: 64Mi}

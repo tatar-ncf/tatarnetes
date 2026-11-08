@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  packages: write
 
 jobs:
   release:
@@ -38,3 +39,23 @@ jobs:
             --title "Татарнетес ${GITHUB_REF_NAME}" \
             --generate-notes \
             "tatarnetes-${GITHUB_REF_NAME}.tar.gz" ayda.yaml
+
+  freeze-image:
+    # Тыю вебхугы образы / the change-freeze webhook image, tagged like the release.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: freeze/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/tatar-ncf/tatarnetes-freeze:${{ github.ref_name }}
