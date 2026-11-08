@@ -265,3 +265,60 @@ msgstr "Бүген %s — «%s» мәйданындагы бу үзгәреш у
 
 msgid "freeze.breakglass"
 msgstr "Бүген %s — тыюны «%s» искәрмәсе узып китте: %s"
+
+msgid "kullama.title"
+msgstr "Куллама %s — бергә эшли торган версияләр"
+
+msgid "kullama.recipe"
+msgstr "Ит, салма һәм кишер-суган туравы аерым пешә, аннары бер савытта шулпа белән кушыла: кисәкләр дә шулай."
+
+msgid "kullama.pinned"
+msgstr "савытта: %s"
+
+msgid "kullama.installed"
+msgstr "урнашкан: %s"
+
+msgid "kullama.unseen"
+msgstr "күренми"
+
+msgid "kullama.latest"
+msgstr "соңгы релиз: %s"
+
+msgid "kullama.unknown"
+msgstr "белеп булмады"
+
+msgid "kullama.no_releases"
+msgstr "релиз юк"
+
+msgid "kullama.ok"
+msgstr "савыттагыча"
+
+msgid "kullama.differs"
+msgstr "савыттагыдан аерыла"
+
+msgid "kullama.upstream"
+msgstr "нигез: %s"
+
+msgid "kullama.fresh"
+msgstr "апстрим белән тигез"
+
+msgid "kullama.overcooked"
+msgstr "артык пешкән: апстримда %s чыккан"
+
+msgid "kullama.upstream_no_releases"
+msgstr "апстримда релиз юк, чагыштырып булмый"
+
+msgid "kullama.no_upstream"
+msgstr "нигез: апстрим күзәтелми"
+
+msgid "kullama.verdict.ok"
+msgstr "Куллама әзер: күренгән кисәкләр савыттагыча."
+
+msgid "kullama.verdict.swapped"
+msgstr "Савыттагыдан аерылган кисәк бар: %s."
+
+msgid "kullama.swap_hint"
+msgstr "Бер кисәкне алмаштыру яки кире кайтару — kubepkg эше: kubepkg install <кисәк>@<версия> яки kubepkg rollback <кисәк>."
+
+msgid "kullama.missing"
+msgstr "Куллама файлы табылмады: %s"

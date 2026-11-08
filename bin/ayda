@@ -20,7 +20,7 @@ done
 AYDA_HOME="$(cd "$(dirname "$_self")/.." && pwd)"
 LIB="$AYDA_HOME/lib"
 
-for _m in render alif catalog i18n complete dictionary faces phrases teatime calendar finops errors skctl explain; do
+for _m in render alif catalog i18n complete dictionary faces phrases teatime calendar finops errors skctl explain kullama; do
   # shellcheck source=/dev/null
   . "$LIB/$_m.sh"
 done
@@ -138,6 +138,7 @@ _help_tt() {
   ЭЧКЕ ӘМЕРЛӘР:
     ayda ярдәм | сүзлек | версия
     ayda аңлат [төшенчә[.юл]]          татарча kubectl explain (глоссарий)
+    ayda куллама                      чыгарылыш савыты: кисәкләр версиясе
     ayda шигырь | тукай               классик поэзия
     ayda мәкаль                       халык мәкале
     ayda чәй | сәлам
@@ -174,6 +175,7 @@ _help_en() {
   BUILT-INS:
     ayda ярдәм|help · сүзлек · версия|version
     ayda аңлат [term[.path]]          Tatar kubectl explain (glossary)
+    ayda куллама|kullama|dish         the release as one dish: component versions
     ayda шигырь (poetry) · мәкаль (proverb) · чәй (tea) · сәлам (hi)
 
   ENV:
@@ -284,6 +286,13 @@ main() {
     explain_main "$@" || erc=$?
     [ "$erc" -eq 0 ] && show_success_footer
     exit "$erc"
+  fi
+
+  # «куллама» — чыгарылыш савыты; чәй вакытында да ачык, кластерга гына сорау юк.
+  # The release as one dish: works during tea, only the cluster is not asked.
+  if [ "$verb" = dish ] || [ "$(complete_to_cyrl "$verb" куллама)" = куллама ]; then
+    kullama_show
+    exit $?
   fi
 
   # Чәй капкасы / tea gate — cluster unreachable during tea (everywhere; AYDA_NO_TEA=1 to skip).

@@ -1,0 +1,51 @@
+# Куллама — Татарнетес чыгарылышы бер савытта / the Tatarnetes release as one dish.
+#
+# Кулламада ит, салма һәм кишер-суган туравы аерым пешә, аннары бер савытта
+# шулпа белән кушыла. Татарнетес кисәкләре дә аерым «пешә» (һәрберсенең үз
+# версиясе), ә бу файл — аларны бергә куя торган савыт: бергә эшли торган
+# версияләр җыелмасы. Релиз тамгасы шушы савытка куела: spec.version = тамга.
+# In kullama the meat, the salma and the carrot-and-onion dressing are cooked
+# separately and then put together in one pan with the broth. Tatarnetes'
+# components are cooked separately too, each with its own version; this file
+# is the pan: the set of versions that work together. The release tag goes on
+# it: spec.version is the tag without its "v".
+#
+# kubepkg кластерга гына куя: кластердагы кисәк (тыю вебхугы) — requires'та;
+# кластердан тыш кисәкләр (ayda, TatarOS, kuberoot, Headlamp плагины) —
+# kullama.tatar-ncf.github.io/* искәрмәләрендә. `ayda куллама` икесен дә укый.
+# kubepkg installs into the cluster only: the in-cluster ingredient (the
+# change freeze) is a requirement; the rest (ayda, TatarOS, kuberoot, the
+# Headlamp plugin) are pinned in the kullama.tatar-ncf.github.io/* annotations.
+# `ayda куллама` reads both. Per ingredient: <name> the pinned version,
+# <name>.repo its GitHub repository, <name>.upstream what it is built on
+# (repository@version), the data upstream-watch compares with upstream.
+apiVersion: kubepkg.dev/v1
+kind: Recipe
+metadata:
+  name: kullama
+  annotations:
+    kubepkg.dev/description: "Куллама: Tatarnetes components at versions that work together"
+    kubepkg.dev/home: https://github.com/tatar-ncf/tatarnetes
+    kullama.tatar-ncf.github.io/ingredients: "ayda tatarnetes-freeze tatarnetes-ui tataros kuberoot"
+    kullama.tatar-ncf.github.io/ayda: "v1.37.2-tatar.1"
+    kullama.tatar-ncf.github.io/ayda.repo: "tatar-ncf/tatarnetes"
+    kullama.tatar-ncf.github.io/ayda.upstream: "kubernetes/kubernetes@v1.37.2"
+    kullama.tatar-ncf.github.io/tatarnetes-freeze: "v1.37.2-tatar.1"
+    kullama.tatar-ncf.github.io/tatarnetes-freeze.repo: "tatar-ncf/tatarnetes"
+    kullama.tatar-ncf.github.io/tatarnetes-ui: "v7.14.0-tatar.1"
+    kullama.tatar-ncf.github.io/tatarnetes-ui.repo: "tatar-ncf/tatarnetes-ui"
+    kullama.tatar-ncf.github.io/tatarnetes-ui.upstream: "kubernetes-sigs/headlamp@v0.46.0"
+    kullama.tatar-ncf.github.io/tataros: "v3.0.0-tatar.0"
+    kullama.tatar-ncf.github.io/tataros.repo: "tatar-ncf/tataros"
+    kullama.tatar-ncf.github.io/tataros.upstream: "kuberoot-dev/kuberoot@539c2962fd9c064cf9e6d1707ad7f974d1fe8721"
+    kullama.tatar-ncf.github.io/kuberoot: "539c2962fd9c064cf9e6d1707ad7f974d1fe8721"
+    kullama.tatar-ncf.github.io/kuberoot.repo: "kuberoot-dev/kuberoot"
+spec:
+  version: 1.37.2-tatar.1
+  build: 1
+  package:
+    variants:
+      - name: default
+        requires:
+          # Тыю вебхугы шул ук чыгарылыштан / the change freeze of this release.
+          - {package: tatarnetes-freeze, version: "=1.37.2-tatar.1"}

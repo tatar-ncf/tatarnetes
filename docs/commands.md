@@ -102,6 +102,7 @@ ayda аңлат бүлүче                 # гомуми төшенчә (sche
 | `ayda ярдәм` / `help` | ярдәм / help |
 | `ayda сүзлек` | бу сүзлек / this dictionary |
 | `ayda аңлат [төшенчә]` | татарча explain / Tatar explain |
+| `ayda куллама` / `kullama` / `dish` | чыгарылыш савыты: кисәкләр версиясе ([kullama/](../kullama/README.md)) / the release as one dish: component versions |
 | `ayda версия` | версия / version |
 | `ayda тукай` | Тукайдан бер шигырь / a Tukay verse |
 | `ayda чәй` | чәй тәнәфесе графигы / tea schedule |

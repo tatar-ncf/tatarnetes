@@ -199,6 +199,20 @@ kubectl annotate deploy web tatar-ncf.github.io/break-glass="INC-42: түләү�
 - Бәйрәм булмаган көнне сынап карау өчен `--set today=2026-06-20` — бүген
   Сабан туе дип исәпли; `tests/e2e-freeze.sh` kind кластерында шулай эшли.
 
+### Куллама — чыгарылыш бер савытта
+
+Кулламада ит, салма һәм кишер-суган туравы аерым пешә, аннары бер савытта
+шулпа белән кушыла. Татарнетес кисәкләре (`ayda`, тыю вебхугы, UI, TatarOS,
+kuberoot нигезе) дә аерым пешә; [`kullama/recipe.yaml`](kullama/recipe.yaml) —
+бергә эшли торган версияләр җыелмасы, `kullama` исемле kubepkg мета-пакеты.
+Релиз тамгасы шушы савытка куела.
+
+```bash
+ayda куллама    # һәр кисәк: савытта, урнашкан, соңгы релиз, хөкем, «артык пешкән»
+```
+
+Аш, чыганаклар, бер кисәкне алмаштыру (kubepkg) — [kullama/README.md](kullama/README.md).
+
 ### Идарә панеле (UI)
 
 Милли идарә панеле — аерым репозиторийда:
@@ -326,6 +340,18 @@ kubectl annotate deploy web tatar-ncf.github.io/break-glass="INC-42: payments do
   given with `--set-file holidays=...` before a new image is out.
 - To try the freeze on a day that is not a holiday, `--set today=2026-06-20`
   pretends the date is Sabantuy; `tests/e2e-freeze.sh` does this on kind.
+
+### Kullama: the release as one dish
+
+In kullama the meat, the salma and the carrot-and-onion dressing are cooked
+separately and then put together in one pan with the broth. Tatarnetes'
+components (`ayda`, the change freeze, the UI, TatarOS, the kuberoot base) are
+cooked separately too; [`kullama/recipe.yaml`](kullama/recipe.yaml), a kubepkg
+meta package named `kullama`, pins the versions that work together, and the
+release tag goes on it. `ayda куллама` (`kullama`, `dish`) prints each
+ingredient: pinned, installed, latest release, verdict, and whether it is
+overcooked (behind its upstream). The dish, its sources and swapping one
+ingredient with kubepkg: [kullama/README.md](kullama/README.md).
 
 ## Гаилә / Family
 

@@ -21,10 +21,17 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
+      - name: The tag goes on the dish
+        # Тамга кулламага куела / the release is the dish kullama/recipe.yaml pins.
+        run: |
+          dish="$(sed -n 's/^  version: *//p' kullama/recipe.yaml)"
+          if [ "v${dish}" != "${GITHUB_REF_NAME}" ]; then
+            echo "kullama/recipe.yaml spec.version is ${dish}, the tag is ${GITHUB_REF_NAME}"; exit 1
+          fi
       - name: Package
         run: |
           tar czf "tatarnetes-${GITHUB_REF_NAME}.tar.gz" \
-            bin lib data locale docs plugins scripts completion install.sh \
+            bin lib data locale docs plugins scripts completion kullama install.sh \
             LICENSE NOTICE README.md MANIFESTO.md CODE_OF_CONDUCT.md
       - name: Krew manifest for this release
         # plugins/ayda.yaml — соңгы чыккан релизга күрсәтә; монда яңа тегка
@@ -43,7 +50,7 @@ jobs:
           gh release create "${GITHUB_REF_NAME}" \
             --title "Татарнетес ${GITHUB_REF_NAME}" \
             --generate-notes \
-            "tatarnetes-${GITHUB_REF_NAME}.tar.gz" ayda.yaml
+            "tatarnetes-${GITHUB_REF_NAME}.tar.gz" ayda.yaml kullama/recipe.yaml
 
   freeze-image:
     # Тыю вебхугы образы / the change-freeze webhook image, tagged like the release.
