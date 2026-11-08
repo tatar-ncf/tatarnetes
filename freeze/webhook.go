@@ -5,6 +5,7 @@
 package freeze
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -44,6 +45,9 @@ type Freeze struct {
 	ExemptGroups []string
 	// SkipResources are never frozen (events, leases).
 	SkipResources []string
+	// Parents reads the object a scale request is for, to find its
+	// break-glass annotation; nil: scaling is frozen with no way through.
+	Parents Parents
 }
 
 // Review is the part of admission.k8s.io/v1 AdmissionReview the webhook uses.
@@ -99,31 +103,60 @@ func (f *Freeze) Decide(req *Request, mode string) *Response {
 	default:
 		return allow
 	}
-	if req.SubResource != "" || slices.Contains(f.SkipResources, req.Resource.Resource) || f.exempt(req.UserInfo) {
+	scale := isScale(req)
+	if (req.SubResource != "" && !scale) || slices.Contains(f.SkipResources, req.Resource.Resource) || f.exempt(req.UserInfo) {
 		return allow
 	}
 	day := func(lang string) string { return f.Catalog.T(lang, HolidayName(key)) }
-	obj := req.Object
-	if req.Operation == "DELETE" {
-		obj = req.OldObject
+	what := req.Resource.Resource
+	if req.SubResource != "" {
+		what += "/" + req.SubResource
 	}
-	if reason := annotation(obj, BreakGlassAnnotation); reason != "" {
+	if reason := f.breakGlass(req, scale); reason != "" {
 		msg := f.Catalog.Both("freeze.breakglass", func(l string) []any { return []any{day(l), BreakGlassAnnotation, reason} })
-		log.Printf("break-glass: %s %s %s/%s by %s: %s", req.Operation, req.Resource.Resource, req.Namespace, req.Name, req.UserInfo.Username, reason)
+		log.Printf("break-glass: %s %s %s/%s by %s: %s", req.Operation, what, req.Namespace, req.Name, req.UserInfo.Username, reason)
 		allow.Warnings = []string{msg}
 		return allow
 	}
 	if mode != ModeEnforce || f.Mode == ModeWarn {
 		allow.Warnings = []string{f.Catalog.Both("freeze.warn", func(l string) []any { return []any{day(l), req.Namespace} })}
-		log.Printf("warn: %s %s %s/%s by %s", req.Operation, req.Resource.Resource, req.Namespace, req.Name, req.UserInfo.Username)
+		log.Printf("warn: %s %s %s/%s by %s", req.Operation, what, req.Namespace, req.Name, req.UserInfo.Username)
 		return allow
 	}
-	log.Printf("deny: %s %s %s/%s by %s", req.Operation, req.Resource.Resource, req.Namespace, req.Name, req.UserInfo.Username)
+	log.Printf("deny: %s %s %s/%s by %s", req.Operation, what, req.Namespace, req.Name, req.UserInfo.Username)
 	return &Response{UID: req.UID, Allowed: false, Result: &Status{
 		Code:    http.StatusForbidden,
 		Reason:  "Forbidden",
 		Message: f.Catalog.Both("freeze.denied", func(l string) []any { return []any{day(l), req.Namespace, BreakGlassAnnotation} }),
 	}}
+}
+
+func isScale(req *Request) bool {
+	return req.SubResource == "scale" && slices.Contains(Scalable, req.Resource.Group+"/"+req.Resource.Resource)
+}
+
+// breakGlass is the reason in the break-glass annotation: on the object, on
+// the old object of a delete, or on the parent of a scale request.
+func (f *Freeze) breakGlass(req *Request, scale bool) string {
+	if !scale {
+		obj := req.Object
+		if req.Operation == "DELETE" {
+			obj = req.OldObject
+		}
+		return annotation(obj, BreakGlassAnnotation)
+	}
+	if f.Parents == nil {
+		log.Printf("scale %s/%s: no API access to read break-glass from the parent", req.Namespace, req.Name)
+		return ""
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	a, err := f.Parents.Annotations(ctx, req)
+	if err != nil {
+		log.Printf("scale %s/%s: reading the parent: %v", req.Namespace, req.Name, err)
+		return ""
+	}
+	return strings.TrimSpace(a[BreakGlassAnnotation])
 }
 
 func (f *Freeze) exempt(u UserInfo) bool {

@@ -103,7 +103,34 @@ for ns in shop bazaar plain; do
 	kubectl -n "$ns" create configmap menu --from-literal=dish=chakchak --dry-run=client -o yaml | kubectl apply -f -
 done
 kubectl -n shop create configmap old --from-literal=a=b --dry-run=client -o yaml | kubectl apply -f -
+kubectl -n shop create deployment api --image=registry.k8s.io/pause:3.10 --dry-run=client -o yaml | kubectl apply -f -
+kubectl -n shop apply -f - <<'EOF'
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: {name: db}
+spec:
+  serviceName: db
+  replicas: 1
+  selector: {matchLabels: {app: db}}
+  template:
+    metadata: {labels: {app: db}}
+    spec:
+      containers: [{name: pause, image: registry.k8s.io/pause:3.10}]
+EOF
+# KEDA's operator, as far as the freeze can tell: its service account with
+# the right to scale in shop (KEDA itself is not installed).
+kubectl create namespace keda --dry-run=client -o yaml | kubectl apply -f -
+kubectl -n keda create serviceaccount keda-operator --dry-run=client -o yaml | kubectl apply -f -
+kubectl -n shop create rolebinding keda-operator --clusterrole=edit --serviceaccount=keda:keda-operator \
+	--dry-run=client -o yaml | kubectl apply -f -
+# kubectl scale reads the deployment and patches its scale, while the HPA
+# controller's own role allows get and update of scale only: impersonating
+# it with kubectl needs more in shop.
+kubectl -n shop create rolebinding hpa-kubectl --clusterrole=edit --serviceaccount=kube-system:horizontal-pod-autoscaler \
+	--dry-run=client -o yaml | kubectl apply -f -
 for ns in shop bazaar plain; do kubectl -n "$ns" rollout status deploy/web --timeout=2m; done
+kubectl -n shop rollout status deploy/api --timeout=2m
+kubectl -n shop rollout status statefulset/db --timeout=2m
 kubectl label namespace shop tatar-ncf.github.io/change-freeze=enforce --overwrite
 kubectl label namespace bazaar tatar-ncf.github.io/change-freeze=warn --overwrite
 
@@ -118,6 +145,9 @@ expect_denied "rollout restart" kubectl "${HUMAN[@]}" -n shop rollout restart de
 expect_denied "delete configmap" kubectl "${HUMAN[@]}" -n shop delete configmap old
 expect_denied "delete pod" kubectl "${HUMAN[@]}" -n shop delete pod -l app=web --wait=false
 expect_denied "set image" kubectl "${HUMAN[@]}" -n shop set image deploy/web pause=registry.k8s.io/pause:3.9
+expect_denied "scale deployment" kubectl "${HUMAN[@]}" -n shop scale deploy/web --replicas=2
+expect_denied "scale statefulset" kubectl "${HUMAN[@]}" -n shop scale statefulset/db --replicas=2
+expect_denied "scale replicaset" kubectl "${HUMAN[@]}" -n shop scale rs -l app=web --replicas=2
 
 step "never frozen: leases, events, nodes"
 expect_allowed "create lease" - kubectl "${HUMAN[@]}" -n shop apply -f - <<'EOF'
@@ -144,6 +174,38 @@ expect_allowed "garbage collector deletes" - \
 expect_allowed "kube-system serviceaccount updates" - \
 	kubectl --as=system:serviceaccount:kube-system:generic-garbage-collector -n shop annotate configmap menu e2e/gc=yes
 
+step "never frozen: autoscalers scaling"
+expect_allowed "KEDA operator scales to zero" - \
+	kubectl --as=system:serviceaccount:keda:keda-operator -n shop scale deploy/api --replicas=0
+expect_allowed "HPA controller scales" - \
+	kubectl --as=system:serviceaccount:kube-system:horizontal-pod-autoscaler -n shop scale deploy/api --replicas=2
+# A real HorizontalPodAutoscaler (let in by break-glass on itself) raises the
+# deployment to its minimum; no metrics are needed for that (an HPA leaves a
+# deployment at zero replicas alone, hence the order above).
+expect_allowed "create HPA under break-glass" "e2e-hpa" kubectl "${HUMAN[@]}" -n shop apply -f - <<EOF
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api
+  annotations: {$BREAK: e2e-hpa}
+spec:
+  scaleTargetRef: {apiVersion: apps/v1, kind: Deployment, name: api}
+  minReplicas: 3
+  maxReplicas: 4
+EOF
+replicas=
+for _ in $(seq 60); do
+	replicas=$(kubectl -n shop get deploy/api -o jsonpath='{.spec.replicas}')
+	[[ $replicas == 3 ]] && break
+	sleep 2
+done
+if [[ $replicas == 3 ]]; then
+	pass "the HPA scaled a deployment in a frozen namespace"
+else
+	fail "the HPA did not scale the deployment (replicas $replicas)"
+	kubectl -n shop describe hpa api || true
+fi
+
 step "break-glass"
 expect_denied "empty reason" kubectl "${HUMAN[@]}" -n shop annotate deploy/web "$BREAK= "
 expect_allowed "annotate break-glass" "Сабан туе.*$BREAK.*INC-42.*Today is Sabantuy" \
@@ -157,6 +219,15 @@ if kubectl -n shop rollout status deploy/web --timeout=2m >/dev/null; then
 else
 	fail "rollout did not finish in a frozen namespace"
 fi
+# kubectl scale carries no annotations: the webhook reads them off the parent.
+expect_allowed "scale under break-glass on the deployment" "INC-42" \
+	kubectl "${HUMAN[@]}" -n shop scale deploy/web --replicas=2
+if kubectl -n "$NS" logs deploy/"$REL" | grep -q 'break-glass: UPDATE deployments/scale shop/web by alsu: INC-42'; then
+	pass "break-glass scale logged"
+else
+	fail "break-glass scale not in the webhook's log"
+fi
+expect_denied "scale a statefulset without break-glass" kubectl "${HUMAN[@]}" -n shop scale statefulset/db --replicas=3
 expect_allowed "delete under break-glass" "INC-42" kubectl "${HUMAN[@]}" -n shop delete deploy/web --wait=false
 if kubectl -n "$NS" logs deploy/"$REL" | grep -q 'break-glass: DELETE deployments shop/web by alsu: INC-42'; then
 	pass "break-glass delete logged"
@@ -168,10 +239,12 @@ step "warn namespace (bazaar)"
 expect_allowed "create configmap" "Сабан туе.*узды.*Today is Sabantuy.*an enforced freeze would deny it" \
 	kubectl "${HUMAN[@]}" -n bazaar create configmap new --from-literal=a=b
 expect_allowed "delete configmap" "Today is Sabantuy" kubectl "${HUMAN[@]}" -n bazaar delete configmap new
+expect_allowed "scale" "Today is Sabantuy" kubectl "${HUMAN[@]}" -n bazaar scale deploy/web --replicas=2
 
 step "unlabelled namespace (plain)"
 expect_allowed "create configmap" - kubectl "${HUMAN[@]}" -n plain create configmap new --from-literal=a=b
 expect_allowed "rollout restart" - kubectl "${HUMAN[@]}" -n plain rollout restart deploy/web
+expect_allowed "scale" - kubectl "${HUMAN[@]}" -n plain scale deploy/web --replicas=2
 
 step "helm upgrade: cluster-wide warn mode"
 ca_before=$(kubectl -n "$NS" get secret "$REL-tls" -o jsonpath='{.data.ca\.crt}')
@@ -191,6 +264,7 @@ install "$ORDINARY"
 sleep 3
 expect_allowed "enforce namespace, ordinary day" - kubectl "${HUMAN[@]}" -n shop create configmap ordinary --from-literal=a=b
 expect_allowed "delete configmap, ordinary day" - kubectl "${HUMAN[@]}" -n shop delete configmap ordinary
+expect_allowed "scale, ordinary day" - kubectl "${HUMAN[@]}" -n shop scale statefulset/db --replicas=2
 
 echo
 if ((fails)); then

@@ -84,4 +84,10 @@ webhooks:
     apiVersions: ["*"]
     resources: ["*"]
     scope: Namespaced
+  # kubectl scale: "*" above does not cover subresources.
+  - operations: [UPDATE]
+    apiGroups: [apps]
+    apiVersions: ["*"]
+    resources: [deployments/scale, statefulsets/scale, replicasets/scale]
+    scope: Namespaced
 {{- end }}

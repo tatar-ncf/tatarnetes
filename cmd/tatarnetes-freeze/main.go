@@ -26,7 +26,7 @@ func main() {
 	zone := flag.String("timezone", "Europe/Moscow", "the time zone whose date decides the holiday (Kazan's by default)")
 	mode := flag.String("mode", freeze.ModeEnforce, "enforce, or warn to only warn in every namespace")
 	holidays := flag.String("holidays", "", "a holidays.tt to use instead of the built-in data/holidays.tt")
-	exemptUsers := flag.String("exempt-users", "system:kube-controller-manager,system:kube-scheduler,system:node:*,system:serviceaccount:kube-system:*",
+	exemptUsers := flag.String("exempt-users", "system:kube-controller-manager,system:kube-scheduler,system:node:*,system:serviceaccount:kube-system:*,system:serviceaccount:keda:keda-operator",
 		"users never frozen, comma-separated; a trailing * matches a prefix")
 	exemptGroups := flag.String("exempt-groups", "system:nodes", "groups never frozen, comma-separated")
 	skip := flag.String("skip-resources", "events,leases", "resources never frozen, comma-separated")
@@ -65,6 +65,11 @@ func main() {
 	}
 	f := &freeze.Freeze{Calendar: cal, Catalog: cat, Location: loc, Now: now, Mode: *mode,
 		ExemptUsers: list(*exemptUsers), ExemptGroups: list(*exemptGroups), SkipResources: list(*skip)}
+	if parents, err := freeze.NewInCluster(); err == nil {
+		f.Parents = parents
+	} else {
+		log.Printf("break-glass on scale will not work: %v", err)
+	}
 	log.Printf("change freeze: %d holidays, %s, mode %s", len(cal), loc, *mode)
 
 	mux := http.NewServeMux()

@@ -15,7 +15,10 @@ spec:
         checksum/holidays: {{ .Values.holidays | sha256sum }}
       {{- end }}
     spec:
-      automountServiceAccountToken: false
+      # The token reads the parent of a scale request, for its break-glass
+      # annotation; the service account may only get the scalable workloads.
+      serviceAccountName: {{ include "freeze.name" . }}
+      automountServiceAccountToken: true
       securityContext:
         runAsNonRoot: true
         seccompProfile: {type: RuntimeDefault}
