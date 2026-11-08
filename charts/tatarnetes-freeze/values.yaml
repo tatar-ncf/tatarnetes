@@ -28,6 +28,10 @@ skipResources:
 # only), e.g. next year's dates before a new image is out.
 holidays: ""
 
+# Pretend the date is this YYYY-MM-DD (in timezone): for testing the freeze
+# on a holiday that is not today. Leave empty in a real cluster.
+today: ""
+
 # Unreachable webhook: Ignore lets changes through rather than stopping the
 # cluster on a holiday; Fail makes the freeze strict.
 failurePolicy: Ignore

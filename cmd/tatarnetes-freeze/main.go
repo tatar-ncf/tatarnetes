@@ -30,6 +30,8 @@ func main() {
 		"users never frozen, comma-separated; a trailing * matches a prefix")
 	exemptGroups := flag.String("exempt-groups", "system:nodes", "groups never frozen, comma-separated")
 	skip := flag.String("skip-resources", "events,leases", "resources never frozen, comma-separated")
+	today := flag.String("today", os.Getenv("TATARNETES_FREEZE_TODAY"),
+		"pretend the date is YYYY-MM-DD in --timezone, for tests; empty: the real date ($TATARNETES_FREEZE_TODAY)")
 	flag.Parse()
 
 	if *mode != freeze.ModeEnforce && *mode != freeze.ModeWarn {
@@ -54,7 +56,14 @@ func main() {
 	if err != nil {
 		log.Fatalf("catalog: %v", err)
 	}
-	f := &freeze.Freeze{Calendar: cal, Catalog: cat, Location: loc, Now: time.Now, Mode: *mode,
+	now, err := freeze.FixedDay(*today, loc)
+	if err != nil {
+		log.Fatalf("--today: %v", err)
+	}
+	if *today != "" {
+		log.Printf("pretending today is %s", *today)
+	}
+	f := &freeze.Freeze{Calendar: cal, Catalog: cat, Location: loc, Now: now, Mode: *mode,
 		ExemptUsers: list(*exemptUsers), ExemptGroups: list(*exemptGroups), SkipResources: list(*skip)}
 	log.Printf("change freeze: %d holidays, %s, mode %s", len(cal), loc, *mode)
 

@@ -32,6 +32,9 @@ spec:
         {{- if .Values.holidays }}
         - --holidays=/holidays/holidays.tt
         {{- end }}
+        {{- if .Values.today }}
+        - --today={{ .Values.today }}
+        {{- end }}
         ports:
         - {name: https, containerPort: 8443}
         readinessProbe:
