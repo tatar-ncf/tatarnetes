@@ -4,9 +4,9 @@
 # Яки PATH'ка bin/kubectl-ayda куеп: «kubectl ayda күрсәт кузаклар».
 # Or just put bin/kubectl-ayda on PATH: `kubectl ayda күрсәт кузаклар`.
 #
-# Бу файл соңгы чыккан релизга (v2.1.0) күрсәтә. Яңа тег куелганда release.yml
+# Бу файл соңгы чыккан релизга (v1.37.1-tatar.0) күрсәтә. Яңа тег куелганда release.yml
 # аның version/uri/sha256'ын яңартып, `ayda.yaml` итеп релизга беркетә.
-# This file points at the last published release (v2.1.0). On every tag,
+# This file points at the last published release (v1.37.1-tatar.0). On every tag,
 # release.yml renders it with that tag's version/uri/sha256 and attaches the
 # result to the GitHub Release as `ayda.yaml`.
 apiVersion: krew.googlecontainertools.github.com/v1alpha2
@@ -14,7 +14,7 @@ kind: Plugin
 metadata:
   name: ayda
 spec:
-  version: v2.1.0
+  version: v1.37.1-tatar.0
   homepage: https://github.com/tatar-ncf/tatarnetes
   shortDescription: Tatar-native kubectl (Татарнетес — милли kubectl)
   description: |
@@ -34,8 +34,8 @@ spec:
           - key: os
             operator: In
             values: [darwin, linux]
-      uri: https://github.com/tatar-ncf/tatarnetes/releases/download/v2.1.0/tatarnetes-v2.1.0.tar.gz
-      sha256: "e5d1efad256926a8e871df402e6b6cb371e07d09f2b88f9f9ff8fcd83c10afdd"
+      uri: https://github.com/tatar-ncf/tatarnetes/releases/download/v1.37.1-tatar.0/tatarnetes-v1.37.1-tatar.0.tar.gz
+      sha256: "ecd5dedb54ed6a674b0db6ca3a0d038b82e3583a4bccde04a3e3b6789ab3004a"
       bin: bin/kubectl-ayda
       files:
         - from: "*"
