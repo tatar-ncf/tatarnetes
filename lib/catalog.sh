@@ -67,6 +67,16 @@ catalog_lookup() { # $1=lang $2=key
     en:explain.skctl) printf '%s' 'Sheeternetes (skctl) has no explain — glossary entry only.' ;;
     en:explain.no_field) printf '%s' 'Field «%s» does not exist. Available fields: ayda аңлат %s' ;;
     en:explain.schema_failed) printf '%s' 'Could not fetch the field schema (kubectl explain talks to the cluster). Glossary only: --кыскача' ;;
+    en:tos.backend.unknown) printf '%s' 'Unknown backend (TOS_BACKEND): "%s". Allowed: kuberoot, talos.' ;;
+    en:tos.kr.talos_only) printf '%s' '"%s" is a Talos verb with no kuberoot counterpart. Try it with TOS_BACKEND=talos.' ;;
+    en:tos.kr.need_node) printf '%s' 'Several nodes are visible; name one with -n <node>.' ;;
+    en:tos.kr.need_service) printf '%s' 'Name the service: tos logs <service>.' ;;
+    en:tos.kr.need_url) printf '%s' 'A release is required: tos upgrade --url <URL> [--sha256 <hash>].' ;;
+    en:tos.kr.no_spare_slot) printf '%s' 'There is no other slot to roll back to (%s).' ;;
+    en:tos.kr.reboot) printf '%s' 'Node %s is rebooting.' ;;
+    en:tos.kr.upgrade) printf '%s' '%s: upgrade started; watch it with "tos get upgrades".' ;;
+    en:tos.kr.rollback) printf '%s' '%s: rolling back to slot %s.' ;;
+    en:tos.kr.restart) printf '%s' 'Service %s is restarting.' ;;
     tt:err.unknown_verb) printf '%s' 'Мондый әмер юк: «%s»' ;;
     tt:hint.try_help) printf '%s' '«ayda ярдәм» яки «ayda сүзлек» дип язып кара.' ;;
     tt:err.code) printf '%s' '(код: %s)' ;;
@@ -132,6 +142,16 @@ catalog_lookup() { # $1=lang $2=key
     tt:explain.skctl) printf '%s' 'Sheeternetes (skctl) explain белми — глоссарий аңлатмасы гына.' ;;
     tt:explain.no_field) printf '%s' '«%s» кыры юк. Булган кырлар: ayda аңлат %s' ;;
     tt:explain.schema_failed) printf '%s' 'Кыр схемасын алып булмады (kubectl explain кластер белән сөйләшә). Глоссарий гына кирәк булса: --кыскача' ;;
+    tt:tos.backend.unknown) printf '%s' 'Билгесез нигез (TOS_BACKEND): «%s». Мөмкиннәре: kuberoot, talos.' ;;
+    tt:tos.kr.talos_only) printf '%s' '«%s» — Talos фигыле, kuberoot төенендә аның тиңе юк. TOS_BACKEND=talos белән кулланып кара.' ;;
+    tt:tos.kr.need_node) printf '%s' 'Берничә төен күренә — кайсысы икәнен «-n <төен>» белән күрсәт.' ;;
+    tt:tos.kr.need_service) printf '%s' 'Хезмәт исемен күрсәт: tos көндәлек <хезмәт>.' ;;
+    tt:tos.kr.need_url) printf '%s' 'Чыгарылыш кирәк: tos яңарт --url <URL> [--sha256 <хеш>].' ;;
+    tt:tos.kr.no_spare_slot) printf '%s' 'Кире кайтарырга икенче слот юк (%s).' ;;
+    tt:tos.kr.reboot) printf '%s' '%s төене яңадан кабызыла.' ;;
+    tt:tos.kr.upgrade) printf '%s' '%s: яңарту башланды — «tos күрсәт яңартулар» белән күзәт.' ;;
+    tt:tos.kr.rollback) printf '%s' '%s: %s слотына кире кайтыла.' ;;
+    tt:tos.kr.restart) printf '%s' '%s хезмәте яңадан башлатыла.' ;;
     *) printf '%s' "$2" ;;
   esac
 }

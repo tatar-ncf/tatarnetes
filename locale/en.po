@@ -202,3 +202,34 @@ msgstr "Field «%s» does not exist. Available fields: ayda аңлат %s"
 
 msgid "explain.schema_failed"
 msgstr "Could not fetch the field schema (kubectl explain talks to the cluster). Glossary only: --кыскача"
+
+# --- TatarOS kuberoot backend (TOS_BACKEND=kuberoot) ---
+msgid "tos.backend.unknown"
+msgstr "Unknown backend (TOS_BACKEND): \"%s\". Allowed: kuberoot, talos."
+
+msgid "tos.kr.talos_only"
+msgstr "\"%s\" is a Talos verb with no kuberoot counterpart. Try it with TOS_BACKEND=talos."
+
+msgid "tos.kr.need_node"
+msgstr "Several nodes are visible; name one with -n <node>."
+
+msgid "tos.kr.need_service"
+msgstr "Name the service: tos logs <service>."
+
+msgid "tos.kr.need_url"
+msgstr "A release is required: tos upgrade --url <URL> [--sha256 <hash>]."
+
+msgid "tos.kr.no_spare_slot"
+msgstr "There is no other slot to roll back to (%s)."
+
+msgid "tos.kr.reboot"
+msgstr "Node %s is rebooting."
+
+msgid "tos.kr.upgrade"
+msgstr "%s: upgrade started; watch it with \"tos get upgrades\"."
+
+msgid "tos.kr.rollback"
+msgstr "%s: rolling back to slot %s."
+
+msgid "tos.kr.restart"
+msgstr "Service %s is restarting."
