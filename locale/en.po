@@ -262,3 +262,60 @@ msgstr "Today is %s: this change in namespace \"%s\" went through, but an enforc
 
 msgid "freeze.breakglass"
 msgstr "Today is %s: the \"%s\" annotation let this change through the freeze: %s"
+
+msgid "kullama.title"
+msgstr "Kullama %s — the versions that work together"
+
+msgid "kullama.recipe"
+msgstr "Meat, salma and the carrot-and-onion dressing are cooked apart, then put together in one pan with the broth: so are the components."
+
+msgid "kullama.pinned"
+msgstr "in the dish: %s"
+
+msgid "kullama.installed"
+msgstr "installed: %s"
+
+msgid "kullama.unseen"
+msgstr "not visible"
+
+msgid "kullama.latest"
+msgstr "latest release: %s"
+
+msgid "kullama.unknown"
+msgstr "could not tell"
+
+msgid "kullama.no_releases"
+msgstr "no releases"
+
+msgid "kullama.ok"
+msgstr "as in the dish"
+
+msgid "kullama.differs"
+msgstr "differs from the dish"
+
+msgid "kullama.upstream"
+msgstr "built on: %s"
+
+msgid "kullama.fresh"
+msgstr "level with upstream"
+
+msgid "kullama.overcooked"
+msgstr "overcooked: upstream has released %s"
+
+msgid "kullama.upstream_no_releases"
+msgstr "upstream has no releases to compare with"
+
+msgid "kullama.no_upstream"
+msgstr "built on: no upstream tracked"
+
+msgid "kullama.verdict.ok"
+msgstr "The dish is ready: every visible ingredient is as pinned."
+
+msgid "kullama.verdict.swapped"
+msgstr "Ingredients that differ from the dish: %s."
+
+msgid "kullama.swap_hint"
+msgstr "Swapping or rolling back one ingredient is kubepkg's job: kubepkg install <ingredient>@<version> or kubepkg rollback <ingredient>."
+
+msgid "kullama.missing"
+msgstr "No dish file: %s"

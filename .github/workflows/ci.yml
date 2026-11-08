@@ -43,6 +43,19 @@ jobs:
           diff -u /tmp/committed.tsv data/glossary.tsv || {
             echo "data/glossary.tsv иске! 'bash scripts/build-glossary.sh' эшләт."; exit 1; }
 
+  kullama:
+    # Куллама — kubepkg мета-пакеты / the dish is a valid kubepkg meta package.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: kubepkg validate kullama
+        run: |
+          go install github.com/kuberoot-dev/kubepkg/cmd/kubepkg@v1.3.1
+          "$(go env GOPATH)/bin/kubepkg" validate kullama
+
   completion-syntax:
     runs-on: ubuntu-latest
     steps:

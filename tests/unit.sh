@@ -10,7 +10,7 @@ unset AYDA_KUBECTL AYDA_BACKEND AYDA_SKCTL AYDA_FORCE_TEA AYDA_COMPLETE_TIMEOUT 
 
 export AYDA_HOME="$HERE"
 # shellcheck source=/dev/null
-for m in render alif catalog i18n faces complete dictionary phrases teatime errors skctl explain; do . "lib/$m.sh"; done
+for m in render alif catalog i18n faces complete dictionary phrases teatime errors skctl explain kullama; do . "lib/$m.sh"; done
 
 PASS=0; FAIL=0
 ok()   { PASS=$((PASS+1)); printf '  ✓ %s\n' "$1"; }
@@ -250,6 +250,64 @@ eq "аңлат during tea → rc 42"  "42" "$(AYDA_NO_TEA='' AYDA_FORCE_TEA=1 ex
 eq "  …but glossary still shown" "кузак — pod" "$(head -1 "$STUBK/out")"
 eq "сөйлә still → describe"    "describe" "$(resolve_verb сөйлә)"
 eq "аңлат is no longer describe" "" "$(translate_verb аңлат)"
+
+echo "── куллама (the release as one dish) ──"
+DISH="kullama/recipe.yaml"
+dishv="$(kullama_version)"
+eq "dish version is a tag"                "v" "$(printf '%s' "$dishv" | cut -c1)"
+eq "ayda is pinned to the dish's tag"     "$dishv" "$(kullama_get ayda)"
+eq "the freeze is pinned to the dish's tag" "$dishv" "$(kullama_get tatarnetes-freeze)"
+eq "kubepkg requires that very freeze"    "1" "$(grep -c "package: tatarnetes-freeze, version: \"=${dishv#v}\"" "$DISH")"
+eq "the freeze chart runs the dish's tag" "\"$dishv\"" "$(sed -n 's/^appVersion: *\("[^"]*"\).*/\1/p' charts/tatarnetes-freeze/Chart.yaml)"
+eq "ayda's upstream is .upstream-version" "kubernetes/kubernetes@$(cat .upstream-version)" "$(kullama_get ayda.upstream)"
+eq "TatarOS is built on the pinned kuberoot" "kuberoot-dev/kuberoot@$(kullama_get kuberoot)" "$(kullama_get tataros.upstream)"
+eq "the release tag is the next tag"      "1" "$(grep -c "| Next tag | \`$dishv\`" RELEASING.md)"
+missing=""; for n in $(kullama_get ingredients); do [ -n "$(kullama_get "$n")" ] && [ -n "$(kullama_get "$n.repo")" ] || missing="$missing $n"; done
+eq "every ingredient has a pin and a repo" "" "$missing"
+STUBD="$(mktemp -d)"
+cat > "$STUBD/curl" <<'CEOF'
+#!/usr/bin/env bash
+url="${!#}"; printf '%s\n' "$url" >> "$CLOG"
+case "$url" in
+  */kubernetes/kubernetes/*)        printf '{"url":"x","tag_name":"%s","name":"y"}\n200' "${K8S_LATEST:-v1.37.2}" ;;
+  */tatar-ncf/tatarnetes/*)         printf '{"tag_name": "v1.37.1-tatar.0"}\n200' ;;
+  */kubernetes-sigs/headlamp/*)     printf '{"tag_name":"v0.46.0"}\n200' ;;
+  */kuberoot-dev/kuberoot/*)        printf '{"message":"Not Found"}\n404' ;;
+  *)                                printf '{"message":"rate limited"}\n403' ;;
+esac
+CEOF
+cat > "$STUBD/kubectl" <<'KEOF'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >> "$KLOG"
+printf 'ghcr.io/tatar-ncf/tatarnetes-freeze:%s' "$FREEZE_TAG"
+KEOF
+chmod +x "$STUBD/curl" "$STUBD/kubectl"
+export CLOG="$STUBD/curl.log" KLOG="$STUBD/kubectl.log"
+eq "latest release from GitHub"   "v1.37.1-tatar.0" "$(AYDA_CURL="$STUBD/curl" kullama_latest tatar-ncf/tatarnetes)"
+eq "no releases → rc 2"           "2" "$(AYDA_CURL="$STUBD/curl" kullama_latest kuberoot-dev/kuberoot >/dev/null; echo $?)"
+eq "rate limit → rc 1"            "1" "$(AYDA_CURL="$STUBD/curl" kullama_latest tatar-ncf/tataros >/dev/null; echo $?)"
+: > "$CLOG"
+eq "offline → rc 1, no request"   "1" "$(AYDA_KULLAMA_OFFLINE=1 AYDA_CURL="$STUBD/curl" kullama_latest tatar-ncf/tatarnetes >/dev/null; echo $?)$(cat "$CLOG")"
+dish() { AYDA_NO_TEA=1 AYDA_CURL="$STUBD/curl" AYDA_KUBECTL="$STUBD/kubectl" bash bin/ayda "$@" 2>/dev/null; }
+out="$(FREEZE_TAG="$dishv" dish куллама)"; rc=$?
+eq "matching freeze → rc 0"       "0" "$rc"
+case "$out" in *"урнашкан: $dishv — савыттагыча"*"Куллама әзер"*) ok "  installed freeze matches, dish ready";; *) bad "  installed freeze matches, dish ready" "…савыттагыча…Куллама әзер" "$out";; esac
+case "$out" in *"kubernetes/kubernetes@v1.37.2 — апстрим белән тигез"*) ok "  upstream level";; *) bad "  upstream level" "апстрим белән тигез" "$out";; esac
+case "$out" in *"апстримда релиз юк"*) ok "  kuberoot has no releases";; *) bad "  kuberoot has no releases" "апстримда релиз юк" "$out";; esac
+case "$out" in *"соңгы релиз: белеп булмады"*) ok "  rate-limited latest: could not tell";; *) bad "  rate-limited latest" "белеп булмады" "$out";; esac
+eq "  one read of the freeze image" "1" "$(grep -c 'get deployments -A -l app.kubernetes.io/name=tatarnetes-freeze' "$KLOG")"
+out="$(FREEZE_TAG=v1.37.1-tatar.0 K8S_LATEST=v1.38.0 AYDA_ALIF=latin dish kullama)"; rc=$?
+eq "swapped freeze → rc 1"        "1" "$rc"
+case "$out" in *"urnaşkan: v1.37.1-tatar.0 — sawıttagıdan aerıla"*) ok "  Latin: differs";; *) bad "  Latin: differs" "sawıttagıdan aerıla" "$out";; esac
+case "$out" in *"artık peşkän: apstrimda v1.38.0 çıkkan"*) ok "  overcooked against upstream";; *) bad "  overcooked" "artık peşkän" "$out";; esac
+case "$out" in *"tatarnetes-freeze."*"kubepkg rollback"*) ok "  verdict names it and how to roll back";; *) bad "  verdict" "tatarnetes-freeze … kubepkg rollback" "$out";; esac
+eq "Arabic script verb" "0" "$(FREEZE_TAG="$dishv" dish "$(printf '%s' куллама | cyrl_to_arab)" >/dev/null; echo $?)"
+case "$(FREEZE_TAG="$dishv" AYDA_LANG=en dish dish)" in *"Kullama $dishv — the versions"*"The dish is ready"*) ok "English alias dish";; *) bad "English alias dish" "Kullama … ready" "";; esac
+: > "$KLOG"
+AYDA_FORCE_TEA=1 AYDA_CURL="$STUBD/curl" AYDA_KUBECTL="$STUBD/kubectl" bash bin/ayda куллама >/dev/null 2>&1; rc=$?
+eq "tea time: dish served, cluster not asked" "0" "$rc$(cat "$KLOG")"
+eq "кул<Tab> offers куллама" "1" "$(AYDA_NO_TEA=1 ayda_complete кул | grep -cx куллама)"
+eq "missing dish → rc 1" "1" "$(AYDA_KULLAMA_FILE=/nonexistent kullama_show >/dev/null 2>&1; echo $?)"
 
 echo "── completion scripts & entry points ──"
 bcomp() { ( complete() { :; }; . completion/ayda.bash; COMP_WORDS=("$HERE/bin/ayda" "$@"); COMP_CWORD=$#

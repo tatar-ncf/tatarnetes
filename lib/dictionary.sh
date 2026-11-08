@@ -233,7 +233,7 @@ ayda_complete() {
 
   if [ "$n" -eq 0 ]; then
     # shellcheck disable=SC2046
-    complete_words "$cur" $(dict_verbs) аңлат ярдәм сүзлек версия шигырь мәкаль чәй сәлам
+    complete_words "$cur" $(dict_verbs) аңлат куллама ярдәм сүзлек версия шигырь мәкаль чәй сәлам
     [ "${AYDA_BACKEND:-kubectl}" = skctl ] && complete_words "$cur" күчер
     return 0
   fi
