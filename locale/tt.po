@@ -205,3 +205,34 @@ msgstr "«%s» кыры юк. Булган кырлар: ayda аңлат %s"
 
 msgid "explain.schema_failed"
 msgstr "Кыр схемасын алып булмады (kubectl explain кластер белән сөйләшә). Глоссарий гына кирәк булса: --кыскача"
+
+# --- TatarOS kuberoot нигезе / tos kuberoot backend (TOS_BACKEND=kuberoot) ---
+msgid "tos.backend.unknown"
+msgstr "Билгесез нигез (TOS_BACKEND): «%s». Мөмкиннәре: kuberoot, talos."
+
+msgid "tos.kr.talos_only"
+msgstr "«%s» — Talos фигыле, kuberoot төенендә аның тиңе юк. TOS_BACKEND=talos белән кулланып кара."
+
+msgid "tos.kr.need_node"
+msgstr "Берничә төен күренә — кайсысы икәнен «-n <төен>» белән күрсәт."
+
+msgid "tos.kr.need_service"
+msgstr "Хезмәт исемен күрсәт: tos көндәлек <хезмәт>."
+
+msgid "tos.kr.need_url"
+msgstr "Чыгарылыш кирәк: tos яңарт --url <URL> [--sha256 <хеш>]."
+
+msgid "tos.kr.no_spare_slot"
+msgstr "Кире кайтарырга икенче слот юк (%s)."
+
+msgid "tos.kr.reboot"
+msgstr "%s төене яңадан кабызыла."
+
+msgid "tos.kr.upgrade"
+msgstr "%s: яңарту башланды — «tos күрсәт яңартулар» белән күзәт."
+
+msgid "tos.kr.rollback"
+msgstr "%s: %s слотына кире кайтыла."
+
+msgid "tos.kr.restart"
+msgstr "%s хезмәте яңадан башлатыла."
