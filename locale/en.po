@@ -233,3 +233,13 @@ msgstr "%s: rolling back to slot %s."
 
 msgid "tos.kr.restart"
 msgstr "Service %s is restarting."
+
+# --- Tea windows as kuberoot rollout maintenance windows ---
+msgid "tos.teawin.applied"
+msgstr "Rollout %s now proceeds only during tea breaks: %s windows, %s days ahead."
+
+msgid "tos.teawin.bad_days"
+msgstr "Days must be between 1 and 60: \"%s\"."
+
+msgid "tos.teawin.bad_tz"
+msgstr "Unknown time zone: \"%s\"."

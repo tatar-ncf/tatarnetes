@@ -60,6 +60,7 @@ eq "en tagline" "A national container orchestrator" "$(AYDA_LANG=en t version.ta
 
 echo "── tea schedule ──"
 eq "3 tea windows/day" "3" "$(tea_windows | grep -c .)"
+eq "tea windows of a given day" "1101 7,1078 7,1055 7" "$(tea_windows 20261108 | paste -sd, -)"
 
 echo "── kubectl error hints (tat_error_hint) ──"
 eq "unknown kind → nomatch"   "err.hint.nomatch"   "$(tat_error_hint 'error: the server could not find the requested resource')"

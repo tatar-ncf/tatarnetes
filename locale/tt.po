@@ -236,3 +236,13 @@ msgstr "%s: %s слотына кире кайтыла."
 
 msgid "tos.kr.restart"
 msgstr "%s хезмәте яңадан башлатыла."
+
+# --- Чәй тәрәзәләре / tea windows as kuberoot rollout maintenance windows ---
+msgid "tos.teawin.applied"
+msgstr "«%s» яңарту җәюе хәзер чәй тәнәфесләрендә генә бара: %s тәрәзә, %s көнгә алдан."
+
+msgid "tos.teawin.bad_days"
+msgstr "Көннәр саны 1 белән 60 арасында булсын: «%s»."
+
+msgid "tos.teawin.bad_tz"
+msgstr "Билгесез вакыт поясы: «%s»."

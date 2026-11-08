@@ -77,6 +77,9 @@ catalog_lookup() { # $1=lang $2=key
     en:tos.kr.upgrade) printf '%s' '%s: upgrade started; watch it with "tos get upgrades".' ;;
     en:tos.kr.rollback) printf '%s' '%s: rolling back to slot %s.' ;;
     en:tos.kr.restart) printf '%s' 'Service %s is restarting.' ;;
+    en:tos.teawin.applied) printf '%s' 'Rollout %s now proceeds only during tea breaks: %s windows, %s days ahead.' ;;
+    en:tos.teawin.bad_days) printf '%s' 'Days must be between 1 and 60: "%s".' ;;
+    en:tos.teawin.bad_tz) printf '%s' 'Unknown time zone: "%s".' ;;
     tt:err.unknown_verb) printf '%s' 'Мондый әмер юк: «%s»' ;;
     tt:hint.try_help) printf '%s' '«ayda ярдәм» яки «ayda сүзлек» дип язып кара.' ;;
     tt:err.code) printf '%s' '(код: %s)' ;;
@@ -152,6 +155,9 @@ catalog_lookup() { # $1=lang $2=key
     tt:tos.kr.upgrade) printf '%s' '%s: яңарту башланды — «tos күрсәт яңартулар» белән күзәт.' ;;
     tt:tos.kr.rollback) printf '%s' '%s: %s слотына кире кайтыла.' ;;
     tt:tos.kr.restart) printf '%s' '%s хезмәте яңадан башлатыла.' ;;
+    tt:tos.teawin.applied) printf '%s' '«%s» яңарту җәюе хәзер чәй тәнәфесләрендә генә бара: %s тәрәзә, %s көнгә алдан.' ;;
+    tt:tos.teawin.bad_days) printf '%s' 'Көннәр саны 1 белән 60 арасында булсын: «%s».' ;;
+    tt:tos.teawin.bad_tz) printf '%s' 'Билгесез вакыт поясы: «%s».' ;;
     *) printf '%s' "$2" ;;
   esac
 }

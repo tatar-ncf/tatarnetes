@@ -11,10 +11,13 @@
 TEA_BREAKS_PER_DAY="${AYDA_TEA_BREAKS:-3}"
 TEA_BREAK_MIN="${AYDA_TEA_MINUTES:-7}"   # һәр тәнәфес озынлыгы, минут
 
-# Бүгенге тәнәфес тәрәзәләре: "башлану_минуты озынлык" юллары.
+# Көннең тәнәфес тәрәзәләре: "башлану_минуты озынлык" юллары. Көн — YYYYMMDD,
+# бирелмәсә бүген. The tea windows of a day (YYYYMMDD, today by default) as
+# "start_minute length" lines; tataros renders them into kuberoot
+# FleetRollout maintenance windows for days ahead.
 tea_windows() {
   local today seed i m
-  today=$(date +%Y%m%d)
+  today="${1:-$(date +%Y%m%d)}"
   seed=$(( 10#$today ))
   i=1
   while [ "$i" -le "$TEA_BREAKS_PER_DAY" ]; do
