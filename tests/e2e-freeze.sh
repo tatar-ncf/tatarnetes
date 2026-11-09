@@ -14,6 +14,7 @@ NS=freeze
 REL=freeze
 HOLIDAY=2026-06-20   # Sabantuy, a verified date of data/holidays.tt
 ORDINARY=2026-06-19
+UNVERIFIED=1999-06-20   # a year data/holidays.tt will never have
 HUMAN=(--as=alsu --as-group=system:authenticated)
 BREAK=tatar-ncf.github.io/break-glass
 
@@ -265,6 +266,14 @@ sleep 3
 expect_allowed "enforce namespace, ordinary day" - kubectl "${HUMAN[@]}" -n shop create configmap ordinary --from-literal=a=b
 expect_allowed "delete configmap, ordinary day" - kubectl "${HUMAN[@]}" -n shop delete configmap ordinary
 expect_allowed "scale, ordinary day" - kubectl "${HUMAN[@]}" -n shop scale statefulset/db --replicas=2
+
+step "a year without verified dates ($UNVERIFIED)"
+install "$UNVERIFIED"
+sleep 3
+expect_allowed "enforce namespace says the year is not verified" "1999 елның.*расланмаган.*Holiday dates for 1999 are not verified yet" \
+	kubectl "${HUMAN[@]}" -n shop create configmap unverified --from-literal=a=b
+expect_allowed "controllers hear nothing" - \
+	kubectl --as=system:serviceaccount:kube-system:generic-garbage-collector -n shop delete configmap unverified
 
 echo
 if ((fails)); then

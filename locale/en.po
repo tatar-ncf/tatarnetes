@@ -263,6 +263,12 @@ msgstr "Today is %s: this change in namespace \"%s\" went through, but an enforc
 msgid "freeze.breakglass"
 msgstr "Today is %s: the \"%s\" annotation let this change through the freeze: %s"
 
+msgid "freeze.unverified"
+msgstr "Holiday dates for %d are not verified yet: until they are added to data/holidays.tt, the change freeze freezes no day of that year."
+
+msgid "calendar.unverified"
+msgstr "Holiday dates for %s are not verified yet: Uraza, Qorban and Sabantuy get no banner and no change freeze until data/holidays.tt has them."
+
 msgid "kullama.title"
 msgstr "Kullama %s — the versions that work together"
 

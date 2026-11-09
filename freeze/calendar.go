@@ -43,6 +43,18 @@ func (c Calendar) On(t time.Time, loc *time.Location) (key string, ok bool) {
 	return key, ok
 }
 
+// Verified reports whether data/holidays.tt has dates for the year of t in
+// loc. Without them no day of that year is a holiday, whatever the date.
+func (c Calendar) Verified(t time.Time, loc *time.Location) bool {
+	year := t.In(loc).Format("2006-")
+	for day := range c {
+		if strings.HasPrefix(day, year) {
+			return true
+		}
+	}
+	return false
+}
+
 // HolidayName is the catalog key of a festival's name: festival.sabantuy
 // -> holiday.sabantuy.
 func HolidayName(festival string) string {

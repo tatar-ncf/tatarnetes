@@ -94,10 +94,6 @@ type Status struct {
 // path), which the global Mode may soften to warn.
 func (f *Freeze) Decide(req *Request, mode string) *Response {
 	allow := &Response{UID: req.UID, Allowed: true}
-	key, holiday := f.Calendar.On(f.Now(), f.Location)
-	if !holiday {
-		return allow
-	}
 	switch req.Operation {
 	case "CREATE", "UPDATE", "DELETE":
 	default:
@@ -105,6 +101,17 @@ func (f *Freeze) Decide(req *Request, mode string) *Response {
 	}
 	scale := isScale(req)
 	if (req.SubResource != "" && !scale) || slices.Contains(f.SkipResources, req.Resource.Resource) || f.exempt(req.UserInfo) {
+		return allow
+	}
+	now := f.Now()
+	key, holiday := f.Calendar.On(now, f.Location)
+	if !holiday {
+		// A year without verified dates freezes nothing; say so rather than
+		// let the namespace believe its holidays are covered.
+		if !f.Calendar.Verified(now, f.Location) {
+			year := now.In(f.Location).Year()
+			allow.Warnings = []string{f.Catalog.Both("freeze.unverified", func(string) []any { return []any{year} })}
+		}
 		return allow
 	}
 	day := func(lang string) string { return f.Catalog.T(lang, HolidayName(key)) }

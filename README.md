@@ -176,8 +176,10 @@ ayda күчер web-1 b                          # skctl migrate web-1 b
 `tatarnetes-freeze` — кластерга куела торган admission-вебхук: Ураза гаете,
 Корбан бәйрәме һәм Сабан туенда ([data/holidays.tt](data/holidays.tt) — бары
 тик расланган, елы белән язылган даталар, Казан вакыты белән) тамгаланган
-мәйданнарда үзгәрешләрне кире кага. Хәбәрләр — шул ук `locale/*.po`
-каталогыннан, татарча һәм инглизчә.
+мәйданнарда үзгәрешләрне кире кага. Ел өчен расланган даталар булмаса, вебхук
+тыймый, ә моны һәр үзгәрешкә кисәтү итеп әйтә (`ayda` та әйтә); атна саен
+`holidays-watch` issue ача. Хәбәрләр — шул ук `locale/*.po` каталогыннан,
+татарча һәм инглизчә.
 
 ```bash
 helm install freeze charts/tatarnetes-freeze -n tatarnetes-freeze --create-namespace
@@ -314,8 +316,10 @@ executed**, and the exit code is `69`. Set `AYDA_SKCTL=<path>` if `skctl` is not
 `tatarnetes-freeze` is a validating admission webhook that denies changes in
 opted-in namespaces on Eid al-Fitr (Uraza), Eid al-Adha (Qorban) and Sabantuy:
 only the verified, dated entries of [data/holidays.tt](data/holidays.tt) count,
-and the day is Kazan's. Its messages come from the same `locale/*.po` catalog,
-in Tatar and English.
+and the day is Kazan's. In a year without verified dates it freezes nothing and
+says so in a warning on every change (so does `ayda`), and the weekly
+`holidays-watch` workflow opens an issue. Its messages come from the same
+`locale/*.po` catalog, in Tatar and English.
 
 ```bash
 helm install freeze charts/tatarnetes-freeze -n tatarnetes-freeze --create-namespace

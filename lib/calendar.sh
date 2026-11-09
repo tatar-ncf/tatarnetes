@@ -6,6 +6,14 @@
 
 _HOLIDAYS_FILE="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/../data" 2>/dev/null && pwd)/holidays.tt"
 
+# tat_holidays_verified [ел] — ул елның расланган даталары бармы.
+# Succeeds when data/holidays.tt has verified dates for the year (default:
+# this one); without them that year's movable holidays are never recognised.
+tat_holidays_verified() {
+  local year="${1:-$(date +%Y)}"
+  grep -qE "^${year}-[0-9]{2}-[0-9]{2}[[:space:]]" "$_HOLIDAYS_FILE" 2>/dev/null
+}
+
 # tat_festival → каталог ачкычы яки буш / echoes a festival key or empty.
 tat_festival() {
   local md ymd dow

@@ -71,6 +71,9 @@ func main() {
 		log.Printf("break-glass on scale will not work: %v", err)
 	}
 	log.Printf("change freeze: %d holidays, %s, mode %s", len(cal), loc, *mode)
+	if !cal.Verified(now(), loc) {
+		log.Printf("no verified holiday dates for %d in the holidays file: nothing is frozen this year until they are added", now().In(loc).Year())
+	}
 
 	mux := http.NewServeMux()
 	mux.Handle("/validate/", f)

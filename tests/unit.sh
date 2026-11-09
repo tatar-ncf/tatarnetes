@@ -362,6 +362,18 @@ eq "tea window line latin" "09:00  (7 min)" "$(AYDA_ALIF=latin t tea.window 09:0
 eq "tea tomorrow latin"    "irtägä"         "$(AYDA_ALIF=latin t tea.tomorrow)"
 eq "tea tomorrow en"       "tomorrow"       "$(AYDA_LANG=en t tea.tomorrow)"
 
+echo "── calendar: verified years ──"
+# shellcheck source=/dev/null
+. lib/calendar.sh
+if tat_holidays_verified 2026; then ok "2026 verified"; else bad "2026 verified" 0 1; fi
+if tat_holidays_verified 1999; then bad "1999 not verified" 1 0; else ok "1999 not verified"; fi
+if (_HOLIDAYS_FILE=/dev/null; tat_holidays_verified 2026); then bad "no file: not verified" 1 0; else ok "no file: not verified"; fi
+case "$(AYDA_LANG=en t calendar.unverified 2027)" in
+  "Holiday dates for 2027 are not verified yet:"*) ok "calendar.unverified en" ;;
+  *) bad "calendar.unverified en" "Holiday dates for 2027 are not verified yet: ..." "$(AYDA_LANG=en t calendar.unverified 2027)" ;;
+esac
+if has_cyrl "$(AYDA_ALIF=latin t calendar.unverified 2027)"; then bad "calendar.unverified latin" "" "$(AYDA_ALIF=latin t calendar.unverified 2027)"; else ok "calendar.unverified latin"; fi
+
 echo
 echo "Йомгак / result: PASS=$PASS FAIL=$FAIL"
 [ "$FAIL" -eq 0 ]

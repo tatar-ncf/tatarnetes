@@ -96,11 +96,10 @@ func TestAllows(t *testing.T) {
 		req  func() *Request
 		mode string
 	}{
-		"an ordinary day":    {ordinary, func() *Request { return req("CREATE") }, ModeEnforce},
-		"an unverified year": {sabantuy7, func() *Request { return req("CREATE") }, ModeEnforce},
-		"connect":            {sabantuy, func() *Request { return req("CONNECT") }, ModeEnforce},
-		"a subresource":      {sabantuy, func() *Request { r := req("UPDATE"); r.SubResource = "status"; return r }, ModeEnforce},
-		"events":             {sabantuy, func() *Request { r := req("CREATE"); r.Resource.Resource = "events"; return r }, ModeEnforce},
+		"an ordinary day": {ordinary, func() *Request { return req("CREATE") }, ModeEnforce},
+		"connect":         {sabantuy, func() *Request { return req("CONNECT") }, ModeEnforce},
+		"a subresource":   {sabantuy, func() *Request { r := req("UPDATE"); r.SubResource = "status"; return r }, ModeEnforce},
+		"events":          {sabantuy, func() *Request { r := req("CREATE"); r.Resource.Resource = "events"; return r }, ModeEnforce},
 		"a kube-system controller": {sabantuy, func() *Request {
 			r := req("CREATE")
 			r.UserInfo.Username = "system:serviceaccount:kube-system:replicaset-controller"
@@ -117,6 +116,32 @@ func TestAllows(t *testing.T) {
 		if resp := f.Decide(r, c.mode); !resp.Allowed || len(resp.Warnings) != 0 {
 			t.Errorf("%s: %+v", name, resp)
 		}
+	}
+}
+
+// A year without verified dates freezes nothing, and says so to the people
+// whose namespaces opted in; the cluster's controllers hear nothing.
+func TestUnverifiedYear(t *testing.T) {
+	f := newFreeze(t, sabantuy7)
+	if f.Calendar.Verified(sabantuy7, kazan) || !f.Calendar.Verified(sabantuy, kazan) {
+		t.Fatal("Verified: want 2026 verified and 2027 not")
+	}
+	resp := f.Decide(req("CREATE"), ModeEnforce)
+	if !resp.Allowed || len(resp.Warnings) != 1 {
+		t.Fatalf("%+v", resp)
+	}
+	for _, want := range []string{"Holiday dates for 2027 are not verified yet", "2027 елның"} {
+		if !strings.Contains(resp.Warnings[0], want) {
+			t.Errorf("warning %q lacks %q", resp.Warnings[0], want)
+		}
+	}
+	controller := req("CREATE")
+	controller.UserInfo.Username = "system:kube-controller-manager"
+	if resp := f.Decide(controller, ModeEnforce); !resp.Allowed || len(resp.Warnings) != 0 {
+		t.Errorf("controller: %+v", resp)
+	}
+	if resp := newFreeze(t, ordinary).Decide(req("CREATE"), ModeEnforce); len(resp.Warnings) != 0 {
+		t.Errorf("verified year: %+v", resp)
 	}
 }
 
