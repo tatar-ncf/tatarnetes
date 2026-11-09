@@ -1,0 +1,55 @@
+name: holidays-watch
+# Бәйрәм даталарын күзәтә: ел җиткәндә data/holidays.tt'та расланган даталар
+# булмаса, issue ача. Даталарны бары рәсми чыганаклардан гына кертергә.
+# Opens an issue when a year arrives (or, from December, is about to)
+# without verified Uraza, Qorban and Sabantuy dates in data/holidays.tt.
+# It never guesses dates: they come from official sources only.
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # һәр дүшәмбе / every Monday 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TZ: Europe/Moscow   # Kazan's date
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check verified dates
+        run: |
+          set -euo pipefail
+          years=$(date +%Y)
+          [ "$(date +%m)" = 12 ] && years="$years $(( $(date +%Y) + 1 ))"
+          for year in $years; do
+            missing=""
+            for key in uraza qorban sabantuy; do
+              grep -qE "^${year}-[0-9]{2}-[0-9]{2}[[:space:]]+festival\.${key}([[:space:]]|$)" data/holidays.tt || missing="$missing $key"
+            done
+            if [ -z "$missing" ]; then
+              echo "$year: verified"; continue
+            fi
+            echo "$year: not verified:$missing"
+            title="Holiday dates for $year are not verified"
+            existing=$(gh issue list --search "\"$title\" in:title" --state open --json number --jq '.[0].number // empty')
+            if [ -n "$existing" ]; then
+              echo "Issue инде бар / already tracked: #$existing"; continue
+            fi
+            body=$(printf '%s\n' \
+              "\`data/holidays.tt\` has no verified dates for **$year**:$missing." \
+              "Until they are added, \`ayda\` shows no festival banner for them and the change freeze freezes nothing that year (both say so)." \
+              "" \
+              "Add each date only from an official source, and record the source in \`data/VERIFICATION.tt.md\`:" \
+              "- [ ] Uraza and Qorban: the decree of the Rais of Tatarstan on the days of Uraza Bayram and Kurban Bayram in $year (pravo.tatarstan.ru, rais.tatarstan.ru). Dates announced by the Spiritual Administration of Muslims or the Ministry of Labour before the decree are preliminary." \
+              "- [ ] Sabantuy: the date of the Kazan Sabantuy in $year from tatarstan.ru or the Kazan city administration (kzn.ru)." \
+              "- [ ] \`go test ./...\` and \`bash tests/unit.sh\` pass; update \`tests/e2e-freeze.sh\` if it names a date." \
+              "" \
+              "Opened by \`.github/workflows/holidays-watch.yml\`.")
+            gh label create calendar --color fbca04 --description "Holiday dates" 2>/dev/null || true
+            gh issue create --title "$title" --body "$body" --label calendar
+          done

@@ -38,3 +38,23 @@ milliard.tatar подборкасы. Барысы да киң таралган, 
 2. Соңгы юлда авторлык: `— Автор, «Әсәр»`.
 3. Бу файлга чыганак һәм ышаныч дәрәҗәсен яз.
 4. PR ач. Рәхмәт! / Open a PR. Thank you!
+
+## Бәйрәм даталары / Holiday dates (`data/holidays.tt`)
+
+Бары рәсми чыганаклар / official sources only: the decree of the Rais of
+Tatarstan for Uraza and Qorban (pravo.tatarstan.ru, rais.tatarstan.ru), and
+tatarstan.ru or the Kazan city administration for the Kazan Sabantuy. Dates
+announced earlier (Spiritual Administration of Muslims, Ministry of Labour
+calendars) are preliminary and are not added.
+
+| Ел | Бәйрәм | Дата | Чыганак | Халәт |
+|---|---|---|---|---|
+| 2026 | Ураза / Uraza | 2026-03-20 | Указ Раиса РТ от 17.01.2026 N 17, pravo.tatarstan.ru/president/ukaz.htm/?npa_id=1776529 | ✅ |
+| 2026 | Корбан / Qorban | 2026-05-27 | шул ук указ / same decree | ✅ |
+| 2026 | Сабантуй (Казан) | 2026-06-20 | Kazan Sabantuy 2026 | ✅ |
+| 2027 | Ураза, Корбан | — | Rais decree for 2027 not published as of 2026-11-09 (the 2026 one was signed in January). Preliminary: 2027-03-09 and 2027-05-16 (Spiritual Administration of Muslims of Tatarstan, via the Ministry of Labour's 2027 calendar, Oct 2026) — not added | ⏳ |
+| 2027 | Сабантуй (Казан) | — | not announced as of 2026-11-09 | ⏳ |
+
+`.github/workflows/holidays-watch.yml` opens an issue when a year (or, from
+December, the next one) has no verified dates.
+
