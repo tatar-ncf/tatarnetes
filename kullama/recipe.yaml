@@ -37,8 +37,8 @@ metadata:
     kullama.tatar-ncf.github.io/tatarnetes-ui.upstream: "kubernetes-sigs/headlamp@v0.46.0"
     kullama.tatar-ncf.github.io/tataros: "v3.0.0-tatar.0"
     kullama.tatar-ncf.github.io/tataros.repo: "tatar-ncf/tataros"
-    kullama.tatar-ncf.github.io/tataros.upstream: "kuberoot-dev/kuberoot@539c2962fd9c064cf9e6d1707ad7f974d1fe8721"
-    kullama.tatar-ncf.github.io/kuberoot: "539c2962fd9c064cf9e6d1707ad7f974d1fe8721"
+    kullama.tatar-ncf.github.io/tataros.upstream: "kuberoot-dev/kuberoot@fdab3b1eeb1266e233eb23cc6b9bccc215ae592b"
+    kullama.tatar-ncf.github.io/kuberoot: "fdab3b1eeb1266e233eb23cc6b9bccc215ae592b"
     kullama.tatar-ncf.github.io/kuberoot.repo: "kuberoot-dev/kuberoot"
 spec:
   version: 1.37.2-tatar.1

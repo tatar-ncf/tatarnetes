@@ -65,7 +65,7 @@
 | Киләсе тег | `v1.37.2-tatar.1` (stable: 1.37 минорының патч-яңартуы; `v1.37.1-tatar.0` — edge иде) |
 | Тикшерелгән kubectl | v1.37.2 (чын бинар белән сыналды: фигыльләр һәм `--help` v1.37.1 белән бер үк) |
 | Kubernetes кластеры | kubectl рәсми рәвештә apiserver'дан бер минорга кадәр аерыла ала: 1.36, 1.37, 1.38 |
-| TatarOS | Talos v1.14.1 — эчендә Kubernetes 1.37 |
+| TatarOS | `v3.0.0-tatar.0`, kuberoot нигезендә — эчендә Kubernetes 1.37 |
 
 **v1.31.0 → v1.37.1: `ayda` өчен нәрсә үзгәрде**
 
@@ -129,7 +129,7 @@ directly. We do not invent; we follow stable upstream, Tatarise it, test, ship.
 | Next tag | `v1.37.2-tatar.1` (stable: patch update of the 1.37 minor; `v1.37.1-tatar.0` was the edge cut) |
 | Verified kubectl | v1.37.2 (checked against the real binary: verb set and every `--help` identical to v1.37.1) |
 | Clusters | kubectl's official skew is one minor either way: 1.36, 1.37, 1.38 |
-| TatarOS | Talos v1.14.1 — ships Kubernetes 1.37 |
+| TatarOS | `v3.0.0-tatar.0`, built on kuberoot — ships Kubernetes 1.37 |
 
 **v1.31.0 → v1.37.1: what changed for `ayda`**
 
