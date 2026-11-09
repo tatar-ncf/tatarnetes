@@ -86,6 +86,8 @@ catalog_lookup() { # $1=lang $2=key
     en:freeze.denied) printf '%s' 'Today is %s: changes in namespace "%s" are frozen. For an emergency, annotate the object with "%s" and the reason.' ;;
     en:freeze.warn) printf '%s' 'Today is %s: this change in namespace "%s" went through, but an enforced freeze would deny it.' ;;
     en:freeze.breakglass) printf '%s' 'Today is %s: the "%s" annotation let this change through the freeze: %s' ;;
+    en:freeze.unverified) printf '%s' 'Holiday dates for %d are not verified yet: until they are added to data/holidays.tt, the change freeze freezes no day of that year.' ;;
+    en:calendar.unverified) printf '%s' 'Holiday dates for %s are not verified yet: Uraza, Qorban and Sabantuy get no banner and no change freeze until data/holidays.tt has them.' ;;
     en:kullama.title) printf '%s' 'Kullama %s — the versions that work together' ;;
     en:kullama.recipe) printf '%s' 'Meat, salma and the carrot-and-onion dressing are cooked apart, then put together in one pan with the broth: so are the components.' ;;
     en:kullama.pinned) printf '%s' 'in the dish: %s' ;;
@@ -189,6 +191,8 @@ catalog_lookup() { # $1=lang $2=key
     tt:freeze.denied) printf '%s' 'Бүген %s — «%s» мәйданында үзгәрешләр тыела. Ашыгыч булса, объектка «%s» искәрмәсен куй (сәбәбе белән).' ;;
     tt:freeze.warn) printf '%s' 'Бүген %s — «%s» мәйданындагы бу үзгәреш узды, ләкин тыю кабызылса, кире кагылыр иде.' ;;
     tt:freeze.breakglass) printf '%s' 'Бүген %s — тыюны «%s» искәрмәсе узып китте: %s' ;;
+    tt:freeze.unverified) printf '%s' '%d елның бәйрәм көннәре әле расланмаган: алар data/holidays.tt файлына кертелгәнче, үзгәрешләрне тыю бу елның бер көнендә дә эшләми.' ;;
+    tt:calendar.unverified) printf '%s' '%s елның бәйрәм көннәре әле расланмаган: data/holidays.tt аларны белгәнче, Ураза, Корбан һәм Сабантуйга баннер да, үзгәрешләрне тыю да булмый.' ;;
     tt:kullama.title) printf '%s' 'Куллама %s — бергә эшли торган версияләр' ;;
     tt:kullama.recipe) printf '%s' 'Ит, салма һәм кишер-суган туравы аерым пешә, аннары бер савытта шулпа белән кушыла: кисәкләр дә шулай.' ;;
     tt:kullama.pinned) printf '%s' 'савытта: %s' ;;

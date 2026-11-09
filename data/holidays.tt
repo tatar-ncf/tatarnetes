@@ -7,7 +7,10 @@
 # year. Read by the festival banner (calendar.sh) and the change freeze.
 # 2026: Татарстан Раисе Указы (17.01.2026, N 17) + Казан Сабантуе.
 # 2026: Decree of the Raıs of Tatarstan (N 17) + Kazan Sabantuy.
-# ⚠ Ел саен яңартырга кирәк / update yearly.
+# ⚠ Ел саен яңартырга кирәк / update yearly; sources go to data/VERIFICATION.tt.md.
+# Ел өчен даталар булмаса, ayda һәм тыю моны әйтә, holidays-watch issue ача.
+# A year without dates: ayda and the freeze say so, holidays-watch opens an issue.
+# 2027: расланмаган / not verified yet (see data/VERIFICATION.tt.md).
 2026-03-20 festival.uraza      # Ураза-байрам 2026
 2026-05-27 festival.qorban     # Корбан-байрам 2026
 2026-06-20 festival.sabantuy   # Сабантуй (Казан) 2026

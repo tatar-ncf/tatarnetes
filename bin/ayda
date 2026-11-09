@@ -35,6 +35,7 @@ _footer_extras() {
   # Бәйрәм баннеры / festival banner
   local fest; fest="$(tat_festival)" || fest=""
   [ -n "$fest" ] && printf '%b\n' "  ${TAT_GOLD}${TAT_BOLD}$(t "$fest")${TAT_RESET}" >&2
+  _calendar_notice daily
   # Хуҗалыкчыллык / thrift nag
   local reps
   if reps="$(tat_finops_replicas ${kargs[@]+"${kargs[@]}"})"; then
@@ -70,6 +71,20 @@ show_error_footer() {
   [ -n "$hint" ] && printf '%b\n' "  ${TAT_GOLD}$(t "$hint")${TAT_RESET}" >&2
   _footer_extras
   tat_carpet
+}
+
+# Расланмаган ел / a year without verified holiday dates: said by `version`
+# and the greeting always, in the footer once a day.
+_calendar_notice() { # [daily]
+  local year; year="$(date +%Y)"
+  tat_holidays_verified "$year" && return 0
+  if [ "${1:-}" = daily ]; then
+    local cache f today
+    cache="${XDG_CACHE_HOME:-$HOME/.cache}/ayda"; f="$cache/calendar_notice"; today="$(date +%F)"
+    [ "$(cat "$f" 2>/dev/null)" = "$today" ] && return 0
+    mkdir -p "$cache" 2>/dev/null && printf '%s' "$today" > "$f" 2>/dev/null
+  fi
+  printf '%b\n' "  ${TAT_RED}$(t calendar.unverified "$year")${TAT_RESET}" >&2
 }
 
 # --- Чәй тәнәфесе / tea break screen ------------------------------------
@@ -200,6 +215,7 @@ show_version() {
   tat_bold "  $name / Tatarnetes  v${AYDA_VERSION}"
   printf '%b\n' "  ${TAT_GREEN}$(t version.tagline)${TAT_RESET}" >&2
   printf '%b\n' "  ${TAT_DIM}$(t version.dedication)${TAT_RESET}" >&2
+  _calendar_notice
   if [ "$AYDA_BACKEND" = skctl ]; then
     printf '%b\n' "  ${TAT_DIM}$(t version.backend) skctl (Sheeternetes) — $SKCTL_BIN${TAT_RESET}" >&2
   elif command -v "$KUBECTL_BIN" >/dev/null 2>&1; then
@@ -233,6 +249,7 @@ greet() {
   printf '%b\n' "  ${TAT_GREEN}${TAT_BOLD}$(t greet.hello)${TAT_RESET}" >&2
   local fest; fest="$(tat_festival)" || fest=""
   [ -n "$fest" ] && printf '%b\n' "  ${TAT_GOLD}${TAT_BOLD}$(t "$fest")${TAT_RESET}" >&2
+  _calendar_notice
   printf '%b\n' "  ${TAT_GOLD}$(tat_random_poem)${TAT_RESET}" >&2
   tat_carpet
 }
